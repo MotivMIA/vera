@@ -1,7 +1,6 @@
 import { DocumentsStepIndicators } from "@/components/onboarding/documents-step-indicators";
 import { InternalSigningPacket } from "@/components/onboarding/internal-signing-packet";
 import { OnboardingShell } from "@/components/onboarding/onboarding-shell";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 export default function DocumentsPage() {
   return (
@@ -12,15 +11,7 @@ export default function DocumentsPage() {
       progress={75}
       asideExtra={<DocumentsStepIndicators />}
     >
-      <Card className="glass-panel rounded-2xl">
-        <CardHeader>
-          <CardTitle>Agreement signing</CardTitle>
-          <CardDescription>Review and sign each document below to complete onboarding.</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-5">
-          <InternalSigningPacket />
-        </CardContent>
-      </Card>
+      <InternalSigningPacket />
     </OnboardingShell>
   );
 }

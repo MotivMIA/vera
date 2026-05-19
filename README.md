@@ -51,7 +51,7 @@ npm run dev
 - `POST /api/didit/webhook` validates DIDIT webhook signatures before processing status updates
 - `GET /api/didit/status` returns verification status
 - `GET /api/documents/status` returns in-app document signing progress
-- `POST /api/documents/submit` validates and records typed e-signatures for required agreements
+- `POST /api/documents/submit` validates signatures, generates signed PDFs, uploads them to Supabase Storage, and records references in `signed_documents`
 
 The app does not store raw ID images. DIDIT should own identity document capture, verification, and document storage.
 
@@ -74,7 +74,8 @@ Run `SUPABASE_SCHEMA.md` in the Supabase SQL editor. The schema includes:
 - `signed_documents`
 - `audit_logs`
 
-Server-side writes use `SUPABASE_SERVICE_ROLE_KEY`. Keep RLS enabled and avoid exposing sensitive metadata to browser clients.
+Server-side writes use `SUPABASE_SERVICE_ROLE_KEY`. Keep RLS enabled and avoid exposing sensitive metadata to browser clients.  
+Signed documents are stored in a private Supabase Storage bucket named `signed-documents`; file paths are stored in `signed_documents.provider_document_id`.
 
 ## Deployment
 

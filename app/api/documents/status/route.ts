@@ -7,6 +7,7 @@ import type { DiditSessionMetadata } from "@/types/onboarding";
 import { getSupabaseAdmin } from "@/lib/supabase/server";
 
 const DOCUMENT_TYPES: InternalDocumentType[] = ["client_agreement", "content_release"];
+const DOCUMENT_BUCKET = "signed-documents";
 
 type Prefill = {
   signerName?: string | null;
@@ -133,7 +134,7 @@ export async function GET() {
 
   const { data, error } = await supabase
     .from("signed_documents")
-    .select("document_type,status,signed_at")
+    .select("document_type,status,signed_at,provider_document_id")
     .eq("clerk_user_id", userId)
     .in("document_type", DOCUMENT_TYPES);
 
@@ -149,14 +150,23 @@ export async function GET() {
   }
 
   const byType = new Map((data ?? []).map((row) => [row.document_type, row]));
-  const documents = DOCUMENT_TYPES.map((type) => {
-    const row = byType.get(type);
-    return {
-      type,
-      status: row?.status ?? "not_started",
-      signedAt: row?.signed_at ?? null,
-    };
-  });
+  const documents = await Promise.all(
+    DOCUMENT_TYPES.map(async (type) => {
+      const row = byType.get(type);
+      let downloadUrl: string | null = null;
+      const storagePath = row?.provider_document_id;
+      if (storagePath) {
+        const signed = await supabase.storage.from(DOCUMENT_BUCKET).createSignedUrl(storagePath, 60 * 60);
+        downloadUrl = signed.data?.signedUrl ?? null;
+      }
+      return {
+        type,
+        status: row?.status ?? "not_started",
+        signedAt: row?.signed_at ?? null,
+        downloadUrl,
+      };
+    }),
+  );
 
   const complete = documents.every((doc) => doc.status === "signed");
   const { data: verification } = await supabase

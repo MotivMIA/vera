@@ -1,6 +1,7 @@
 import { auth } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
+import { buildSignedDocumentPdf } from "@/lib/onboarding/pdf";
 import { recordAuditLog } from "@/lib/onboarding/audit";
 import { getClientIp } from "@/lib/security";
 import { getSupabaseAdminOrThrow } from "@/lib/supabase/server";
@@ -10,6 +11,8 @@ const shared = {
   signerName: z.string().min(2).max(120),
   signerEmail: z.string().email(),
   signatureName: z.string().min(2).max(120),
+  signatureMethod: z.enum(["draw", "type"]).optional(),
+  signatureImageDataUrl: z.string().startsWith("data:image/").max(2_000_000).optional(),
   signedAt: z.string().datetime(),
 };
 
@@ -38,6 +41,13 @@ const releaseFormSchema = z.object({
 
 const submitSchema = z.union([clientAgreementSchema, releaseFormSchema]);
 const DOC_TYPES: InternalDocumentType[] = ["client_agreement", "content_release"];
+const DOCUMENT_BUCKET = "signed-documents";
+
+async function ensureDocumentBucket(supabase: ReturnType<typeof getSupabaseAdminOrThrow>) {
+  const { data: existing } = await supabase.storage.getBucket(DOCUMENT_BUCKET);
+  if (existing) return;
+  await supabase.storage.createBucket(DOCUMENT_BUCKET, { public: false });
+}
 
 export async function POST(request: NextRequest) {
   const authState = await auth().catch(() => ({ userId: process.env.NODE_ENV === "development" ? "local-preview-user" : null }));
@@ -78,10 +88,26 @@ export async function POST(request: NextRequest) {
   }
 
   const now = new Date().toISOString();
+  const pdfBytes = await buildSignedDocumentPdf({
+    documentType: parsed.data.documentType,
+    payload: parsed.data.payload,
+  });
+  const fileSafeSignedAt = parsed.data.payload.signedAt.replace(/[:.]/g, "-");
+  const filePath = `${userId}/${parsed.data.documentType}/${fileSafeSignedAt}.pdf`;
+  await ensureDocumentBucket(supabase);
+  const { error: uploadError } = await supabase.storage.from(DOCUMENT_BUCKET).upload(filePath, Buffer.from(pdfBytes), {
+    contentType: "application/pdf",
+    upsert: true,
+  });
+  if (uploadError) {
+    return NextResponse.json({ error: `Unable to store signed PDF: ${uploadError.message}` }, { status: 500 });
+  }
+
   await supabase.from("signed_documents").upsert({
     clerk_user_id: userId,
     document_type: parsed.data.documentType,
     provider: "internal",
+    provider_document_id: filePath,
     status: "signed",
     signed_at: parsed.data.payload.signedAt,
     updated_at: now,

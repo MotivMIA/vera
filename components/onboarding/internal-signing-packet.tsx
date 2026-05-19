@@ -1,13 +1,13 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import type { PointerEvent as ReactPointerEvent } from "react";
 import { useUser } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
-import { CheckCircle2, FileSignature, Loader2, Lock, PenLine, Send } from "lucide-react";
+import { Download, FileSignature, Loader2, PenLine, Send } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
@@ -15,7 +15,7 @@ type DocState = "not_started" | "sent" | "signed" | "voided";
 type DocType = "client_agreement" | "content_release";
 
 type StatusResponse = {
-  documents: { type: DocType; status: DocState; signedAt: string | null }[];
+  documents: { type: DocType; status: DocState; signedAt: string | null; downloadUrl?: string | null }[];
   complete: boolean;
   supabaseConfigured?: boolean;
   prefill?: {
@@ -38,7 +38,6 @@ const emptyClient = {
   signerName: "",
   signerEmail: "",
   clientHandle: "",
-  signatureName: "",
   termsAccepted: false,
   esignAccepted: false,
 };
@@ -50,9 +49,11 @@ const emptyRelease = {
   idNumber: "",
   idIssuedBy: "",
   dateOfBirth: "",
-  signatureName: "",
   ageConfirmed: false,
 };
+
+type SignatureMode = "draw" | "type";
+type SignatureValue = { mode: SignatureMode; typedName: string; drawnDataUrl: string };
 
 const CLIENT_TERMS = [
   {
@@ -143,11 +144,12 @@ const CLIENT_TERMS = [
 ] as const;
 
 const RELEASE_POINTS = [
-  "I am a participant in media content intended for publication on Platform services.",
+  "I am a participant in sexually explicit and/or non-sexually explicit media content which is intended to be posted on the Platform.",
   "I was at least 18 years old when all such media content was created.",
-  "I grant permission for Creator publication and distribution on the Platform.",
-  "I understand this content may be used for commercial purposes.",
-  "I can withdraw consent by contacting Platform support in writing.",
+  "I give the Platform the absolute right and permission to allow the Creator to create, upload, use, re-use, display, publish and distribute such content on the Platform.",
+  "I am aware that this content may be used for commercial reasons.",
+  "I acknowledge and agree that (i) I am not entitled to any payments from the Platform in relation to the publication of such content, (ii) the Platform will distribute any earnings generated from such content to the Creator, and that (iii) the Platform is not a party to any agreement I may have with the Creator regarding the publication of such content on the Platform.",
+  "I am aware that I can at any time withdraw my consent by contacting the Platform's support team in writing.",
 ] as const;
 
 function isFilled(value: string) {
@@ -175,6 +177,226 @@ function deriveNameFromUser(user: ReturnType<typeof useUser>["user"]) {
   return toTitleCase(local);
 }
 
+function SignatureField({
+  idPrefix,
+  disabled,
+  signature,
+  onChange,
+  suggestedTypedName,
+}: {
+  idPrefix: string;
+  disabled: boolean;
+  signature: SignatureValue;
+  onChange: (next: SignatureValue) => void;
+  suggestedTypedName: string;
+}) {
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const drawingRef = useRef(false);
+  const drawnDataRef = useRef(signature.drawnDataUrl);
+
+  useEffect(() => {
+    drawnDataRef.current = signature.drawnDataUrl;
+  }, [signature.drawnDataUrl]);
+
+  const repaintFromDataUrl = useCallback(
+    (dataUrl: string) => {
+      const canvas = canvasRef.current;
+      if (!canvas || !dataUrl) return;
+      const context = canvas.getContext("2d");
+      if (!context) return;
+      const image = new Image();
+      image.onload = () => {
+        context.save();
+        context.setTransform(1, 0, 0, 1, 0, 0);
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        context.restore();
+        context.drawImage(image, 0, 0, canvas.clientWidth, canvas.clientHeight);
+      };
+      image.src = dataUrl;
+    },
+    [canvasRef],
+  );
+
+  const resetCanvasSize = useCallback(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ratio = typeof window !== "undefined" ? Math.max(window.devicePixelRatio || 1, 1) : 1;
+    const width = canvas.clientWidth;
+    const height = canvas.clientHeight;
+    canvas.width = Math.floor(width * ratio);
+    canvas.height = Math.floor(height * ratio);
+    const context = canvas.getContext("2d");
+    if (!context) return;
+    context.setTransform(ratio, 0, 0, ratio, 0, 0);
+    context.lineWidth = 2;
+    context.lineCap = "round";
+    context.lineJoin = "round";
+    context.strokeStyle = "#f6f4ef";
+    if (drawnDataRef.current) repaintFromDataUrl(drawnDataRef.current);
+  }, [repaintFromDataUrl]);
+
+  useEffect(() => {
+    if (signature.mode !== "draw") return;
+    resetCanvasSize();
+    const onResize = () => resetCanvasSize();
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
+  }, [resetCanvasSize, signature.mode]);
+
+  const beginStroke = useCallback(
+    (event: ReactPointerEvent<HTMLCanvasElement>) => {
+      if (disabled) return;
+      const canvas = canvasRef.current;
+      if (!canvas) return;
+      const context = canvas.getContext("2d");
+      if (!context) return;
+      drawingRef.current = true;
+      canvas.setPointerCapture(event.pointerId);
+      const rect = canvas.getBoundingClientRect();
+      context.beginPath();
+      context.moveTo(event.clientX - rect.left, event.clientY - rect.top);
+    },
+    [disabled],
+  );
+
+  const moveStroke = useCallback((event: ReactPointerEvent<HTMLCanvasElement>) => {
+    if (!drawingRef.current) return;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const context = canvas.getContext("2d");
+    if (!context) return;
+    const rect = canvas.getBoundingClientRect();
+    context.lineTo(event.clientX - rect.left, event.clientY - rect.top);
+    context.stroke();
+  }, []);
+
+  const endStroke = useCallback(
+    (event: ReactPointerEvent<HTMLCanvasElement>) => {
+      if (!drawingRef.current) return;
+      const canvas = canvasRef.current;
+      if (!canvas) return;
+      drawingRef.current = false;
+      canvas.releasePointerCapture(event.pointerId);
+      const dataUrl = canvas.toDataURL("image/png");
+      onChange({ ...signature, drawnDataUrl: dataUrl });
+    },
+    [onChange, signature],
+  );
+
+  const clearSignature = useCallback(() => {
+    const canvas = canvasRef.current;
+    if (canvas) {
+      const context = canvas.getContext("2d");
+      context?.clearRect(0, 0, canvas.width, canvas.height);
+    }
+    onChange({ ...signature, drawnDataUrl: "" });
+  }, [onChange, signature]);
+
+  return (
+    <div className="space-y-2 rounded-lg border border-white/10 p-3">
+      <div className="flex flex-wrap items-center gap-2">
+        <Label className="text-sm text-foreground">Signature</Label>
+        <div className="ml-auto inline-flex rounded-lg border border-white/10 p-1">
+          <Button
+            type="button"
+            variant={signature.mode === "draw" ? "secondary" : "ghost"}
+            className="h-8 px-3 text-xs"
+            onClick={() => onChange({ ...signature, mode: "draw" })}
+            disabled={disabled}
+          >
+            Draw
+          </Button>
+          <Button
+            type="button"
+            variant={signature.mode === "type" ? "secondary" : "ghost"}
+            className="h-8 px-3 text-xs"
+            onClick={() => onChange({ ...signature, mode: "type", typedName: signature.typedName || suggestedTypedName })}
+            disabled={disabled}
+          >
+            Type
+          </Button>
+        </div>
+      </div>
+
+      {signature.mode === "draw" ? (
+        <div className="space-y-2">
+          <canvas
+            ref={canvasRef}
+            className="h-36 w-full touch-none rounded-lg border border-white/10 bg-black/40"
+            onPointerDown={beginStroke}
+            onPointerMove={moveStroke}
+            onPointerUp={endStroke}
+            onPointerLeave={endStroke}
+          />
+          <div className="flex justify-end">
+            <Button type="button" variant="outline" className="h-8 px-3 text-xs" onClick={clearSignature} disabled={disabled}>
+              Clear
+            </Button>
+          </div>
+        </div>
+      ) : (
+        <div className="space-y-1.5">
+          <Label htmlFor={`${idPrefix}-typed-signature`}>Typed signature</Label>
+          <Input
+            id={`${idPrefix}-typed-signature`}
+            value={signature.typedName}
+            onChange={(event) => onChange({ ...signature, typedName: event.target.value })}
+            disabled={disabled}
+            placeholder="Type your legal name"
+          />
+        </div>
+      )}
+    </div>
+  );
+}
+
+function DocumentStepCard({ children }: { children: React.ReactNode }) {
+  return (
+    <Card className="glass-panel rounded-2xl">
+      <CardContent className="space-y-4 p-4">{children}</CardContent>
+    </Card>
+  );
+}
+
+function LegalTextPanel({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="max-h-[28rem] space-y-3 overflow-y-auto rounded-xl border border-white/10 bg-black/20 p-4 pr-3 text-sm leading-6 text-muted-foreground">
+      {children}
+    </div>
+  );
+}
+
+function NativeCheckboxRow({
+  id,
+  checked,
+  onCheckedChange,
+  disabled,
+  children,
+}: {
+  id: string;
+  checked: boolean;
+  onCheckedChange: (next: boolean) => void;
+  disabled?: boolean;
+  children: React.ReactNode;
+}) {
+  return (
+    <label
+      htmlFor={id}
+      className={`flex items-start gap-2 rounded-lg border border-white/10 p-3 ${disabled ? "cursor-not-allowed opacity-70" : "cursor-pointer"}`}
+    >
+      <input
+        id={id}
+        type="checkbox"
+        checked={checked}
+        onChange={(event) => onCheckedChange(event.target.checked)}
+        disabled={disabled}
+        className="mt-1 size-4 shrink-0 rounded border-white/20 bg-white/[0.04] accent-[#d8b56d]"
+      />
+      <span className="text-sm leading-6 text-muted-foreground">{children}</span>
+    </label>
+  );
+}
+
 export function InternalSigningPacket() {
   const router = useRouter();
   const { user } = useUser();
@@ -184,20 +406,16 @@ export function InternalSigningPacket() {
     client_agreement: "not_started",
     content_release: "not_started",
   });
+  const [downloadUrls, setDownloadUrls] = useState<Record<DocType, string | null>>({
+    client_agreement: null,
+    content_release: null,
+  });
   const [clientForm, setClientForm] = useState(emptyClient);
   const [releaseForm, setReleaseForm] = useState(emptyRelease);
+  const [finalSignature, setFinalSignature] = useState<SignatureValue>({ mode: "draw", typedName: "", drawnDataUrl: "" });
   const [prefill, setPrefill] = useState<PrefillIdentity | null>(null);
   const [supabaseConfigured, setSupabaseConfigured] = useState(true);
-
-  const todayLabel = useMemo(
-    () =>
-      new Date().toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "2-digit",
-        day: "2-digit",
-      }),
-    [],
-  );
+  const [activeStep, setActiveStep] = useState<1 | 2 | 3>(1);
 
   const loadStatus = useCallback(async () => {
     setLoadingStatus(true);
@@ -207,8 +425,11 @@ export function InternalSigningPacket() {
       if (!response.ok) throw new Error(data.error ?? "Unable to load document status.");
 
       const next = { client_agreement: "not_started", content_release: "not_started" } as Record<DocType, DocState>;
+      const links = { client_agreement: null, content_release: null } as Record<DocType, string | null>;
       for (const doc of data.documents) next[doc.type] = doc.status;
+      for (const doc of data.documents) links[doc.type] = doc.downloadUrl ?? null;
       setDocuments(next);
+      setDownloadUrls(links);
       setPrefill(data.prefill ?? null);
       setSupabaseConfigured(data.supabaseConfigured !== false);
 
@@ -231,8 +452,8 @@ export function InternalSigningPacket() {
       ...prev,
       signerName: prefill.signerName ?? "",
       signerEmail: prefill.signerEmail ?? "",
-      signatureName: prev.signatureName || prefill.signerName || "",
     }));
+    setFinalSignature((prev) => ({ ...prev, typedName: prev.typedName || prefill.signerName || "" }));
 
     setReleaseForm((prev) => ({
       ...prev,
@@ -242,7 +463,6 @@ export function InternalSigningPacket() {
       idNumber: prefill.idNumber ?? "",
       idIssuedBy: prefill.idIssuedBy ?? "",
       dateOfBirth: prefill.dateOfBirth ?? "",
-      signatureName: prev.signatureName || prefill.signerName || "",
     }));
   }, [prefill]);
 
@@ -253,13 +473,12 @@ export function InternalSigningPacket() {
       setClientForm((prev) => ({
         ...prev,
         signerName: prev.signerName || clerkName,
-        signatureName: prev.signatureName || clerkName,
       }));
       setReleaseForm((prev) => ({
         ...prev,
         signerName: prev.signerName || clerkName,
-        signatureName: prev.signatureName || clerkName,
       }));
+      setFinalSignature((prev) => ({ ...prev, typedName: prev.typedName || clerkName }));
     }
     if (!clerkEmail) return;
 
@@ -273,7 +492,7 @@ export function InternalSigningPacket() {
     }));
   }, [user, user?.primaryEmailAddress?.emailAddress]);
 
-  const missingIdentityForClient = useMemo(() => {
+  const missingClientFields = useMemo(() => {
     const missing: string[] = [];
     if (!isFilled(clientForm.signerName)) missing.push("Legal name");
     if (!isFilled(clientForm.signerEmail)) missing.push("Email");
@@ -291,74 +510,93 @@ export function InternalSigningPacket() {
     return missing;
   }, [releaseForm.dateOfBirth, releaseForm.idIssuedBy, releaseForm.idNumber, releaseForm.idType, releaseForm.signerEmail, releaseForm.signerName]);
 
-  const canSignClient =
+  const releaseReadyForBundle = missingIdentityForRelease.length === 0 && releaseForm.ageConfirmed;
+  const clientReadyForBundle = missingClientFields.length === 0 && clientForm.termsAccepted && clientForm.esignAccepted;
+  const signatureReady =
+    finalSignature.mode === "type" ? isFilled(finalSignature.typedName) : isFilled(finalSignature.drawnDataUrl);
+
+  const clientSigned = documents.client_agreement === "signed";
+  const releaseSigned = documents.content_release === "signed";
+  const pendingDocs = ([
+    ["content_release", releaseSigned],
+    ["client_agreement", clientSigned],
+  ] as const)
+    .filter(([, signed]) => !signed)
+    .map(([type]) => type);
+
+  const canSubmitBundle =
     supabaseConfigured &&
-    missingIdentityForClient.length === 0 &&
-    clientForm.termsAccepted &&
-    clientForm.esignAccepted &&
-    isFilled(clientForm.signatureName) &&
+    releaseReadyForBundle &&
+    clientReadyForBundle &&
+    signatureReady &&
+    pendingDocs.length > 0 &&
     submitting === null &&
     !loadingStatus;
 
-  const canSignRelease =
-    supabaseConfigured &&
-    missingIdentityForRelease.length === 0 &&
-    releaseForm.ageConfirmed &&
-    isFilled(releaseForm.signatureName) &&
-    submitting === null &&
-    !loadingStatus;
+  useEffect(() => {
+    if (releaseSigned && clientSigned) {
+      setActiveStep(3);
+      return;
+    }
+    if (releaseSigned && !clientSigned) {
+      setActiveStep(2);
+      return;
+    }
+    setActiveStep(1);
+  }, [clientSigned, releaseSigned]);
 
-  async function submitDocument(documentType: DocType) {
-    setSubmitting(documentType);
+  async function submitAllDocuments() {
+    setSubmitting("content_release");
     try {
       const signedAt = new Date().toISOString();
-      const payload =
-        documentType === "client_agreement"
-          ? {
-              signerName: clientForm.signerName,
-              signerEmail: clientForm.signerEmail,
-              clientHandle: clientForm.clientHandle || undefined,
-              creatorAlias: MANAGER_ALIAS,
-              signatureName: clientForm.signatureName,
-              termsAccepted: clientForm.termsAccepted,
-              esignAccepted: clientForm.esignAccepted,
-              signedAt,
-            }
-          : {
-              signerName: releaseForm.signerName,
-              signerEmail: releaseForm.signerEmail,
-              idType: releaseForm.idType,
-              idNumber: releaseForm.idNumber,
-              idIssuedBy: releaseForm.idIssuedBy,
-              dateOfBirth: releaseForm.dateOfBirth,
-              signatureName: releaseForm.signatureName,
-              ageConfirmed: releaseForm.ageConfirmed,
-              signedAt,
-            };
+      const sharedSignature = {
+        signatureName: finalSignature.mode === "type" ? finalSignature.typedName : clientForm.signerName,
+        signatureMethod: finalSignature.mode,
+        signatureImageDataUrl: finalSignature.mode === "draw" ? finalSignature.drawnDataUrl : undefined,
+        signedAt,
+      };
 
-      const response = await fetch("/api/documents/submit", {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({ documentType, payload }),
-      });
-      const data = (await response.json()) as { error?: string; details?: string[]; complete?: boolean };
-      if (!response.ok) throw new Error(data.details?.[0] ?? data.error ?? "Unable to submit document.");
+      for (const documentType of pendingDocs) {
+        const payload =
+          documentType === "client_agreement"
+            ? {
+                signerName: clientForm.signerName,
+                signerEmail: clientForm.signerEmail,
+                clientHandle: clientForm.clientHandle || undefined,
+                creatorAlias: MANAGER_ALIAS,
+                termsAccepted: clientForm.termsAccepted,
+                esignAccepted: clientForm.esignAccepted,
+                ...sharedSignature,
+              }
+            : {
+                signerName: releaseForm.signerName,
+                signerEmail: releaseForm.signerEmail,
+                idType: releaseForm.idType,
+                idNumber: releaseForm.idNumber,
+                idIssuedBy: releaseForm.idIssuedBy,
+                dateOfBirth: releaseForm.dateOfBirth,
+                ageConfirmed: releaseForm.ageConfirmed,
+                ...sharedSignature,
+              };
 
-      toast.success(`${documentType === "client_agreement" ? "Client agreement" : "Release form"} signed.`);
-      if (data.complete) {
-        router.push("/success");
-        return;
+        const response = await fetch("/api/documents/submit", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: JSON.stringify({ documentType, payload }),
+        });
+        const data = (await response.json()) as { error?: string; details?: string[]; complete?: boolean };
+        if (!response.ok) throw new Error(data.details?.[0] ?? data.error ?? "Unable to submit document.");
       }
+
+      toast.success("Both agreements signed and stored.");
       await loadStatus();
+      router.refresh();
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Unable to submit document.");
+      toast.error(error instanceof Error ? error.message : "Unable to submit both documents.");
     } finally {
       setSubmitting(null);
     }
   }
-
-  const clientSigned = documents.client_agreement === "signed";
-  const releaseSigned = documents.content_release === "signed";
 
   return (
     <div className="space-y-4">
@@ -368,229 +606,191 @@ export function InternalSigningPacket() {
         </div>
       ) : null}
 
-      <Card className="border-white/10 bg-white/[0.03]">
-        <CardContent className="space-y-4 p-4">
-          <div className="flex items-center justify-between">
+      {activeStep === 1 ? (
+        <DocumentStepCard>
             <h3 className="flex items-center gap-2 text-lg font-semibold">
-              <FileSignature className="size-5 text-accent" />
-              Step 1: Client agreement
+              <Send className="size-5 text-accent" />
+              Step 1: Release form
             </h3>
-            {clientSigned ? (
-              <span className="inline-flex items-center gap-1 text-sm text-emerald-300">
-                <CheckCircle2 className="size-4" />
-                Signed
-              </span>
-            ) : null}
-          </div>
-
-          <div className="max-h-[28rem] space-y-3 overflow-y-auto rounded-xl border border-white/10 bg-black/20 p-4 pr-3 text-sm leading-6 text-muted-foreground">
-            <p className="text-base font-medium text-foreground">Welcome to Visual Era</p>
-            <p>This Management Agreement is between {MANAGER_NAME} (Manager) and {clientForm.signerName || "Client"} (Client).</p>
-            {CLIENT_TERMS.map((section) => (
-              <div key={section.heading} className="space-y-1.5">
-                <p className="font-semibold text-foreground">{section.heading}</p>
-                {section.items.map((item) => (
-                  <p key={item}>{item}</p>
-                ))}
-              </div>
-            ))}
-          </div>
-
-          {missingIdentityForClient.length > 0 ? (
-            <div className="rounded-lg border border-amber-400/30 bg-amber-500/10 p-3 text-sm text-amber-100">
-              DIDIT identity data is incomplete for: {missingIdentityForClient.join(", ")}.
-            </div>
-          ) : null}
-
-          <div className="grid gap-3 sm:grid-cols-2">
-            <div className="space-y-1.5">
-              <Label htmlFor="client-signer-name">Client legal name (from DIDIT)</Label>
-              <div className="relative">
-                <Input id="client-signer-name" value={clientForm.signerName} disabled />
-                <Lock className="pointer-events-none absolute right-3 top-3 size-4 text-muted-foreground" />
-              </div>
-            </div>
-            <div className="space-y-1.5">
-              <Label htmlFor="client-signer-email">Client email (from DIDIT)</Label>
-              <div className="relative">
-                <Input id="client-signer-email" type="email" value={clientForm.signerEmail} disabled />
-                <Lock className="pointer-events-none absolute right-3 top-3 size-4 text-muted-foreground" />
-              </div>
-            </div>
-          </div>
-
-          <div className="space-y-1.5">
-            <Label htmlFor="client-handle">Optional handle / stage name</Label>
-            <Input
-              id="client-handle"
-              value={clientForm.clientHandle}
-              onChange={(event) => setClientForm((prev) => ({ ...prev, clientHandle: event.target.value }))}
-              disabled={clientSigned}
-              placeholder="@yourname"
-            />
-          </div>
-
-          <div className="grid gap-3 sm:grid-cols-2">
-            <div className="flex items-start gap-2 rounded-lg border border-white/10 p-3">
-              <Checkbox
-                id="client-terms"
-                checked={clientForm.termsAccepted}
-                onCheckedChange={(value) => setClientForm((prev) => ({ ...prev, termsAccepted: value === true }))}
-                disabled={clientSigned}
-              />
-              <Label htmlFor="client-terms" className="leading-6 text-muted-foreground">
-                I accept the management agreement terms.
-              </Label>
-            </div>
-            <div className="flex items-start gap-2 rounded-lg border border-white/10 p-3">
-              <Checkbox
-                id="client-esign"
-                checked={clientForm.esignAccepted}
-                onCheckedChange={(value) => setClientForm((prev) => ({ ...prev, esignAccepted: value === true }))}
-                disabled={clientSigned}
-              />
-              <Label htmlFor="client-esign" className="leading-6 text-muted-foreground">
-                I agree my typed name is my legal e-signature.
-              </Label>
-            </div>
-          </div>
-
-          <div className="grid gap-3 sm:grid-cols-2">
-            <div className="space-y-1.5">
-              <Label>Manager signature</Label>
-              <Input value={MANAGER_NAME} disabled />
-            </div>
-            <div className="space-y-1.5">
-              <Label>Manager date</Label>
-              <Input value={todayLabel} disabled />
-            </div>
-          </div>
-          <div className="space-y-1.5">
-            <Label htmlFor="client-signature">Client typed signature</Label>
-            <Input
-              id="client-signature"
-              value={clientForm.signatureName}
-              onChange={(event) => setClientForm((prev) => ({ ...prev, signatureName: event.target.value }))}
-              disabled={clientSigned}
-            />
-          </div>
-
-          <Button onClick={() => void submitDocument("client_agreement")} disabled={!canSignClient || clientSigned}>
-            {submitting === "client_agreement" ? <Loader2 className="animate-spin" /> : <PenLine />}
-            {clientSigned ? "Agreement signed" : "Sign client agreement"}
-          </Button>
-        </CardContent>
-      </Card>
-
-      {clientSigned ? (
-        <Card className="border-white/10 bg-white/[0.03]">
-          <CardContent className="space-y-4 p-4">
-            <div className="flex items-center justify-between">
-              <h3 className="flex items-center gap-2 text-lg font-semibold">
-                <Send className="size-5 text-accent" />
-                Step 2: Release form
-              </h3>
-              {releaseSigned ? (
-                <span className="inline-flex items-center gap-1 text-sm text-emerald-300">
-                  <CheckCircle2 className="size-4" />
-                  Signed
-                </span>
-              ) : null}
-            </div>
-
-            <div className="space-y-2 rounded-xl border border-white/10 bg-black/20 p-4 text-sm leading-6 text-muted-foreground">
+            <LegalTextPanel>
               <p className="text-base font-medium text-foreground">Release form</p>
-              {RELEASE_POINTS.map((line) => (
-                <p key={line}>- {line}</p>
-              ))}
-            </div>
-
+              <p>
+                This release form applies to any media content which features me that is posted on the platform by {MANAGER_ALIAS} (the &quot;Creator&quot;) for as long as their account is available on the platform.
+              </p>
+              <p>I confirm that:</p>
+              <ul className="list-disc space-y-2 pl-6">
+                {RELEASE_POINTS.map((line) => (
+                  <li key={line}>{line}</li>
+                ))}
+              </ul>
+            </LegalTextPanel>
             {missingIdentityForRelease.length > 0 ? (
               <div className="rounded-lg border border-amber-400/30 bg-amber-500/10 p-3 text-sm text-amber-100">
                 DIDIT identity data is incomplete for: {missingIdentityForRelease.join(", ")}.
               </div>
             ) : null}
-
             <div className="grid gap-3 sm:grid-cols-2">
               <div className="space-y-1.5">
                 <Label htmlFor="release-signer-name">Full legal name on ID (from DIDIT)</Label>
-                <div className="relative">
-                  <Input id="release-signer-name" value={releaseForm.signerName} disabled />
-                  <Lock className="pointer-events-none absolute right-3 top-3 size-4 text-muted-foreground" />
-                </div>
+                <Input id="release-signer-name" value={releaseForm.signerName} disabled />
               </div>
               <div className="space-y-1.5">
                 <Label htmlFor="release-signer-email">Email (from DIDIT)</Label>
-                <div className="relative">
-                  <Input id="release-signer-email" value={releaseForm.signerEmail} disabled />
-                  <Lock className="pointer-events-none absolute right-3 top-3 size-4 text-muted-foreground" />
-                </div>
+                <Input id="release-signer-email" value={releaseForm.signerEmail} disabled />
               </div>
             </div>
             <div className="grid gap-3 sm:grid-cols-2">
               <div className="space-y-1.5">
                 <Label htmlFor="release-id-type">Type of ID (from DIDIT)</Label>
-                <div className="relative">
-                  <Input id="release-id-type" value={releaseForm.idType} disabled />
-                  <Lock className="pointer-events-none absolute right-3 top-3 size-4 text-muted-foreground" />
-                </div>
+                <Input id="release-id-type" value={releaseForm.idType} disabled />
               </div>
               <div className="space-y-1.5">
                 <Label htmlFor="release-id-number">ID number (from DIDIT)</Label>
-                <div className="relative">
-                  <Input id="release-id-number" value={releaseForm.idNumber} disabled />
-                  <Lock className="pointer-events-none absolute right-3 top-3 size-4 text-muted-foreground" />
-                </div>
+                <Input id="release-id-number" value={releaseForm.idNumber} disabled />
               </div>
             </div>
             <div className="grid gap-3 sm:grid-cols-2">
               <div className="space-y-1.5">
                 <Label htmlFor="release-issued">ID issuing state/country (from DIDIT)</Label>
-                <div className="relative">
-                  <Input id="release-issued" value={releaseForm.idIssuedBy} disabled />
-                  <Lock className="pointer-events-none absolute right-3 top-3 size-4 text-muted-foreground" />
-                </div>
+                <Input id="release-issued" value={releaseForm.idIssuedBy} disabled />
               </div>
               <div className="space-y-1.5">
                 <Label htmlFor="release-dob">Date of birth (from DIDIT)</Label>
-                <div className="relative">
-                  <Input id="release-dob" value={releaseForm.dateOfBirth} disabled />
-                  <Lock className="pointer-events-none absolute right-3 top-3 size-4 text-muted-foreground" />
-                </div>
+                <Input id="release-dob" value={releaseForm.dateOfBirth} disabled />
               </div>
             </div>
-            <div className="flex items-start gap-2 rounded-lg border border-white/10 p-3">
-              <Checkbox
-                id="release-age"
-                checked={releaseForm.ageConfirmed}
-                onCheckedChange={(value) => setReleaseForm((prev) => ({ ...prev, ageConfirmed: value === true }))}
-                disabled={releaseSigned}
-              />
-              <Label htmlFor="release-age" className="leading-6 text-muted-foreground">
-                I confirm I was at least 18 when this content was created and can enter a legally binding contract.
-              </Label>
+            <NativeCheckboxRow
+              id="release-age"
+              checked={releaseForm.ageConfirmed}
+              onCheckedChange={(checked) => setReleaseForm((prev) => ({ ...prev, ageConfirmed: checked }))}
+              disabled={releaseSigned}
+            >
+                I confirm that I am at least 18 years old and can enter into a legally binding contract. I confirm that I have read and understood this document before signing it. I acknowledge this document may be shared with third parties in accordance with applicable law and/or platform policies, and that my electronic signature is valid and legally binding.
+            </NativeCheckboxRow>
+            <Button onClick={() => setActiveStep(2)} disabled={!releaseReadyForBundle}>
+              Continue to client agreement
+            </Button>
+        </DocumentStepCard>
+      ) : null}
+
+      {activeStep === 2 ? (
+        <DocumentStepCard>
+            <h3 className="flex items-center gap-2 text-lg font-semibold">
+              <FileSignature className="size-5 text-accent" />
+              Step 2: Client agreement
+            </h3>
+            <LegalTextPanel>
+              <p className="text-base font-medium text-foreground">Welcome to Visual Era</p>
+              <p>This Management Agreement is between {MANAGER_NAME} (Manager) and {clientForm.signerName || "Client"} (Client).</p>
+              {CLIENT_TERMS.map((section) => (
+                <div key={section.heading} className="space-y-1.5">
+                  <p className="font-semibold text-foreground">{section.heading}</p>
+                  {section.items.map((item) => (
+                    <p key={item}>{item}</p>
+                  ))}
+                </div>
+              ))}
+            </LegalTextPanel>
+            <div className="grid gap-3 sm:grid-cols-2">
+              <div className="space-y-1.5">
+                <Label htmlFor="client-signer-name">Client legal name</Label>
+                <Input
+                  id="client-signer-name"
+                  value={clientForm.signerName}
+                  onChange={(event) => setClientForm((prev) => ({ ...prev, signerName: event.target.value }))}
+                  disabled={clientSigned}
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="client-signer-email">Client email</Label>
+                <Input
+                  id="client-signer-email"
+                  type="email"
+                  value={clientForm.signerEmail}
+                  onChange={(event) => setClientForm((prev) => ({ ...prev, signerEmail: event.target.value }))}
+                  disabled={clientSigned}
+                />
+              </div>
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="release-signature">Typed signature</Label>
+              <Label htmlFor="client-handle">Optional handle / stage name</Label>
               <Input
-                id="release-signature"
-                value={releaseForm.signatureName}
-                onChange={(event) => setReleaseForm((prev) => ({ ...prev, signatureName: event.target.value }))}
-                disabled={releaseSigned}
+                id="client-handle"
+                value={clientForm.clientHandle}
+                onChange={(event) => setClientForm((prev) => ({ ...prev, clientHandle: event.target.value }))}
+                disabled={clientSigned}
+                placeholder="@yourname"
               />
             </div>
+            <div className="grid gap-3 sm:grid-cols-2">
+              <NativeCheckboxRow
+                id="client-terms"
+                checked={clientForm.termsAccepted}
+                onCheckedChange={(checked) => setClientForm((prev) => ({ ...prev, termsAccepted: checked }))}
+                disabled={clientSigned}
+              >
+                  I accept the management agreement terms.
+              </NativeCheckboxRow>
+              <NativeCheckboxRow
+                id="client-esign"
+                checked={clientForm.esignAccepted}
+                onCheckedChange={(checked) => setClientForm((prev) => ({ ...prev, esignAccepted: checked }))}
+                disabled={clientSigned}
+              >
+                  I agree my typed name is my legal e-signature.
+              </NativeCheckboxRow>
+            </div>
+            <div className="grid gap-3 sm:grid-cols-2">
+              <Button variant="outline" onClick={() => setActiveStep(1)}>
+                Back
+              </Button>
+              <Button onClick={() => setActiveStep(3)} disabled={!clientReadyForBundle}>
+                Continue to final signature
+              </Button>
+            </div>
+        </DocumentStepCard>
+      ) : null}
 
-            <Button onClick={() => void submitDocument("content_release")} disabled={!canSignRelease || releaseSigned}>
-              {submitting === "content_release" ? <Loader2 className="animate-spin" /> : <PenLine />}
-              {releaseSigned ? "Release form signed" : "Sign release form"}
-            </Button>
-          </CardContent>
-        </Card>
-      ) : (
-        <div className="rounded-xl border border-white/10 bg-white/[0.03] p-4 text-sm text-muted-foreground">
-          Step 2 unlocks after the client agreement is signed.
-        </div>
-      )}
+      {activeStep === 3 ? (
+        <DocumentStepCard>
+            <h3 className="text-lg font-semibold">Step 3: Final signature</h3>
+            <p className="text-sm leading-6 text-muted-foreground">
+              Use one signature below to execute both the Release Form and Client Agreement.
+            </p>
+            <SignatureField
+              idPrefix="bundle"
+              disabled={clientSigned && releaseSigned}
+              signature={finalSignature}
+              onChange={setFinalSignature}
+              suggestedTypedName={clientForm.signerName || releaseForm.signerName}
+            />
+            <div className="grid gap-3 sm:grid-cols-2">
+              <Button variant="outline" onClick={() => setActiveStep(2)}>
+                Back
+              </Button>
+              <Button onClick={() => void submitAllDocuments()} disabled={!canSubmitBundle}>
+                {submitting ? <Loader2 className="animate-spin" /> : <PenLine />}
+                {clientSigned && releaseSigned ? "All documents signed" : "Sign and submit both documents"}
+              </Button>
+            </div>
+            {releaseSigned && downloadUrls.content_release ? (
+              <Button asChild variant="outline">
+                <a href={downloadUrls.content_release} target="_blank" rel="noreferrer">
+                  <Download />
+                  Download release PDF
+                </a>
+              </Button>
+            ) : null}
+            {clientSigned && downloadUrls.client_agreement ? (
+              <Button asChild variant="outline">
+                <a href={downloadUrls.client_agreement} target="_blank" rel="noreferrer">
+                  <Download />
+                  Download client agreement PDF
+                </a>
+              </Button>
+            ) : null}
+        </DocumentStepCard>
+      ) : null}
     </div>
   );
 }

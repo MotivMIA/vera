@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { CheckCircle2, FileSignature, Send } from "lucide-react";
+import { CheckCircle2, FileSignature, PenLine, Send } from "lucide-react";
 
 type DocState = "not_started" | "sent" | "signed" | "voided";
 type DocType = "client_agreement" | "content_release";
@@ -39,17 +39,21 @@ export function DocumentsStepIndicators() {
     };
   }, []);
 
-  const items: Array<{ type: DocType; label: string; Icon: typeof FileSignature }> = [
-    { type: "client_agreement", label: "Client agreement", Icon: FileSignature },
-    { type: "content_release", label: "Release form", Icon: Send },
+  const releaseComplete = stateByType.content_release === "signed";
+  const agreementComplete = stateByType.client_agreement === "signed";
+  const finalSignatureComplete = releaseComplete && agreementComplete;
+
+  const items: Array<{ key: string; label: string; Icon: typeof FileSignature; complete: boolean }> = [
+    { key: "content_release", label: "Release form", Icon: Send, complete: releaseComplete },
+    { key: "client_agreement", label: "Client agreement", Icon: FileSignature, complete: agreementComplete },
+    { key: "final_signature", label: "Final signature", Icon: PenLine, complete: finalSignatureComplete },
   ];
 
   return (
     <div className="max-w-sm space-y-3">
-      {items.map(({ type, label, Icon }) => {
-        const complete = stateByType[type] === "signed";
+      {items.map(({ key, label, Icon, complete }) => {
         return (
-          <div key={type} className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/[0.03] p-3">
+          <div key={key} className="flex items-center gap-3 rounded-xl border border-white/10 bg-white/[0.03] p-3">
             <span className={`flex size-8 items-center justify-center rounded-lg ${complete ? "bg-emerald-500/15 text-emerald-300" : "bg-white/[0.06] text-muted-foreground"}`}>
               <Icon className="size-4" />
             </span>
