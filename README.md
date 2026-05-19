@@ -40,7 +40,6 @@ npm run dev
 - `/` split-screen premium signup homepage
 - `/sign-in` Clerk sign in
 - `/sign-up` Clerk sign up
-- `/onboarding` consent capture
 - `/verify-identity` DIDIT verification placeholder
 - `/documents` in-app signing packet
 - `/success` onboarding completion

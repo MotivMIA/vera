@@ -8,7 +8,7 @@ export default function SignUpPage() {
         <Link href="/" className="block text-center text-sm font-medium text-muted-foreground hover:text-foreground">
           Visual Era
         </Link>
-        <SignUp routing="path" path="/sign-up" signInUrl="/sign-in" fallbackRedirectUrl="/onboarding" />
+        <SignUp routing="path" path="/sign-up" signInUrl="/sign-in" fallbackRedirectUrl="/verify-identity" />
       </div>
     </main>
   );

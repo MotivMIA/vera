@@ -52,8 +52,8 @@ export function AuthCard() {
           {mode === "sign-up" ? (
             <SignUp
               key="sign-up"
-              fallbackRedirectUrl="/onboarding"
-              forceRedirectUrl="/onboarding"
+              fallbackRedirectUrl="/verify-identity"
+              forceRedirectUrl="/verify-identity"
               oauthFlow="auto"
               routing="hash"
               signInUrl="/sign-in"
@@ -61,8 +61,8 @@ export function AuthCard() {
           ) : (
             <SignIn
               key="sign-in"
-              fallbackRedirectUrl="/onboarding"
-              forceRedirectUrl="/onboarding"
+              fallbackRedirectUrl="/verify-identity"
+              forceRedirectUrl="/verify-identity"
               oauthFlow="auto"
               routing="hash"
               signUpUrl="/sign-up"
@@ -85,8 +85,8 @@ export function AuthCard() {
             Your account is active and ready to continue.
           </div>
           <Button asChild className="mt-6 w-full">
-            <Link href="/onboarding">
-              Continue to onboarding
+            <Link href="/verify-identity">
+              Continue to verification
               <ArrowRight className="ml-auto size-4" />
             </Link>
           </Button>
