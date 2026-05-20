@@ -293,6 +293,9 @@ export function getDiditWebhookDebug(rawBody: string, payload: Record<string, un
     timestamp,
     timestampSkewSeconds: timestamp ? Math.round(Date.now() / 1000 - Number(timestamp)) : null,
     bodyKeys: Object.keys(payload).sort(),
+    xHeaders: Array.from(headers.entries())
+      .filter(([key]) => key.toLowerCase().startsWith("x-"))
+      .map(([key, value]) => ({ key, valuePrefix: value.slice(0, 48) })),
     expected,
   };
 }
