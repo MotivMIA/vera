@@ -178,13 +178,32 @@ function sortObjectKeys(value: unknown): unknown {
   return value;
 }
 
+// DIDIT V3 signature v2 canonicalization: shorten float-looking values then sort keys recursively.
+function shortenFloats(value: unknown): unknown {
+  if (Array.isArray(value)) return value.map(shortenFloats);
+  if (value && typeof value === "object") {
+    return Object.fromEntries(Object.entries(value as Record<string, unknown>).map(([k, v]) => [k, shortenFloats(v)]));
+  }
+  if (typeof value === "number" && !Number.isInteger(value) && value % 1 === 0) {
+    return Math.trunc(value);
+  }
+  return value;
+}
+
+function normalizeSecrets(secretOrSecrets: string | string[] | undefined) {
+  if (!secretOrSecrets) return [];
+  const values = Array.isArray(secretOrSecrets) ? secretOrSecrets : [secretOrSecrets];
+  return values.map((value) => value.trim()).filter(Boolean);
+}
+
 export function verifyDiditWebhook(
   rawBody: string,
   payload: Record<string, unknown>,
   headers: Headers,
-  secret: string | undefined,
+  secretOrSecrets: string | string[] | undefined,
 ) {
-  if (!secret) return false;
+  const secrets = normalizeSecrets(secretOrSecrets);
+  if (secrets.length === 0) return false;
   const compareHex = (expected: string, actual: string) => {
     const expectedBuffer = Buffer.from(expected, "utf8");
     const actualBuffer = Buffer.from(actual, "utf8");
@@ -201,18 +220,22 @@ export function verifyDiditWebhook(
 
   const signatureV2 = headers.get("x-signature-v2");
   if (signatureV2) {
-    const canonical = JSON.stringify(sortObjectKeys(payload), null, 0);
-    const expected = crypto.createHmac("sha256", secret).update(canonical, "utf8").digest("hex");
-    if (compareHex(expected, signatureV2)) {
-      return true;
+    const canonical = JSON.stringify(sortObjectKeys(shortenFloats(payload)));
+    for (const secret of secrets) {
+      const expected = crypto.createHmac("sha256", secret).update(canonical, "utf8").digest("hex");
+      if (compareHex(expected, signatureV2)) {
+        return true;
+      }
     }
   }
 
   const signature = headers.get("x-signature");
   if (signature) {
-    const expected = crypto.createHmac("sha256", secret).update(rawBody, "utf8").digest("hex");
-    if (compareHex(expected, signature)) {
-      return true;
+    for (const secret of secrets) {
+      const expected = crypto.createHmac("sha256", secret).update(rawBody, "utf8").digest("hex");
+      if (compareHex(expected, signature)) {
+        return true;
+      }
     }
   }
 
@@ -224,9 +247,11 @@ export function verifyDiditWebhook(
       String(payload.status ?? ""),
       String(payload.webhook_type ?? ""),
     ].join(":");
-    const expected = crypto.createHmac("sha256", secret).update(canonical, "utf8").digest("hex");
-    if (compareHex(expected, simpleSignature)) {
-      return true;
+    for (const secret of secrets) {
+      const expected = crypto.createHmac("sha256", secret).update(canonical, "utf8").digest("hex");
+      if (compareHex(expected, simpleSignature)) {
+        return true;
+      }
     }
   }
 

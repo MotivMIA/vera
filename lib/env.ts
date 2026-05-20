@@ -13,6 +13,7 @@ const serverEnvSchema = z.object({
   DIDIT_API_KEY: z.string().optional(),
   DIDIT_WORKFLOW_ID: z.string().optional(),
   DIDIT_WEBHOOK_SECRET: z.string().optional(),
+  DIDIT_WEBHOOK_SECRET_PREVIOUS: z.string().optional(),
   JOTFORM_API_KEY: z.string().optional(),
   JOTFORM_FORM_URL: optionalUrl,
   JOTFORM_CLIENT_AGREEMENT_URL: optionalUrl,

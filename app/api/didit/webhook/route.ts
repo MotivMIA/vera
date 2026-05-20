@@ -30,7 +30,12 @@ export async function POST(request: NextRequest) {
   })();
   const payload = diditWebhookSchema.safeParse(parsedBody);
   if (!payload.success) return NextResponse.json({ error: "Invalid payload" }, { status: 400 });
-  if (!verifyDiditWebhook(rawBody, parsedBody as Record<string, unknown>, request.headers, env.DIDIT_WEBHOOK_SECRET)) {
+  if (
+    !verifyDiditWebhook(rawBody, parsedBody as Record<string, unknown>, request.headers, [
+      env.DIDIT_WEBHOOK_SECRET ?? "",
+      env.DIDIT_WEBHOOK_SECRET_PREVIOUS ?? "",
+    ])
+  ) {
     return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
   }
 
