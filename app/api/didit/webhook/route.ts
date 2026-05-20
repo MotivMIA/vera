@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { getDiditWebhookDebug, mapDiditStatus, serializeDiditMetadata, verifyDiditWebhook } from "@/lib/didit";
+import { fetchDiditWebhookSecrets, getDiditWebhookDebug, mapDiditStatus, serializeDiditMetadata, verifyDiditWebhook } from "@/lib/didit";
 import { getServerEnv } from "@/lib/env";
 import { recordAuditLog } from "@/lib/onboarding/audit";
 import { getSupabaseAdmin } from "@/lib/supabase/server";
@@ -31,9 +31,14 @@ export async function POST(request: NextRequest) {
   const payload = diditWebhookSchema.safeParse(parsedBody);
   if (!payload.success) return NextResponse.json({ error: "Invalid payload" }, { status: 400 });
   const webhookSecrets = [env.DIDIT_WEBHOOK_SECRET ?? "", env.DIDIT_WEBHOOK_SECRET_PREVIOUS ?? ""];
-  if (
-    !verifyDiditWebhook(rawBody, parsedBody as Record<string, unknown>, request.headers, webhookSecrets)
-  ) {
+  let validSignature = verifyDiditWebhook(rawBody, parsedBody as Record<string, unknown>, request.headers, webhookSecrets);
+  if (!validSignature) {
+    const remoteSecrets = await fetchDiditWebhookSecrets();
+    if (remoteSecrets.length > 0) {
+      validSignature = verifyDiditWebhook(rawBody, parsedBody as Record<string, unknown>, request.headers, remoteSecrets);
+    }
+  }
+  if (!validSignature) {
     if (env.DIDIT_WEBHOOK_DEBUG) {
       console.error(
         "[didit.webhook] signature verification failed",

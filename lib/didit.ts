@@ -22,6 +22,11 @@ type RetrieveDiditSessionResponse = {
   decision?: unknown;
 };
 
+type DiditWebhookConfigResponse = {
+  secret_shared_key?: string;
+  endpoints?: Array<{ secret_shared_key?: string }>;
+};
+
 function normalizeDiditStatus(status: string): VerificationState {
   switch (status) {
     case "Approved":
@@ -57,6 +62,35 @@ export function getDiditConfig() {
     webhookSecret: env.DIDIT_WEBHOOK_SECRET,
     configured: Boolean(env.DIDIT_API_KEY && env.DIDIT_WORKFLOW_ID),
   };
+}
+
+export async function fetchDiditWebhookSecrets() {
+  const config = getDiditConfig();
+  if (!config.apiKey) return [];
+
+  let response: Response;
+  try {
+    response = await fetch("https://verification.didit.me/v3/webhook/", {
+      headers: {
+        accept: "application/json",
+        "x-api-key": config.apiKey,
+      },
+      cache: "no-store",
+    });
+  } catch {
+    return [];
+  }
+
+  if (!response.ok) return [];
+  const data = (await response.json()) as DiditWebhookConfigResponse;
+
+  const secrets = new Set<string>();
+  if (data.secret_shared_key) secrets.add(data.secret_shared_key);
+  for (const endpoint of data.endpoints ?? []) {
+    if (endpoint.secret_shared_key) secrets.add(endpoint.secret_shared_key);
+  }
+
+  return Array.from(secrets);
 }
 
 export async function createDiditSession(input: CreateDiditSessionInput) {
