@@ -241,19 +241,58 @@ export function verifyDiditWebhook(
 
   const simpleSignature = headers.get("x-signature-simple");
   if (simpleSignature) {
-    const canonical = [
-      String(payload.timestamp ?? ""),
-      String(payload.session_id ?? ""),
-      String(payload.status ?? ""),
-      String(payload.webhook_type ?? ""),
-    ].join(":");
-    for (const secret of secrets) {
-      const expected = crypto.createHmac("sha256", secret).update(canonical, "utf8").digest("hex");
-      if (compareHex(expected, simpleSignature)) {
-        return true;
+    const simpleTimestamps = [String(payload.timestamp ?? ""), String(headers.get("x-timestamp") ?? "")].filter(Boolean);
+    for (const ts of simpleTimestamps) {
+      const canonical = [ts, String(payload.session_id ?? ""), String(payload.status ?? ""), String(payload.webhook_type ?? "")].join(":");
+      for (const secret of secrets) {
+        const expected = crypto.createHmac("sha256", secret).update(canonical, "utf8").digest("hex");
+        if (compareHex(expected, simpleSignature)) {
+          return true;
+        }
       }
     }
   }
 
   return false;
+}
+
+export function getDiditWebhookDebug(rawBody: string, payload: Record<string, unknown>, headers: Headers, secretOrSecrets: string | string[] | undefined) {
+  const secrets = normalizeSecrets(secretOrSecrets);
+  const timestamp = headers.get("x-timestamp");
+  const signatureV2 = headers.get("x-signature-v2");
+  const signature = headers.get("x-signature");
+  const signatureSimple = headers.get("x-signature-simple");
+  const canonicalV2 = JSON.stringify(sortObjectKeys(shortenFloats(payload)));
+
+  const simpleTimestamps = [String(payload.timestamp ?? ""), String(timestamp ?? "")].filter(Boolean);
+  const expected = secrets.map((secret, secretIndex) => {
+    const v2 = crypto.createHmac("sha256", secret).update(canonicalV2, "utf8").digest("hex");
+    const raw = crypto.createHmac("sha256", secret).update(rawBody, "utf8").digest("hex");
+    const simple = simpleTimestamps.map((ts) => {
+      const canonical = [ts, String(payload.session_id ?? ""), String(payload.status ?? ""), String(payload.webhook_type ?? "")].join(":");
+      return {
+        timestamp: ts,
+        hashPrefix: crypto.createHmac("sha256", secret).update(canonical, "utf8").digest("hex").slice(0, 12),
+      };
+    });
+    return {
+      secretIndex,
+      v2Prefix: v2.slice(0, 12),
+      rawPrefix: raw.slice(0, 12),
+      simple,
+    };
+  });
+
+  return {
+    hasSignatureV2: Boolean(signatureV2),
+    hasSignature: Boolean(signature),
+    hasSignatureSimple: Boolean(signatureSimple),
+    incomingV2Prefix: signatureV2?.slice(0, 12) ?? null,
+    incomingRawPrefix: signature?.slice(0, 12) ?? null,
+    incomingSimplePrefix: signatureSimple?.slice(0, 12) ?? null,
+    timestamp,
+    timestampSkewSeconds: timestamp ? Math.round(Date.now() / 1000 - Number(timestamp)) : null,
+    bodyKeys: Object.keys(payload).sort(),
+    expected,
+  };
 }

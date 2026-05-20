@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { mapDiditStatus, serializeDiditMetadata, verifyDiditWebhook } from "@/lib/didit";
+import { getDiditWebhookDebug, mapDiditStatus, serializeDiditMetadata, verifyDiditWebhook } from "@/lib/didit";
 import { getServerEnv } from "@/lib/env";
 import { recordAuditLog } from "@/lib/onboarding/audit";
 import { getSupabaseAdmin } from "@/lib/supabase/server";
@@ -30,12 +30,16 @@ export async function POST(request: NextRequest) {
   })();
   const payload = diditWebhookSchema.safeParse(parsedBody);
   if (!payload.success) return NextResponse.json({ error: "Invalid payload" }, { status: 400 });
+  const webhookSecrets = [env.DIDIT_WEBHOOK_SECRET ?? "", env.DIDIT_WEBHOOK_SECRET_PREVIOUS ?? ""];
   if (
-    !verifyDiditWebhook(rawBody, parsedBody as Record<string, unknown>, request.headers, [
-      env.DIDIT_WEBHOOK_SECRET ?? "",
-      env.DIDIT_WEBHOOK_SECRET_PREVIOUS ?? "",
-    ])
+    !verifyDiditWebhook(rawBody, parsedBody as Record<string, unknown>, request.headers, webhookSecrets)
   ) {
+    if (env.DIDIT_WEBHOOK_DEBUG) {
+      console.error(
+        "[didit.webhook] signature verification failed",
+        getDiditWebhookDebug(rawBody, parsedBody as Record<string, unknown>, request.headers, webhookSecrets),
+      );
+    }
     return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
   }
 
