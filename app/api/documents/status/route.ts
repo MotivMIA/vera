@@ -6,6 +6,9 @@ import type { InternalDocumentType } from "@/types/onboarding";
 import type { DiditSessionMetadata } from "@/types/onboarding";
 import { getSupabaseAdmin } from "@/lib/supabase/server";
 
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
 const DOCUMENT_TYPES: InternalDocumentType[] = ["client_agreement", "content_release"];
 const DOCUMENT_BUCKET = "signed-documents";
 

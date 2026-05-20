@@ -5,6 +5,9 @@ import { retrieveDiditSession, sanitizeDiditProviderStatus } from "@/lib/didit";
 import { getSupabaseAdmin } from "@/lib/supabase/server";
 import type { DiditSessionMetadata } from "@/types/onboarding";
 
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
 export async function GET(request: NextRequest) {
   const authState = await auth().catch(() => ({ userId: process.env.NODE_ENV === "development" ? "local-preview-user" : null }));
   const userId = authState.userId;

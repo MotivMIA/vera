@@ -7,6 +7,9 @@ import { getClientIp } from "@/lib/security";
 import { getSupabaseAdminOrThrow } from "@/lib/supabase/server";
 import type { InternalDocumentType } from "@/types/onboarding";
 
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
 const shared = {
   signerName: z.string().min(2).max(120),
   signerEmail: z.string().email(),

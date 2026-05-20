@@ -5,6 +5,9 @@ import { recordAuditLog } from "@/lib/onboarding/audit";
 import { createSecureToken, hashToken } from "@/lib/security";
 import { getSupabaseAdmin } from "@/lib/supabase/server";
 
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
 export async function POST() {
   const authState = await auth().catch(() => ({ userId: process.env.NODE_ENV === "development" ? "local-preview-user" : null }));
   const userId = authState.userId;

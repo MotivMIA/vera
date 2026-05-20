@@ -5,6 +5,9 @@ import { getServerEnv } from "@/lib/env";
 import { recordAuditLog } from "@/lib/onboarding/audit";
 import { getSupabaseAdmin } from "@/lib/supabase/server";
 
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
 const diditWebhookSchema = z.object({
   session_id: z.string(),
   vendor_data: z.string().optional(),

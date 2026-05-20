@@ -8,8 +8,13 @@ import { createSecureToken, getClientIp, hashToken } from "@/lib/security";
 import { getSupabaseAdmin } from "@/lib/supabase/server";
 import { getSiteUrl } from "@/lib/env";
 
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
 const startSchema = z.object({
-  consentsAccepted: z.literal(true),
+  // Consent capture will ultimately live in the Clerk signup experience.
+  // For now, allow the client to omit this field (but never allow false).
+  consentsAccepted: z.literal(true).optional(),
 });
 
 export async function POST(request: NextRequest) {
