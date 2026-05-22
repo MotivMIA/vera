@@ -19,4 +19,10 @@ if ! echo "$html" | grep -qE 'src="/__clerk/npm/@clerk/clerk-js'; then
   exit 1
 fi
 
+clerk_js_code="$(curl -fsSL --max-time 30 -o /dev/null -w "%{http_code}" "${BASE_URL}/__clerk/npm/@clerk/clerk-js@6/dist/clerk.browser.js")"
+if [ "$clerk_js_code" != "200" ]; then
+  echo "FAIL: /__clerk/npm clerk.browser.js returned HTTP ${clerk_js_code} (expected 200)."
+  exit 1
+fi
+
 echo "OK: Clerk loads same-origin via /__clerk on ${BASE_URL}/sign-in"
