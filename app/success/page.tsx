@@ -2,8 +2,10 @@ import Link from "next/link";
 import { CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { enforceOnboardingPath } from "@/lib/onboarding/guards";
 
-export default function SuccessPage() {
+export default async function SuccessPage() {
+  await enforceOnboardingPath("/success");
   return (
     <main className="flex min-h-screen items-center justify-center px-5 py-10">
       <Card className="glass-panel max-w-xl rounded-2xl text-center">
