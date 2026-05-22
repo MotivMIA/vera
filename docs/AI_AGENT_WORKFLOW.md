@@ -55,6 +55,7 @@ git add -A && git commit -m "[cursor] short summary"
 git push -u origin agent-cursor-my-feature
 ./scripts/agent-status.sh
 ./scripts/open-agent-pr.sh "[cursor] short summary"
+# Enables GitHub auto-merge (squash, delete branch) when checks pass
 ```
 
 ### Codex (worker) task
@@ -81,7 +82,33 @@ When done: list files changed and tests run.
 3. **CI checks** runs lint, typecheck, optional tests, build, audit.
 4. **Vercel** preview for UI changes.
 5. Cursor supervisor fills template: risks, rollback, screenshots.
-6. Merge when checks are green (human optional approval later).
+6. **Auto-merge** when checks pass — enabled by `open-agent-pr.sh` (commit + push + PR implies approval).
+
+## Auto-merge (default)
+
+`./scripts/open-agent-pr.sh` creates the PR and runs:
+
+```bash
+gh pr merge <PR> --auto --squash --delete-branch
+```
+
+| Behavior | Detail |
+|----------|--------|
+| Merge timing | After required checks pass (CI checks, etc.) |
+| Method | Squash merge only |
+| Branch | Head branch deleted after merge |
+| Protection | No `--admin`, no force merge, no direct push to `main` |
+| Draft PRs | Auto-merge skipped; enable after marking ready |
+
+Cursor reports **PR link**, **check status**, and **auto-merge status** — do not ask for manual merge each time.
+
+### Manual merge fallback
+
+```bash
+./scripts/merge-agent-pr.sh <PR_NUMBER>
+```
+
+Use only if auto-merge could not be enabled. Interactive Enter confirmation in a normal terminal.
 
 ## Commit messages
 
