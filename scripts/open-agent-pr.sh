@@ -1,12 +1,14 @@
 #!/usr/bin/env bash
-# Open a PR from the current agent branch to main.
+# Open a PR from the current agent branch to main and enable GitHub auto-merge.
 # Usage: ./scripts/open-agent-pr.sh "Short title" [--draft]
+# Auto-merge: squash, delete branch, merges when required checks pass (no --admin).
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 # shellcheck source=lib/agent-git.sh
 source "$SCRIPT_DIR/lib/agent-git.sh"
 
+REPO="${GITHUB_REPO:-MotivMIA/vera}"
 TITLE="${1:-}"
 DRAFT=""
 if [[ "${2:-}" == "--draft" ]]; then
@@ -15,6 +17,11 @@ fi
 
 if ! command -v gh >/dev/null 2>&1; then
   echo "Install GitHub CLI: https://cli.github.com/" >&2
+  exit 1
+fi
+
+if ! gh auth status >/dev/null 2>&1; then
+  echo "Run: gh auth login" >&2
   exit 1
 fi
 
@@ -29,7 +36,6 @@ if [[ -z "$TITLE" ]]; then
   TITLE="${TITLE//-/ }"
 fi
 
-# Ensure prefix matches commit convention
 if [[ ! "$TITLE" =~ ^\[ ]]; then
   TITLE="[${AGENT}] ${TITLE}"
 fi
@@ -38,10 +44,11 @@ if ! git -C "$AGENT_GIT_ROOT" rev-parse --abbrev-ref "@{u}" >/dev/null 2>&1; the
   echo "Pushing branch to origin first..."
   git -C "$AGENT_GIT_ROOT" push -u origin "$BRANCH"
 else
-  git -C "$AGENT_GIT_ROOT" push origin "$BRANCH" || true
+  git -C "$AGENT_GIT_ROOT" push origin "$BRANCH"
 fi
 
 BODY_FILE="$(mktemp)"
+trap 'rm -f "$BODY_FILE"' EXIT
 cat >"$BODY_FILE" <<EOF
 ## Agent
 
@@ -82,17 +89,56 @@ ${AGENT}
 
 - [ ] Work was done only on \`${BRANCH}\` (not \`main\`)
 - [ ] No direct push to \`main\`
-- [ ] CI checks pass
-- [ ] Vercel preview checked (if applicable)
+- [ ] CI checks pass (auto-merge waits for green checks)
+- [ ] Auto-merge enabled (squash, delete branch)
 - [ ] No secrets in diff
 EOF
 
+CREATE_ARGS=(pr create --repo "$REPO" --base main --head "$BRANCH" --title "$TITLE" --body-file "$BODY_FILE")
 if [[ -n "$DRAFT" ]]; then
-  gh pr create --base main --head "$BRANCH" --title "$TITLE" --body-file "$BODY_FILE" --draft
-else
-  gh pr create --base main --head "$BRANCH" --title "$TITLE" --body-file "$BODY_FILE"
+  CREATE_ARGS+=(--draft)
 fi
-rm -f "$BODY_FILE"
+
+PR_URL="$(gh "${CREATE_ARGS[@]}" )"
+PR_NUMBER="$(gh pr view "$PR_URL" --repo "$REPO" --json number -q .number)"
 
 echo ""
-echo "PR opened. Wait for CI checks + branch naming before merge."
+echo "PR opened: #$PR_NUMBER"
+echo "URL:       $PR_URL"
+echo ""
+
+if [[ -n "$DRAFT" ]]; then
+  echo "Draft PR — auto-merge not enabled. Mark ready, then run:"
+  echo "  gh pr merge $PR_NUMBER --repo $REPO --auto --squash --delete-branch"
+  exit 0
+fi
+
+enable_auto_merge() {
+  gh pr merge "$PR_NUMBER" --repo "$REPO" --auto --squash --delete-branch
+}
+
+echo "Enabling auto-merge (squash, delete branch when checks pass)..."
+if enable_auto_merge 2>"/tmp/merge-auto-err-$$.log"; then
+  :
+elif grep -q 'enablePullRequestAutoMerge' "/tmp/merge-auto-err-$$.log" 2>/dev/null; then
+  echo "Enabling allow_auto_merge on repository (one-time, requires admin)..."
+  if gh api "repos/${REPO}" -X PATCH -f allow_auto_merge=true >/dev/null 2>&1; then
+    enable_auto_merge
+  else
+    cat "/tmp/merge-auto-err-$$.log" >&2
+    echo "error: enable auto-merge in GitHub → Settings → General → Allow auto-merge" >&2
+    exit 1
+  fi
+else
+  cat "/tmp/merge-auto-err-$$.log" >&2
+  echo "Fallback: ./scripts/merge-agent-pr.sh $PR_NUMBER" >&2
+  rm -f "/tmp/merge-auto-err-$$.log"
+  exit 1
+fi
+rm -f "/tmp/merge-auto-err-$$.log"
+
+echo ""
+echo "Auto-merge: ENABLED"
+echo "GitHub will squash-merge into main after required checks pass."
+echo "Track: gh pr view $PR_NUMBER --repo $REPO"
+echo "Checks: gh pr checks $PR_NUMBER --repo $REPO"

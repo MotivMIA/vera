@@ -12,6 +12,28 @@ Read this file first. It defines how **Cursor** (supervisor/orchestrator) and **
 
 Optional later: require human approval (`required_approving_review_count: 1`) in branch protection.
 
+## Cursor automation (mandatory)
+
+| When | Command |
+|------|---------|
+| Start task | `./scripts/start-agent-task.sh cursor <feature-slug>` |
+| Assign Codex | `./scripts/start-agent-task.sh codex <feature-slug>` |
+| Before commit / PR | `./scripts/agent-status.sh` |
+| Open PR (+ auto-merge) | `./scripts/open-agent-pr.sh "[cursor] short summary"` |
+| Manual merge (fallback) | `./scripts/merge-agent-pr.sh <PR_NUMBER>` |
+
+**Never:** work on `main`, push to `main`, bypass protection (`--admin`, `--force`), or force-merge.
+
+### Auto-merge (default)
+
+Commit + push + PR means merge approval is implied. `open-agent-pr.sh` runs `gh pr merge --auto --squash --delete-branch`. GitHub merges when CI and branch protection pass. Cursor must **not** ask you to manually merge each PR.
+
+**End of every task**, report: branch, commit hash, PR link, checks status, auto-merge status.
+
+### Manual merge fallback
+
+`./scripts/merge-agent-pr.sh` only if auto-merge failed — not the normal flow.
+
 ## Roles
 
 | Role | Tool | Branch prefix | Can merge to `main`? |
@@ -31,9 +53,9 @@ CI & protection: [docs/CI_CD.md](docs/CI_CD.md)
 - Assign **one branch per task** (`agent-cursor-*` or `agent-codex-*`).
 - **Review Codex output** before opening or updating a PR (diff, risks, scope).
 - Run checks locally when possible: `npm run lint`, `npm run typecheck`, `npm run build`.
-- **Open and maintain PRs** (`./scripts/open-agent-pr.sh`); write risk summary and rollback notes.
+- **Open PRs with auto-merge** (`./scripts/open-agent-pr.sh`); write risk summary and rollback notes.
 - Read the **automated PR summary** comment on each PR.
-- **Do not merge** until CI checks (and Vercel, if UI) are green.
+- Report PR link, checks, and auto-merge status — do not ask for routine manual merges.
 - **Do not bypass** branch protection or push to `main`.
 - Coordinate with human on production deploys after merge to `main`.
 
@@ -73,7 +95,8 @@ Legacy `cursor:` / `codex:` prefixes are acceptable but prefer `[cursor]` / `[co
 | Start Cursor task | `./scripts/start-agent-task.sh cursor <feature>` |
 | Start Codex task | `./scripts/start-agent-task.sh codex <feature>` |
 | Agent status | `./scripts/agent-status.sh` |
-| Open PR | `./scripts/open-agent-pr.sh "[cursor] short title"` |
+| Open PR (auto-merge on) | `./scripts/open-agent-pr.sh "[cursor] short title"` |
+| Manual merge (fallback) | `./scripts/merge-agent-pr.sh <PR_NUMBER>` |
 | Install local main guard | `./scripts/install-git-hooks.sh` |
 
 ---
