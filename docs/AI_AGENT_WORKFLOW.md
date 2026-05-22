@@ -43,6 +43,77 @@ flowchart LR
 | CI before merge | Required check **CI checks** |
 | Commit prefixes | Convention + review |
 
+## Task intake (plain English)
+
+The human describes work in normal language. **Cursor classifies** before coding:
+
+| Class | When |
+|-------|------|
+| **cursor-only** | Planning, architecture, security, UI judgment, ambiguity, risky areas |
+| **codex-assisted** | Codex builds; Cursor reviews and may patch |
+| **codex-first** | Plan is already clear; Codex implements; Cursor reviews before PR |
+
+Cursor prints: `Classification: <class> — <one-line reason>`.
+
+### What Cursor keeps
+
+- Planning and architecture
+- Reviewing Codex output
+- UI/UX judgment
+- Final PR summary and risk notes
+- Security-sensitive or high-risk edits
+- Auto-merge status reporting
+
+### What Codex gets
+
+- Isolated bug fixes, tests, refactors
+- Repetitive multi-file edits
+- Utility scripts, docs cleanup
+- Small API/backend tasks from a **clear** Cursor plan
+
+### What Codex must not get
+
+- Secrets, auth, `middleware.ts` / env (unless task explicitly allows)
+- Database migrations (unless human approves)
+- Payments, major architecture, legal/compliance, Vercel/production config
+- Vague tasks — Cursor plans first
+
+### Decision table
+
+| Task type | Owner |
+|-----------|--------|
+| Planning / architecture | Cursor |
+| Simple implementation from clear plan | Codex |
+| Tests | Codex |
+| Review / final judgment | Cursor |
+| Security / auth / secrets | Cursor only |
+| Database migrations | Cursor only unless explicitly approved |
+| UI polish | Cursor |
+| Repetitive edits | Codex |
+
+### Delegation flow
+
+```mermaid
+flowchart TD
+  Task[Human describes task] --> Classify[Cursor classifies]
+  Classify -->|cursor-only| CursorBranch[agent-cursor-*]
+  Classify -->|codex-assisted or codex-first| CodexBranch[agent-codex-*]
+  CodexBranch --> CodexWork[Codex commits and pushes]
+  CodexWork --> Review[Cursor reviews diff]
+  Review -->|fixes needed| CursorBranch
+  Review --> PR[open-agent-pr.sh + auto-merge]
+  CursorBranch --> PR
+  PR --> CI[CI checks pass]
+  CI --> Main[main via auto-merge]
+```
+
+1. Classify and report.
+2. If Codex: `./scripts/start-agent-task.sh codex <feature-slug>`.
+3. Codex: `[codex]` commits only on its branch.
+4. Cursor reviews; optional `agent-cursor-*` follow-up.
+5. `./scripts/open-agent-pr.sh "[cursor|codex] summary"` → auto-merge when green.
+6. No direct `main` pushes; no `--admin`.
+
 ## Starting work
 
 ### Cursor (supervisor) task
@@ -60,20 +131,22 @@ git push -u origin agent-cursor-my-feature
 
 ### Codex (worker) task
 
-Give Codex explicit instructions:
+Cursor creates the branch when delegation applies — the human does not need to say “use Codex.”
+
+```bash
+./scripts/start-agent-task.sh codex my-feature   # Cursor runs this when classifying codex-* 
+```
+
+Handoff brief for Codex:
 
 ```text
-Branch: agent-codex-my-feature only.
+Branch: agent-codex-<feature> only.
 Do not push to main. Do not merge.
 Commit format: [codex] description.
 When done: list files changed and tests run.
 ```
 
-```bash
-./scripts/start-agent-task.sh codex my-feature
-# Codex works on that branch …
-./scripts/agent-status.sh   # Cursor verifies before PR
-```
+Cursor runs `./scripts/agent-status.sh`, reviews the diff, then opens the PR.
 
 ## Pull requests
 

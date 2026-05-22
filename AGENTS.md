@@ -34,6 +34,46 @@ Commit + push + PR means merge approval is implied. `open-agent-pr.sh` runs `gh 
 
 `./scripts/merge-agent-pr.sh` only if auto-merge failed — not the normal flow.
 
+### Automatic Codex delegation
+
+You describe the task in **plain English**. Cursor decides whether to work alone, pair with Codex, or send Codex first — **do not** require you to say “use Codex.”
+
+**Classifications** (Cursor reports briefly at task start):
+
+| Class | Meaning |
+|-------|---------|
+| **cursor-only** | Cursor plans and implements on `agent-cursor-*` |
+| **codex-assisted** | Codex implements on `agent-codex-*`; Cursor reviews and may fix on `agent-cursor-*` |
+| **codex-first** | Clear plan exists; Codex implements first; Cursor reviews before PR |
+
+**Cursor handles directly:** planning, architecture, reviewing Codex work, UI/UX judgment, final PR summary, risky changes, merge/auto-merge reporting.
+
+**Delegate to Codex when useful:** isolated bug fixes, tests, refactors, repetitive edits, utility scripts, docs cleanup, small backend/API tasks, turning a clear plan into code.
+
+**Do not delegate to Codex:** secrets/auth/security-sensitive changes, database migrations, payment/billing, major architecture, legal/compliance copy, production deploy settings, anything ambiguous (plan in Cursor first).
+
+#### Decision table
+
+| Task type | Owner |
+|-----------|--------|
+| Planning / architecture | Cursor |
+| Simple implementation from clear plan | Codex |
+| Tests | Codex |
+| Review / final judgment | Cursor |
+| Security / auth / secrets | Cursor only |
+| Database migrations | Cursor only (unless you explicitly approve Codex) |
+| UI polish | Cursor |
+| Repetitive edits | Codex |
+
+#### Delegation workflow
+
+1. You give a task → Cursor classifies (`cursor-only` \| `codex-assisted` \| `codex-first`) and states why.
+2. If Codex helps → `./scripts/start-agent-task.sh codex <feature-slug>` (Cursor creates the branch).
+3. Codex works only on that branch; commits `[codex] short summary`; pushes.
+4. Cursor reviews diff, runs checks, fixes on `agent-cursor-*` if needed.
+5. Cursor opens PR: `./scripts/open-agent-pr.sh "[cursor] …"` or `"[codex] …"` as appropriate.
+6. Auto-merge after CI passes; never push to `main`; never `--admin`.
+
 ## Roles
 
 | Role | Tool | Branch prefix | Can merge to `main`? |
@@ -49,6 +89,8 @@ CI & protection: [docs/CI_CD.md](docs/CI_CD.md)
 
 ## Cursor — supervisor responsibilities
 
+- **Classify every task** automatically (`cursor-only`, `codex-assisted`, `codex-first`); tell the human in one sentence.
+- **Create Codex branches** when delegation helps — without being asked to “use Codex.”
 - Break large goals into **small, testable tasks** for Codex or yourself.
 - Assign **one branch per task** (`agent-cursor-*` or `agent-codex-*`).
 - **Review Codex output** before opening or updating a PR (diff, risks, scope).
