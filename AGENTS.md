@@ -168,7 +168,7 @@ Required status check on `main`: **CI checks**
 ## Project context
 
 - Next.js 15 App Router, Clerk, Supabase, Didit, Vercel.
-- Production: `https://visual-era.vercel.app`
+- Production: `https://visual-era.vercel.app` (not raw `visual-*-motivmias-projects.vercel.app` deployment URLs — see [docs/VERCEL_DEPLOYMENT.md](docs/VERCEL_DEPLOYMENT.md))
 - Sensitive areas: `middleware.ts`, `lib/didit.ts`, `lib/env.ts`, `app/api/*`
 
 See also [docs/COLLABORATION.md](docs/COLLABORATION.md) for collision avoidance between agents.
