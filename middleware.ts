@@ -84,6 +84,8 @@ const runClerkMiddleware = clerkMiddleware(
   },
   {
     authorizedParties: collectAuthorizedParties(),
+    // Clerk 7 auto-enables /__clerk FAPI proxy on Vercel production without this.
+    frontendApiProxy: { enabled: false },
   },
 );
 
