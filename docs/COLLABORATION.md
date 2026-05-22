@@ -27,6 +27,24 @@ You are **not** clashing because both agents are evil. Clashes happen when **two
 - **Cursor** → branch `cursor` → merge/review → PR to `main`
 - Only one PR merged at a time.
 
+### Style C — Per-task agent branches (recommended)
+
+Create a branch from `main` before each agent session:
+
+```text
+agent-[AGENT_NAME]-[FEATURE]
+```
+
+Examples: `agent-cursor-didit-vercel-fix`, `agent-codex-onboarding-consent`
+
+1. `git checkout main && git pull`
+2. `git checkout -b agent-cursor-my-feature`
+3. Agent works, commits: `cursor: short description`
+4. `git push -u origin agent-cursor-my-feature`
+5. Open PR → `main` (or merge locally), then `git checkout main`
+
+Only **one agent** edits a given `agent-*` branch at a time.
+
 ## Who owns what (default)
 
 | Area | First choice |
