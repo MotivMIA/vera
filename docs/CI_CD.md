@@ -44,11 +44,20 @@ File: [.github/workflows/ci.yml](../.github/workflows/ci.yml)
 
 **Required check name for branch protection:** `CI checks`
 
-## One-time: protect `main` on GitHub
+## Branch protection on `main` (enabled)
 
-Branch protection cannot live in git alone; enable it on GitHub (repo admin).
+`main` is protected on **MotivMIA/vera** with:
 
-**Private repos:** GitHub requires **Pro** (or Team/Enterprise), or a **public** repository, to use classic branch protection via the API/UI. If `setup-github-branch-protection.sh` returns HTTP 403, upgrade the org/account, make the repo public, or enforce the workflow manually (no direct pushes to `main` by convention) until protection is available.
+| Rule | Setting |
+|------|---------|
+| Pull request required | Yes (0 approvals; conversation must be resolved) |
+| Required status check | **CI checks** (branch must be up to date) |
+| Force push / delete branch | Disabled |
+| Admins | Same rules apply (`enforce_admins`) |
+
+Re-apply after changes: `./scripts/setup-github-branch-protection.sh`
+
+**Private repos** need GitHub Pro for this API; **public** repos can use the script above (HTTP 403 on private → make public or upgrade).
 
 ### Option A — Script (GitHub CLI)
 
