@@ -34,14 +34,12 @@ Legacy `cursor:` / `codex:` prefixes still work; prefer bracket form for new com
 
 File: [.github/workflows/ci.yml](../.github/workflows/ci.yml)
 
-| Step | Command |
-|------|---------|
-| Install | `npm ci` |
-| Lint | `npm run lint` |
-| Types | `npm run typecheck` |
-| Tests | `npm test` (skipped with notice if no script) |
-| Build | `npm run build` |
-| Audit | `npm audit --audit-level=high` (advisory warning) |
+| Change type | Job | Steps |
+|-------------|-----|--------|
+| App/code | **CI checks** | `npm ci` (cached) → lint ∥ typecheck → tests (if script) → build → advisory audit |
+| Docs/markdown only | **CI checks** (fast) | Skips lint/build; satisfies required check |
+
+Concurrency cancels superseded runs on the same PR. Push to `agent-*` still runs full CI when code changes.
 
 ### Additional workflows
 
@@ -57,7 +55,7 @@ See [AI_AGENT_WORKFLOW.md](./AI_AGENT_WORKFLOW.md) for supervisor/worker roles a
 - Every **pull request** into `main`
 - Every **push** to `agent-*`, `codex`, or `cursor`
 
-**Required check name for branch protection:** `CI checks`
+**Required check name for branch protection:** `CI checks` (Vercel preview is optional — do not add to required checks unless you want slower auto-merge)
 
 ## Branch protection on `main` (enabled)
 

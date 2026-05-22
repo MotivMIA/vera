@@ -43,23 +43,43 @@ jobs:
             const agentMatch = branch.match(/^agent-([^-]+)-/);
             const agent = agentMatch ? agentMatch[1] : 'unknown';
 
-            const riskPatterns = [
+            const cursorOwnedPatterns = [
               'middleware.ts',
               'lib/env.ts',
+              'lib/clerk-proxy.ts',
               'lib/didit.ts',
               'lib/security.ts',
               'app/api/',
+              'supabase/migrations/',
+              'migrations/',
+              'vercel.json',
+              'next.config',
               '.github/workflows/',
+              'scripts/configure-vercel',
+              'docs/VERCEL_DEPLOYMENT',
+            ];
+            const riskPatterns = [
+              ...cursorOwnedPatterns,
               'package.json',
               'package-lock.json',
             ];
             const riskFiles = files.filter((f) =>
               riskPatterns.some((p) => f.includes(p))
             );
+            const cursorOwnedFiles = files.filter((f) =>
+              cursorOwnedPatterns.some((p) => f.includes(p))
+            );
             const riskSection =
               riskFiles.length > 0
                 ? riskFiles.map((f) => `- \`${f}\``).join('\n')
                 : '_No high-signal paths detected (still review the full diff)._';
+            const ownershipSection =
+              cursorOwnedFiles.length > 0
+                ? [
+                    '**Cursor-owned** — Codex must not merge without Cursor review:',
+                    ...cursorOwnedFiles.map((f) => `- \`${f}\``),
+                  ].join('\n')
+                : '_No Cursor-owned paths in this diff._';
 
             const fileList =
               files.length > 40
@@ -86,8 +106,11 @@ jobs:
               '### Risk areas (path-based)',
               riskSection,
               '',
+              '### Ownership (Cursor vs Codex)',
+              ownershipSection,
+              '',
               '### Required before merge',
-              '- [ ] **CI checks** — lint, typecheck, build, audit',
+              '- [ ] **CI checks** — lint, typecheck, build (docs-only PRs skip build)',
               '- [ ] **Agent branch naming**',
               '- [ ] **Vercel** preview (if UI)',
               '- [ ] No secrets in diff',

@@ -18,7 +18,7 @@ Optional later: require human approval (`required_approving_review_count: 1`) in
 |------|---------|
 | Start task | `./scripts/start-agent-task.sh cursor <feature-slug>` |
 | Assign Codex | `./scripts/start-agent-task.sh codex <feature-slug>` |
-| Before commit / PR | `./scripts/agent-status.sh` |
+| Before commit / PR | `./scripts/agent-status.sh` (use `--pre-pr` before opening PR) |
 | Open PR (+ auto-merge) | `./scripts/open-agent-pr.sh "[cursor] short summary"` |
 | Sync local `main` | `./scripts/sync-main.sh` |
 | Manual merge (fallback) | `./scripts/merge-agent-pr.sh <PR_NUMBER>` |
@@ -27,17 +27,30 @@ Optional later: require human approval (`required_approving_review_count: 1`) in
 
 ### Auto-merge (default)
 
-Commit + push + PR means merge approval is implied. `open-agent-pr.sh` runs `gh pr merge --auto --squash --delete-branch`. GitHub merges when CI and branch protection pass. Cursor must **not** ask you to manually merge each PR.
+Commit + push + PR means merge approval is implied. `open-agent-pr.sh` enables `gh pr merge --auto --squash --delete-branch` **immediately** after the PR is created. GitHub merges when required checks pass. Cursor must **not** ask you to manually merge each PR.
+
+- **Wait time:** script polls up to **120s** (override with `MERGE_WAIT_TIMEOUT=300`), then exits cleanly while auto-merge continues on GitHub.
+- **Checks:** script prints pending/passed checks via `gh pr checks`; Vercel preview and PR summary are **not** required for merge.
+- **Sync:** if merge finishes within the wait window, `sync-main.sh` runs automatically; otherwise sync at the next task start.
 
 ### Sync local `main` (automatic)
 
-- `start-agent-task.sh` syncs `main` before every new agent branch (`sync-main.sh`).
-- After auto-merge, `open-agent-pr.sh` polls for merge (up to 10 minutes), then runs `sync-main.sh`.
-- If polling times out: run `./scripts/sync-main.sh` or ask Cursor to sync at the next task start.
-- Cursor runs `sync-main.sh` at the **start of the next task** if merge finished while idle.
+- `start-agent-task.sh` requires a **clean working tree**, then syncs `main` before every new agent branch (`sync-main.sh`).
+- After auto-merge, `open-agent-pr.sh` may sync `main` if merge completed within the short wait window.
+- If still pending: run `./scripts/sync-main.sh` or sync at the next task start.
 - Never force-pull or hard-reset; fails if uncommitted changes would be at risk.
 
-**End of every task**, report: branch, commit hash, PR link, checks status, auto-merge status, local `main` commit after sync.
+**End of every task**, report (from `open-agent-pr.sh` task report when possible):
+
+| Field | Example |
+|-------|---------|
+| Branch | `agent-cursor-my-feature` |
+| Commit | short SHA |
+| PR link | GitHub URL |
+| Checks | pending / passed (CI checks, branch naming) |
+| Auto-merge | yes / no |
+| Local `main` sync | yes + hash / pending |
+| Manual step | none, or `sync-main.sh` after merge |
 
 ### Manual merge fallback
 
@@ -60,6 +73,20 @@ You describe the task in **plain English**. Cursor decides whether to work alone
 **Delegate to Codex when useful:** isolated bug fixes, tests, refactors, repetitive edits, utility scripts, docs cleanup, small backend/API tasks, turning a clear plan into code.
 
 **Do not delegate to Codex:** secrets/auth/security-sensitive changes, database migrations, payment/billing, major architecture, legal/compliance copy, production deploy settings, anything ambiguous (plan in Cursor first).
+
+### Ownership locking (Cursor vs Codex)
+
+| Cursor-owned (supervisor only) | Codex-safe (when scoped + reviewed) |
+|--------------------------------|-------------------------------------|
+| Architecture, routing, `middleware.ts` | Isolated UI components |
+| Auth, security, Clerk/Supabase wiring | Tests |
+| `app/api/*`, `lib/env.ts`, `lib/didit.ts` | Utility functions |
+| DB migrations, schema | Repetitive refactors |
+| Vercel/deployment, env vars, `docs/VERCEL_DEPLOYMENT.md` | Docs cleanup (non-deploy) |
+| Billing/payments, production settings | Small API helpers from a clear plan |
+| `.github/workflows/`, branch protection scripts | Clearly scoped bug fixes |
+
+**Rule:** If a task touches a **Cursor-owned** path, Cursor implements or **reviews before PR**. Codex must **not** open a PR that modifies Cursor-owned files without Cursor review. `./scripts/agent-status.sh --pre-pr` flags those paths; Codex PRs that touch them **exit with error**.
 
 #### Decision table
 
@@ -153,15 +180,24 @@ Legacy `cursor:` / `codex:` prefixes are acceptable but prefer `[cursor]` / `[co
 
 ---
 
+## Conflict prevention
+
+Before **starting** a task: clean working tree → `./scripts/start-agent-task.sh` (syncs `main`, creates isolated branch).
+
+Before **opening a PR**: `./scripts/agent-status.sh --pre-pr` — lists files vs `main`, flags Cursor-owned paths.
+
+**One writer per branch** — never Cursor and Codex on the same branch concurrently.
+
 ## Automation (GitHub)
 
-| Workflow | Purpose |
-|----------|---------|
-| `ci.yml` | Lint, typecheck, test (if present), build, audit |
-| `branch-naming.yml` | Enforce `agent-*` head branch on PRs |
-| `pr-summary.yml` | Bot comment: files, risks, reviewer checklist |
+| Workflow | Purpose | Blocks merge? |
+|----------|---------|---------------|
+| `ci.yml` | Lint+typecheck (parallel), test if present, build; docs-only fast path | **Yes** — `CI checks` |
+| `branch-naming.yml` | Enforce `agent-*` head branch on PRs | Yes (failed check) |
+| `pr-summary.yml` | Bot comment: files, ownership, risks | No (informational) |
+| Vercel | Preview deploy per PR | No (unless you add it in branch protection) |
 
-Required status check on `main`: **CI checks**
+Required status check on `main`: **CI checks** only.
 
 ---
 

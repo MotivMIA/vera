@@ -17,6 +17,7 @@ if [[ -z "$AGENT" || -z "$FEATURE" ]]; then
   exit 1
 fi
 
+assert_clean_worktree_or_exit
 echo "Syncing main before new branch..."
 "$SCRIPT_DIR/agent-branch.sh" "$AGENT" "$FEATURE"
 

@@ -38,11 +38,15 @@ CI runs on every PR to `main` and on pushes to `agent-*`, `codex`, and `cursor`.
 
 ## Who owns what (default)
 
-| Area | First choice |
-|------|----------------|
-| Big multi-file builds | Codex |
-| Production bugs, stuck UI, deploy | Cursor |
+See **Ownership locking** in [AGENTS.md](../AGENTS.md) and [AI_AGENT_WORKFLOW.md](./AI_AGENT_WORKFLOW.md).
+
+| Area | Owner |
+|------|--------|
+| Architecture, auth, middleware, API routes, migrations, Vercel/env | **Cursor** |
+| Scoped components, tests, utilities, docs cleanup, clear bug fixes | **Codex** (Cursor reviews PR) |
 | `lib/didit.ts`, `didit-embed.tsx` | One agent per session — not both same day without merge |
+
+Run `./scripts/agent-status.sh --pre-pr` before opening a PR to flag Cursor-owned paths.
 
 ## Before you open Codex
 

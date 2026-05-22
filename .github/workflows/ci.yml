@@ -1,5 +1,5 @@
-# Runs on pull requests targeting main and on pushes to agent/feature branches.
-# Required check for branch protection: "CI checks"
+# Required status check for branch protection: "CI checks"
+# Fast path for docs-only PRs; full lint/typecheck/build for code changes.
 
 name: CI
 
@@ -20,10 +20,37 @@ permissions:
   contents: read
 
 jobs:
+  changes:
+    name: Detect changes
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    outputs:
+      docs_only: ${{ steps.filter.outputs.docs_only }}
+      code: ${{ steps.filter.outputs.code }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            docs_only:
+              - "docs/**"
+              - "**/*.md"
+              - "AGENTS.md"
+              - ".github/**/*.md"
+            code:
+              - "**"
+              - "!docs/**"
+              - "!**/*.md"
+              - "!AGENTS.md"
+              - "!.github/**/*.md"
+
   ci:
     name: CI checks
+    needs: changes
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 12
+    if: needs.changes.outputs.code == 'true' || needs.changes.outputs.docs_only != 'true'
 
     env:
       NEXT_PUBLIC_SITE_URL: https://visual-era.vercel.app
@@ -49,11 +76,14 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Lint
-        run: npm run lint
-
-      - name: Typecheck
-        run: npm run typecheck
+      - name: Lint and typecheck
+        run: |
+          npm run lint &
+          pid_lint=$!
+          npm run typecheck &
+          pid_type=$!
+          wait "$pid_lint"
+          wait "$pid_type"
 
       - name: Tests
         run: |
@@ -62,19 +92,26 @@ jobs:
             npm test
           else
             echo "::notice::No test script in package.json — skipping tests."
-            echo "Add \"test\": \"vitest\" (or similar) when ready."
           fi
 
       - name: Production build
         run: npm run build
 
-      - name: Security audit
+      - name: Security audit (advisory)
         run: |
           echo "Running npm audit (high severity and above)..."
-          if npm audit --audit-level=high; then
-            echo "No high-severity vulnerabilities reported."
-          else
-            echo "::warning::npm audit reported high+ issues. Review lockfile and dependencies."
-            exit 0
-          fi
+          npm audit --audit-level=high || echo "::warning::npm audit reported high+ issues — review when convenient."
         continue-on-error: true
+
+  docs-only:
+    name: CI checks
+    needs: changes
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    if: needs.changes.outputs.docs_only == 'true'
+
+    steps:
+      - name: Docs-only change
+        run: |
+          echo "::notice::Docs/markdown only — skipping lint, typecheck, and build."
+          echo "Required check satisfied for documentation updates."
