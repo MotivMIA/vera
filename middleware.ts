@@ -55,14 +55,17 @@ export default clerkMiddleware(
     }
   },
   {
-    proxyUrl: "/__clerk",
+    // Proxy Clerk Frontend API in middleware so /__clerk/npm/@clerk/*.js is not routed by App Router.
+    frontendApiProxy: { enabled: true },
     // Protect against origin mixups / subdomain cookie leaking.
-    // Keep this list tight; it must include your current origin(s).
     authorizedParties: collectAuthorizedParties(),
   },
 );
 
 export const config = {
-  // Clerk recommended matcher: run middleware on all routes except static files and Next internals.
-  matcher: ["/((?!.*\\..*|_next).*)", "/", "/(api|trpc)(.*)", "/__clerk(.*)"],
+  matcher: [
+    "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
+    "/(api|trpc)(.*)",
+    "/__clerk/(.*)",
+  ],
 };
