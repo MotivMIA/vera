@@ -46,36 +46,32 @@ export function DiditEmbed() {
   const [starting, setStarting] = useState(false);
   const [startError, setStartError] = useState<string | null>(null);
   const [redirecting, setRedirecting] = useState(false);
+  const [authTimedOut, setAuthTimedOut] = useState(false);
 
   const wait = (ms: number) => new Promise((resolve) => window.setTimeout(resolve, ms));
 
-  const startDiditSession = useCallback(
-    async (attempt = 0) => {
-      if (sessionId) return;
+  const startDiditSession = useCallback(async () => {
+    if (sessionId) return;
+    if (!isLoaded) return;
 
-      if (!isLoaded) return;
+    if (!isSignedIn || !userId) {
+      const redirect = encodeURIComponent("/verify-identity");
+      router.replace(`/sign-in?redirect_url=${redirect}`);
+      return;
+    }
 
-      if (!isSignedIn || !userId) {
-        const redirect = encodeURIComponent("/verify-identity");
-        router.replace(`/sign-in?redirect_url=${redirect}`);
-        return;
-      }
+    setStarting(true);
+    setStartError(null);
 
-      setStarting(true);
-      setStartError(null);
+    try {
+      let lastError = "Unable to start DIDIT verification.";
 
-      try {
+      for (let attempt = 0; attempt < 4; attempt += 1) {
         const response = await fetch("/api/didit/start", {
           method: "POST",
           headers: { "content-type": "application/json" },
           body: JSON.stringify({ consentsAccepted: true }),
         });
-
-        if (response.status === 401 && attempt < 3) {
-          await wait(500);
-          await startDiditSession(attempt + 1);
-          return;
-        }
 
         const data = (await response.json()) as {
           sessionId?: string;
@@ -83,8 +79,14 @@ export function DiditEmbed() {
           error?: string;
         };
 
+        if (response.status === 401 && attempt < 3) {
+          await wait(600);
+          continue;
+        }
+
         if (!response.ok || !data.sessionId) {
-          throw new Error(data.error ?? "Unable to start DIDIT verification.");
+          lastError = data.error ?? lastError;
+          throw new Error(lastError);
         }
 
         if (!data.diditUrl) {
@@ -95,23 +97,30 @@ export function DiditEmbed() {
         setEmbedUrl(data.diditUrl);
         setStatus("pending");
         setProviderStatus("Not Started");
+        setLoading(false);
 
         const params = new URLSearchParams();
         params.set("session", data.sessionId);
         params.set("diditUrl", data.diditUrl);
-        router.replace(`/verify-identity?${params.toString()}`);
-      } catch (error) {
-        const message = error instanceof Error ? error.message : "Unable to start DIDIT.";
-        setStartError(message);
-        toast.error(message);
-        setStatus("failed");
-        setProviderStatus("Failed to start");
-      } finally {
-        setStarting(false);
+        const next = `/verify-identity?${params.toString()}`;
+        if (window.location.pathname + window.location.search !== next) {
+          router.replace(next);
+        }
+        return;
       }
-    },
-    [isLoaded, isSignedIn, router, sessionId, userId],
-  );
+
+      throw new Error("Your sign-in session is still settling. Refresh the page and try again.");
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Unable to start DIDIT.";
+      setStartError(message);
+      toast.error(message);
+      setStatus("failed");
+      setProviderStatus("Failed to start");
+      setLoading(false);
+    } finally {
+      setStarting(false);
+    }
+  }, [isLoaded, isSignedIn, router, sessionId, userId]);
 
   const refreshStatus = useCallback(
     async (isBackground = false) => {
@@ -170,19 +179,35 @@ export function DiditEmbed() {
   }, []);
 
   useEffect(() => {
+    if (!isLoaded) {
+      const timer = window.setTimeout(() => setAuthTimedOut(true), 12_000);
+      return () => window.clearTimeout(timer);
+    }
+    setAuthTimedOut(false);
+  }, [isLoaded]);
+
+  useEffect(() => {
     if (!isLoaded) return;
+
     if (!sessionId) {
       void startDiditSession();
       return;
     }
+
+    if (!embedUrl) {
+      void refreshStatus();
+      return;
+    }
+
     if (status === "verified") {
       setLoading(false);
       return;
     }
+
     void refreshStatus();
     const timer = window.setInterval(() => void refreshStatus(true), 7000);
     return () => window.clearInterval(timer);
-  }, [isLoaded, refreshStatus, sessionId, startDiditSession, status]);
+  }, [embedUrl, isLoaded, refreshStatus, sessionId, startDiditSession, status]);
 
   useEffect(() => {
     if (status !== "verified") return;
@@ -263,11 +288,20 @@ export function DiditEmbed() {
           </div>
         ) : !isLoaded || starting ? (
           <div className="flex min-h-[760px] items-center justify-center rounded-2xl border border-white/10 bg-black/20">
-            <div className="text-center">
+            <div className="space-y-4 text-center">
               <LoaderCircle className="mx-auto size-7 animate-spin text-accent" />
-              <p className="mt-4 text-sm text-muted-foreground">
-                {!isLoaded ? "Loading your account…" : "Starting your DIDIT verification session…"}
+              <p className="text-sm text-muted-foreground">
+                {!isLoaded
+                  ? authTimedOut
+                    ? "Sign-in is taking longer than expected. Refresh the page or sign out and back in."
+                    : "Loading your account…"
+                  : "Starting your DIDIT verification session…"}
               </p>
+              {authTimedOut ? (
+                <Button variant="outline" onClick={() => window.location.reload()}>
+                  Refresh page
+                </Button>
+              ) : null}
             </div>
           </div>
         ) : showEmbed ? (
