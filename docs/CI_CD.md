@@ -22,9 +22,13 @@ Legacy lanes `codex` and `cursor` also run CI on push.
 ### Commit message format
 
 ```text
-cursor: short description
-codex: short description
+[cursor] short description
+[codex] short description
+[docs] short description
+[system] short description
 ```
+
+Legacy `cursor:` / `codex:` prefixes still work; prefer bracket form for new commits.
 
 ## CI pipeline
 
@@ -35,7 +39,18 @@ File: [.github/workflows/ci.yml](../.github/workflows/ci.yml)
 | Install | `npm ci` |
 | Lint | `npm run lint` |
 | Types | `npm run typecheck` |
+| Tests | `npm test` (skipped with notice if no script) |
 | Build | `npm run build` |
+| Audit | `npm audit --audit-level=high` (advisory warning) |
+
+### Additional workflows
+
+| Workflow | Check name | Purpose |
+|----------|------------|---------|
+| `branch-naming.yml` | Agent branch naming | Head branch must be `agent-*` |
+| `pr-summary.yml` | — | Bot comment: files, risks, checklist |
+
+See [AI_AGENT_WORKFLOW.md](./AI_AGENT_WORKFLOW.md) for supervisor/worker roles and scripts.
 
 **Triggers**
 
@@ -109,17 +124,13 @@ After the first CI run on a PR, **CI checks** appears in the status-check dropdo
 ## Creating a PR (agents or you)
 
 ```bash
-git checkout main
-git pull origin main
-git checkout -b agent-cursor-my-feature
-
-# … work, commit …
+./scripts/start-agent-task.sh cursor my-feature
+# … work, commit: [cursor] summary …
 git push -u origin agent-cursor-my-feature
-
-gh pr create --base main --head agent-cursor-my-feature \
-  --title "cursor: my feature" \
-  --body "Summary and test plan"
+./scripts/open-agent-pr.sh "[cursor] my feature"
 ```
+
+Or use `./scripts/agent-status.sh` to see branch state and open PR hints.
 
 Merge only when **CI checks** is green and review is done.
 

@@ -1,0 +1,80 @@
+# Fail PRs to main when the head branch does not follow agent-<agent>-<feature>.
+# Skips Dependabot, Renovate, and GitHub Actions bot branches.
+
+name: Agent branch naming
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, edited]
+    branches: [main]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  naming:
+    name: Agent branch naming
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Validate head branch name
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const head = context.payload.pull_request.head.ref;
+            const systemPrefixes = [
+              'dependabot/',
+              'dependabot-',
+              'renovate/',
+              'github-actions/',
+              'allcontributors/',
+            ];
+            const isSystem = systemPrefixes.some((p) => head.startsWith(p));
+            const agentPattern = /^agent-(cursor|codex|[a-z][a-z0-9-]*)-[a-z0-9][a-z0-9-]*$/;
+
+            if (isSystem) {
+              core.info(`Skipping naming check for system branch: ${head}`);
+              return;
+            }
+
+            if (!agentPattern.test(head)) {
+              core.setFailed(
+                `Head branch "${head}" must match agent-<cursor|codex|name>-<feature> ` +
+                  `(e.g. agent-cursor-multi-agent-workflow). ` +
+                  `Create a branch with ./scripts/start-agent-task.sh cursor my-feature`
+              );
+              return;
+            }
+
+            core.info(`Branch name OK: ${head}`);
+
+      - name: Comment on failure
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const head = context.payload.pull_request.head.ref;
+            const body = [
+              '### Agent branch naming',
+              '',
+              `Head branch \`${head}\` does not match the required pattern:`,
+              '',
+              '```',
+              'agent-<cursor|codex|other>-<short-feature-name>',
+              '```',
+              '',
+              '**Fix:**',
+              '```bash',
+              './scripts/start-agent-task.sh cursor my-feature',
+              '# cherry-pick or re-open PR from the new branch',
+              '```',
+              '',
+              'System branches (`dependabot/*`, `renovate/*`, etc.) are exempt.',
+            ].join('\n');
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.payload.pull_request.number,
+              body,
+            });

@@ -1,24 +1,46 @@
-## Summary
+## Agent name
 
-<!-- What does this change do? -->
+<!-- cursor | codex | human -->
 
-## Agent
+## Branch name
 
-<!-- e.g. cursor, codex, or human -->
+<!-- e.g. agent-cursor-multi-agent-workflow -->
 
-## Branch
+## Task summary
 
-<!-- agent-[name]-[feature] -->
+<!-- What problem does this solve? -->
 
-## Test plan
+## Files changed
+
+<!-- High-level list or `git diff --stat origin/main` -->
+
+## Tests run
 
 - [ ] `npm run lint`
 - [ ] `npm run typecheck`
 - [ ] `npm run build`
-- [ ] Manual check on Vercel preview (if applicable)
+- [ ] `npm test` (if script exists)
+- [ ] Manual / Vercel preview
+
+## Risks
+
+<!-- Auth, middleware, API routes, env, payments, PII -->
+
+## Rollback notes
+
+<!-- Revert commit, feature flag, env rollback -->
+
+## Screenshots
+
+<!-- Required if UI changed -->
 
 ## Checklist
 
-- [ ] CI checks pass on this PR
-- [ ] No secrets committed (`.env`, keys, tokens)
-- [ ] Only one agent worked on this branch for this feature
+- [ ] All work on an `agent-*` branch (not `main`)
+- [ ] **No direct push to `main`**
+- [ ] Commit messages use `[cursor]` / `[codex]` / `[docs]` / `[system]` prefix
+- [ ] CI checks pass
+- [ ] Agent branch naming check passes
+- [ ] Automated PR summary reviewed
+- [ ] No secrets in diff (`.env`, keys, tokens)
+- [ ] Single agent owned this branch for this feature

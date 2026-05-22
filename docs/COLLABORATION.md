@@ -1,5 +1,8 @@
 # Cursor + Codex — avoid overwriting each other
 
+> **Canonical workflow:** [AI_AGENT_WORKFLOW.md](./AI_AGENT_WORKFLOW.md) and [AGENTS.md](../AGENTS.md).  
+> Cursor = supervisor; Codex = worker; all merges via PR from `agent-*` branches.
+
 You are **not** clashing because both agents are evil. Clashes happen when **two writers edit the same branch at the same time** without pulling first.
 
 ## The simple rule
@@ -14,12 +17,9 @@ You are **not** clashing because both agents are evil. Clashes happen when **two
 
 ## Recommended lanes (pick one style)
 
-### Style A — Single production branch (what you use now)
+### Style A — Direct to main (deprecated)
 
-- Everyone commits to **`main`** (or PR into `main`).
-- **One agent at a time** until the deploy is verified.
-- After Codex finishes: **stop Codex**, let Cursor review, commit, deploy.
-- After Cursor deploys: **pause Cursor edits** until you test production.
+- **Do not use.** `main` is protected; use Style C and PRs only.
 
 ### Style B — Two branches (less collision)
 

@@ -1,5 +1,5 @@
 # Runs on pull requests targeting main and on pushes to agent/feature branches.
-# Merge to main is blocked until "CI checks" passes (configure branch protection).
+# Required check for branch protection: "CI checks"
 
 name: CI
 
@@ -26,7 +26,6 @@ jobs:
     timeout-minutes: 15
 
     env:
-      # Placeholders so Next.js build can compile without real secrets in CI.
       NEXT_PUBLIC_SITE_URL: https://visual-era.vercel.app
       NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: pk_test_ci_placeholder
       CLERK_SECRET_KEY: sk_test_ci_placeholder
@@ -56,5 +55,26 @@ jobs:
       - name: Typecheck
         run: npm run typecheck
 
+      - name: Tests
+        run: |
+          if node -e "const p=require('./package.json'); process.exit(p.scripts&&p.scripts.test?0:1)"; then
+            echo "Running npm test..."
+            npm test
+          else
+            echo "::notice::No test script in package.json — skipping tests."
+            echo "Add \"test\": \"vitest\" (or similar) when ready."
+          fi
+
       - name: Production build
         run: npm run build
+
+      - name: Security audit
+        run: |
+          echo "Running npm audit (high severity and above)..."
+          if npm audit --audit-level=high; then
+            echo "No high-severity vulnerabilities reported."
+          else
+            echo "::warning::npm audit reported high+ issues. Review lockfile and dependencies."
+            exit 0
+          fi
+        continue-on-error: true
