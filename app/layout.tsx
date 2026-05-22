@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Toaster } from "@/components/ui/sonner";
-import { CLERK_HOSTED_PROVIDER_PROPS } from "@/lib/clerk/hosted-only";
+import { CLERK_PROVIDER_PROXY_PROPS } from "@/lib/clerk/hosted-only";
 import { getSiteUrl } from "@/lib/env";
 import "./globals.css";
 
@@ -46,7 +46,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
 
   return (
     <ClerkProvider
-      {...CLERK_HOSTED_PROVIDER_PROPS}
+      {...CLERK_PROVIDER_PROXY_PROPS}
       appearance={{
         variables: {
           colorBackground: "#0d0f13",

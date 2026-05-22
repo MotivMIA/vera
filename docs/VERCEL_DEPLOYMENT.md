@@ -55,20 +55,21 @@ To disable all Vercel Authentication (not recommended for previews):
 { "ssoProtection": null }
 ```
 
-## Clerk auth (no Frontend API proxy)
+## Clerk auth (same-origin `/__clerk` proxy)
 
-Production uses Clerk’s **hosted** Frontend API (standard `@clerk/nextjs` setup).
+This Clerk instance’s Frontend API host is `clerk.visual-era.vercel.app` (from the publishable key). That host is **not** on Vercel DNS, so the app **must** proxy Clerk through same-origin `/__clerk` (`frontendApiProxy` in `middleware.ts` + `proxyUrl="/__clerk"` on `ClerkProvider`).
 
-**Do not set `NEXT_PUBLIC_CLERK_PROXY_URL` on Vercel** (Production or Preview). If it exists, delete it and redeploy. The app passes a `ClerkProvider` `proxyUrl` sentinel (see `lib/clerk/hosted-only.ts`), strips `NEXT_PUBLIC_CLERK_PROXY_URL` at build time, and sets `frontendApiProxy: { enabled: false }` on `clerkMiddleware`. Without the sentinel, Clerk 7 auto-enables `/__clerk` on Vercel production via `getAutoProxyUrlFromEnvironment`.
+**Do not set `NEXT_PUBLIC_CLERK_PROXY_URL` on Vercel** unless you intend a different path.
+
+If you see a handshake loop or `session-token-expired-refresh-non-eligible-no-refresh-cookie`, **clear site data** for `visual-era.vercel.app` (stale `__session` cookies from an older config).
 
 After deploy, verify:
 
 ```bash
 npm run smoke:clerk-proxy
-# or: ./scripts/production-clerk-proxy-smoke.sh https://visual-era.vercel.app
 ```
 
-This fails when `/sign-in` HTML contains `data-clerk-proxy-url="/__clerk"` or `"proxyUrl":"/__clerk"`.
+This fails if Clerk JS loads from `clerk.visual-era.vercel.app` (CORS/SSL) instead of `/__clerk/npm/...`.
 
 **Required on Vercel (Production + Preview):**
 
