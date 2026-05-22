@@ -18,20 +18,38 @@ Optional later: require human approval (`required_approving_review_count: 1`) in
 |------|---------|
 | Start task (default) | `./scripts/start-agent-task.sh cursor <feature-slug>` |
 | Optional Codex worker | `./scripts/start-agent-task.sh codex <feature-slug>` — only when Cursor delegates |
-| Before commit / PR | `./scripts/agent-status.sh` (use `--pre-pr` before opening PR) |
-| Open PR (+ auto-merge) | `./scripts/open-agent-pr.sh "[cursor] short summary"` |
-| Sync local `main` | `./scripts/sync-main.sh` |
+| Fast local check | `./scripts/agent-quick-check.sh` (lint + typecheck, no build) |
+| Before PR (optional) | `./scripts/agent-status.sh --pre-pr` |
+| Finish task (fast) | `./scripts/agent-finish.sh "[cursor] short summary"` — push + PR, no wait |
+| Open PR (+ auto-merge) | `./scripts/open-agent-pr.sh "[cursor] …"` (exits immediately by default) |
+| Wait for merge | `./scripts/open-agent-pr.sh "[cursor] …" --wait` |
+| Sync local `main` | `./scripts/sync-main.sh` (next task start syncs automatically) |
 | Manual merge (fallback) | `./scripts/merge-agent-pr.sh <PR_NUMBER>` |
 
 **Never:** work on `main`, push to `main`, bypass protection (`--admin`, `--force`), or force-merge.
 
+### Fast workflow (default)
+
+Optimize for **short agent turns**, not blocking on GitHub:
+
+| Step | Fast command | Why |
+|------|----------------|-----|
+| Start | `./scripts/start-agent-task.sh cursor <feature>` | Quiet sync of `main` |
+| While coding | `./scripts/agent-quick-check.sh` | Parallel lint + typecheck (~seconds), skip local `npm run build` |
+| Ship | `./scripts/agent-finish.sh "[cursor] …"` | Push + PR + auto-merge, **exit immediately** |
+| Next task | `start-agent-task` syncs `main` | Picks up merged work |
+
+**CI runs once per PR** (not on every push to `agent-*`). Open the PR when the branch is ready — avoid pushing 5 times before `agent-finish`.
+
+**CI tiers:** docs-only (~15s) → config/scripts (lint + typecheck, no build) → app code (full build).
+
 ### Auto-merge (default)
 
-Commit + push + PR means merge approval is implied. `open-agent-pr.sh` enables `gh pr merge --auto --squash --delete-branch` **immediately** after the PR is created. GitHub merges when required checks pass. Cursor must **not** ask you to manually merge each PR.
+`open-agent-pr.sh` / `agent-finish.sh` enable auto-merge and **return immediately** (no 2-minute poll). GitHub merges when **CI checks** pass.
 
-- **Wait time:** script polls up to **120s** (override with `MERGE_WAIT_TIMEOUT=300`), then exits cleanly while auto-merge continues on GitHub.
-- **Checks:** script prints pending/passed checks via `gh pr checks`; Vercel preview and PR summary are **not** required for merge.
-- **Sync:** if merge finishes within the wait window, `sync-main.sh` runs automatically; otherwise sync at the next task start.
+- **Optional wait:** `--wait` or `MERGE_WAIT_TIMEOUT=120` to poll and sync `main`.
+- **Vercel preview** and PR summary bot are **not** required for merge.
+- Cursor must **not** ask you to manually merge each PR.
 
 ### Sync local `main` (automatic)
 
@@ -175,9 +193,11 @@ Legacy `cursor:` / `codex:` prefixes are acceptable but prefer `[cursor]` / `[co
 | Action | Command |
 |--------|---------|
 | Start task (default) | `./scripts/start-agent-task.sh cursor <feature>` |
-| Start Codex (optional) | `./scripts/start-agent-task.sh codex <feature>` — Cursor delegates only |
+| Quick check | `./scripts/agent-quick-check.sh` |
+| Finish (push + PR) | `./scripts/agent-finish.sh "[cursor] short title"` |
+| Open PR only | `./scripts/open-agent-pr.sh "[cursor] short title"` |
+| Wait for merge | `open-agent-pr.sh "…" --wait` |
 | Agent status | `./scripts/agent-status.sh` |
-| Open PR (auto-merge on) | `./scripts/open-agent-pr.sh "[cursor] short title"` |
 | Sync `main` | `./scripts/sync-main.sh` |
 | Manual merge (fallback) | `./scripts/merge-agent-pr.sh <PR_NUMBER>` |
 | Install local main guard | `./scripts/install-git-hooks.sh` |

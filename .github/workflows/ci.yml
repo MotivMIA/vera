@@ -1,56 +1,25 @@
 # Required status check for branch protection: "CI checks"
-# Fast path for docs-only PRs; full lint/typecheck/build for code changes.
+# Runs on pull_request only (not every agent push) for faster iteration.
+# Fast paths: docs-only (~15s), config/scripts-only (lint+typecheck, no build).
 
 name: CI
 
 on:
   pull_request:
     branches: [main]
-  push:
-    branches:
-      - "agent-**"
-      - "codex"
-      - "cursor"
 
 concurrency:
-  group: ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  group: ci-${{ github.event.pull_request.number }}
   cancel-in-progress: true
 
 permissions:
   contents: read
 
 jobs:
-  changes:
-    name: Detect changes
-    runs-on: ubuntu-latest
-    timeout-minutes: 3
-    outputs:
-      docs_only: ${{ steps.filter.outputs.docs_only }}
-      code: ${{ steps.filter.outputs.code }}
-    steps:
-      - uses: actions/checkout@v4
-      - uses: dorny/paths-filter@v3
-        id: filter
-        with:
-          filters: |
-            docs_only:
-              - "docs/**"
-              - "**/*.md"
-              - "AGENTS.md"
-              - ".github/**/*.md"
-            code:
-              - "**"
-              - "!docs/**"
-              - "!**/*.md"
-              - "!AGENTS.md"
-              - "!.github/**/*.md"
-
   ci:
     name: CI checks
-    needs: changes
     runs-on: ubuntu-latest
     timeout-minutes: 12
-    if: needs.changes.outputs.code == 'true' || needs.changes.outputs.docs_only != 'true'
 
     env:
       NEXT_PUBLIC_SITE_URL: https://visual-era.vercel.app
@@ -67,16 +36,50 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
+      - name: Detect change scope
+        uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            docs_only:
+              - "docs/**"
+              - "**/*.md"
+              - "AGENTS.md"
+            config_only:
+              - ".github/**"
+              - "scripts/**"
+            code:
+              - "app/**"
+              - "components/**"
+              - "lib/**"
+              - "middleware.ts"
+              - "package.json"
+              - "package-lock.json"
+              - "next.config.*"
+              - "tsconfig.json"
+              - "postcss.config.*"
+              - "tailwind.config.*"
+              - "public/**"
+
+      - name: Docs-only (skip build)
+        if: steps.filter.outputs.docs_only == 'true'
+        run: |
+          echo "::notice::Docs/markdown only — skipping install, lint, and build."
+          echo "Required check satisfied for documentation updates."
+
       - name: Setup Node.js
+        if: steps.filter.outputs.docs_only != 'true'
         uses: actions/setup-node@v4
         with:
           node-version: "20"
           cache: npm
 
       - name: Install dependencies
+        if: steps.filter.outputs.docs_only != 'true'
         run: npm ci
 
       - name: Lint and typecheck
+        if: steps.filter.outputs.docs_only != 'true'
         run: |
           npm run lint &
           pid_lint=$!
@@ -86,32 +89,23 @@ jobs:
           wait "$pid_type"
 
       - name: Tests
+        if: steps.filter.outputs.docs_only != 'true' && steps.filter.outputs.code == 'true'
         run: |
           if node -e "const p=require('./package.json'); process.exit(p.scripts&&p.scripts.test?0:1)"; then
-            echo "Running npm test..."
             npm test
           else
-            echo "::notice::No test script in package.json — skipping tests."
+            echo "::notice::No test script — skipping."
           fi
 
       - name: Production build
+        if: steps.filter.outputs.docs_only != 'true' && steps.filter.outputs.code == 'true'
         run: npm run build
 
+      - name: Config-only notice
+        if: steps.filter.outputs.docs_only != 'true' && steps.filter.outputs.code != 'true'
+        run: echo "::notice::Workflow/scripts only — skipped production build."
+
       - name: Security audit (advisory)
-        run: |
-          echo "Running npm audit (high severity and above)..."
-          npm audit --audit-level=high || echo "::warning::npm audit reported high+ issues — review when convenient."
+        if: steps.filter.outputs.docs_only != 'true' && steps.filter.outputs.code == 'true'
+        run: npm audit --audit-level=high || echo "::warning::npm audit reported high+ issues."
         continue-on-error: true
-
-  docs-only:
-    name: CI checks
-    needs: changes
-    runs-on: ubuntu-latest
-    timeout-minutes: 3
-    if: needs.changes.outputs.docs_only == 'true'
-
-    steps:
-      - name: Docs-only change
-        run: |
-          echo "::notice::Docs/markdown only — skipping lint, typecheck, and build."
-          echo "Required check satisfied for documentation updates."

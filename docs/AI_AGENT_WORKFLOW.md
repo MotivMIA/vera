@@ -127,8 +127,8 @@ flowchart TD
 3. Codex: `[codex]` commits only on its branch.
 4. Cursor reviews; optional `agent-cursor-*` follow-up.
 5. `./scripts/open-agent-pr.sh "[cursor|codex] summary"` → auto-merge when green.
-6. `open-agent-pr.sh` enables auto-merge immediately; waits up to **120s** for merge, then exits while GitHub finishes checks.
-7. `./scripts/sync-main.sh` when merge completed in time (or at next task start).
+6. `./scripts/agent-finish.sh` or `open-agent-pr.sh` enables auto-merge and **exits immediately** (use `--wait` to poll).
+7. `./scripts/sync-main.sh` at next task start (or `--wait` after merge).
 8. No direct `main` pushes; no `--admin`.
 
 ### Sync local `main`
@@ -151,14 +151,14 @@ flowchart TD
 - At the start of the next Cursor task if merge completed earlier
 - After manual `merge-agent-pr.sh`
 
-If auto-merge is still pending after the short wait (default 120s):
+Default: no wait — merge finishes on GitHub in the background.
 
 ```text
-Auto-merge will complete on GitHub when CI checks pass.
-Later: ./scripts/sync-main.sh or sync at the next task start.
+./scripts/agent-finish.sh "[cursor] summary"
+# → PR opened, auto-merge ON, agent returns in seconds
 ```
 
-Override wait: `MERGE_WAIT_TIMEOUT=300 ./scripts/open-agent-pr.sh "…"`
+Optional: `./scripts/open-agent-pr.sh "…" --wait` polls up to 120s and may sync `main`.
 
 ## Starting work
 
@@ -214,7 +214,7 @@ gh pr merge <PR> --auto --squash --delete-branch
 | Behavior | Detail |
 |----------|--------|
 | Merge timing | After **CI checks** pass on GitHub (not when the script exits) |
-| Script wait | Default **120s** poll; then exit — merge continues on GitHub |
+| Script wait | Default **0s** — exit immediately; merge continues on GitHub |
 | Method | Squash merge only |
 | Branch | Head branch deleted after merge |
 | Protection | No `--admin`, no force merge, no direct push to `main` |

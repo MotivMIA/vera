@@ -5,7 +5,8 @@ name: PR summary
 
 on:
   pull_request:
-    types: [opened, synchronize, reopened]
+    # opened/reopened only — skip re-comment on every push (faster agent iteration)
+    types: [opened, reopened]
     branches: [main]
 
 permissions:
