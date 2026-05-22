@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# Block pushes that update main/master on the remote.
+set -euo pipefail
+
+protected_regex='refs/heads/(main|master)$'
+
+while read -r local_ref local_sha remote_ref remote_sha; do
+  if [[ "$remote_ref" =~ $protected_regex ]]; then
+    echo "pre-push: refusing push to protected branch ($remote_ref)." >&2
+    echo "Use an agent branch and open a PR: ./scripts/open-agent-pr.sh" >&2
+    exit 1
+  fi
+done
+
+exit 0

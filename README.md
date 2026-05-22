@@ -89,12 +89,15 @@ Run `SUPABASE_SCHEMA.md` in the Supabase SQL editor. The schema includes:
 Server-side writes use `SUPABASE_SERVICE_ROLE_KEY`. Keep RLS enabled and avoid exposing sensitive metadata to browser clients.  
 Signed documents are stored in a private Supabase Storage bucket named `signed-documents`; file paths are stored in `signed_documents.provider_document_id`.
 
-## CI/CD and branches
+## AI agents & CI/CD
 
-- **`main`** is protected: merge only via pull request after **CI checks** pass (lint, typecheck, build).
-- Agents and features use branches: `agent-[name]-[feature]` (see [docs/CI_CD.md](docs/CI_CD.md)).
-- Create a branch: `./scripts/agent-branch.sh cursor my-feature`
-- One-time GitHub setup: `./scripts/setup-github-branch-protection.sh` (requires `gh` and repo admin).
+- Read **[AGENTS.md](AGENTS.md)** first (Cursor supervisor, Codex worker).
+- Playbook: [docs/AI_AGENT_WORKFLOW.md](docs/AI_AGENT_WORKFLOW.md)
+- **`main`** is protected: PR only, **CI checks** + branch naming required.
+- Start task: `./scripts/start-agent-task.sh cursor|codex <feature>`
+- Open PR: `./scripts/open-agent-pr.sh "[cursor] title"`
+- Status: `./scripts/agent-status.sh`
+- Local guard: `./scripts/install-git-hooks.sh`
 
 ## Deployment
 

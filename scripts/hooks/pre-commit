@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# Block commits when HEAD is on main/master.
+set -euo pipefail
+
+branch="$(git rev-parse --abbrev-ref HEAD 2>/dev/null || true)"
+
+case "$branch" in
+  main|master)
+    echo "pre-commit: refusing commit on protected branch '$branch'." >&2
+    echo "Create a task branch: ./scripts/start-agent-task.sh cursor <feature>" >&2
+    exit 1
+    ;;
+esac
+
+exit 0

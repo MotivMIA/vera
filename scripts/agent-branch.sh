@@ -24,6 +24,7 @@ git pull --ff-only origin main
 git checkout -b "$BRANCH"
 
 echo "On branch: $BRANCH"
-echo "Commit with: ${AGENT}: <description>"
+echo "Commit with: [${AGENT}] <description>"
 echo "Push with:   git push -u origin $BRANCH"
-echo "Open PR:     gh pr create --base main --head $BRANCH"
+echo "Status:      ./scripts/agent-status.sh"
+echo "Open PR:     ./scripts/open-agent-pr.sh \"[${AGENT}] <description>\""
