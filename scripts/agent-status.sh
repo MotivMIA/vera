@@ -1,10 +1,16 @@
 #!/usr/bin/env bash
 # Show current agent branch status and safety checks.
+# Usage: ./scripts/agent-status.sh [--pre-pr]
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 # shellcheck source=lib/agent-git.sh
 source "$SCRIPT_DIR/lib/agent-git.sh"
+
+PRE_PR=0
+if [[ "${1:-}" == "--pre-pr" ]]; then
+  PRE_PR=1
+fi
 
 cd "$AGENT_GIT_ROOT"
 
@@ -32,7 +38,7 @@ else
 fi
 
 if git status --porcelain | grep -q .; then
-  echo "Uncommitted changes:"
+  echo "Working tree: uncommitted changes"
   git status --short
 else
   echo "Working tree: clean"
@@ -48,6 +54,27 @@ else
 fi
 echo ""
 
+CHANGED="$(changed_files_vs_main)"
+if [[ -n "$CHANGED" ]]; then
+  echo "Files changed vs main:"
+  echo "$CHANGED" | head -25
+  count="$(echo "$CHANGED" | grep -c . || true)"
+  if [[ "$count" -gt 25 ]]; then
+    echo "… ($count files total)"
+  fi
+  echo ""
+  if report_cursor_owned_files; then
+    if [[ "$AGENT" == "codex" && "$PRE_PR" -eq 1 ]]; then
+      echo "error: Codex PR touches Cursor-owned paths — Cursor must review before merge." >&2
+      exit 1
+    fi
+    echo ""
+  fi
+else
+  echo "Files changed vs main: (none or origin/main not available — fetch origin)"
+  echo ""
+fi
+
 echo "Recent commits (this branch vs main):"
 git log --oneline origin/main..HEAD 2>/dev/null | head -8 || git log --oneline -5
 echo ""
@@ -56,7 +83,9 @@ if command -v gh >/dev/null 2>&1; then
   PR_URL="$(gh pr view --json url -q .url 2>/dev/null || true)"
   if [[ -n "$PR_URL" ]]; then
     echo "Open PR: $PR_URL"
-    gh pr checks 2>/dev/null | head -10 || true
+    echo ""
+    echo "Checks:"
+    gh pr checks 2>/dev/null | head -15 || echo "  (pending or unavailable)"
   else
     echo "No PR for this branch. Open with:"
     echo "  ./scripts/open-agent-pr.sh \"[${AGENT}] summary\""

@@ -78,6 +78,21 @@ Cursor prints: `Classification: <class> — <one-line reason>`.
 - Payments, major architecture, legal/compliance, Vercel/production config
 - Vague tasks — Cursor plans first
 
+### Ownership locking
+
+| Cursor-owned | Codex-safe |
+|--------------|------------|
+| Architecture, routing, `middleware.ts` | Scoped components |
+| Auth, security, Clerk, Supabase service wiring | Tests, utilities |
+| `app/api/*`, `lib/env.ts`, `lib/didit.ts`, `lib/clerk-proxy.ts` | Docs cleanup (non-deploy) |
+| Migrations / schema | Repetitive refactors |
+| Vercel, env vars, production settings | Bug fixes with a clear plan |
+| `.github/workflows/`, protection scripts | |
+
+**Enforcement:** `./scripts/agent-status.sh --pre-pr` lists Cursor-owned paths. **Codex** PRs that touch them fail before `open-agent-pr.sh` continues. Cursor reviews all Codex PRs before merge.
+
+**Conflict prevention:** clean tree → `start-agent-task.sh` → one writer per branch → `agent-status.sh --pre-pr` before PR.
+
 ### Decision table
 
 | Task type | Owner |
@@ -112,8 +127,9 @@ flowchart TD
 3. Codex: `[codex]` commits only on its branch.
 4. Cursor reviews; optional `agent-cursor-*` follow-up.
 5. `./scripts/open-agent-pr.sh "[cursor|codex] summary"` → auto-merge when green.
-6. Poll for merge → `./scripts/sync-main.sh` (or sync at next task start).
-7. No direct `main` pushes; no `--admin`.
+6. `open-agent-pr.sh` enables auto-merge immediately; waits up to **120s** for merge, then exits while GitHub finishes checks.
+7. `./scripts/sync-main.sh` when merge completed in time (or at next task start).
+8. No direct `main` pushes; no `--admin`.
 
 ### Sync local `main`
 
@@ -135,11 +151,14 @@ flowchart TD
 - At the start of the next Cursor task if merge completed earlier
 - After manual `merge-agent-pr.sh`
 
-If auto-merge is still pending after timeout:
+If auto-merge is still pending after the short wait (default 120s):
 
 ```text
-Auto-merge is pending. Later, run ./scripts/sync-main.sh or ask Cursor to sync main.
+Auto-merge will complete on GitHub when CI checks pass.
+Later: ./scripts/sync-main.sh or sync at the next task start.
 ```
+
+Override wait: `MERGE_WAIT_TIMEOUT=300 ./scripts/open-agent-pr.sh "…"`
 
 ## Starting work
 
@@ -186,7 +205,7 @@ Cursor runs `./scripts/agent-status.sh`, reviews the diff, then opens the PR.
 
 ## Auto-merge (default)
 
-`./scripts/open-agent-pr.sh` creates the PR and runs:
+`./scripts/open-agent-pr.sh` creates the PR, enables auto-merge **immediately**, prints check status, and waits briefly:
 
 ```bash
 gh pr merge <PR> --auto --squash --delete-branch
@@ -194,14 +213,17 @@ gh pr merge <PR> --auto --squash --delete-branch
 
 | Behavior | Detail |
 |----------|--------|
-| Merge timing | After required checks pass (CI checks, etc.) |
+| Merge timing | After **CI checks** pass on GitHub (not when the script exits) |
+| Script wait | Default **120s** poll; then exit — merge continues on GitHub |
 | Method | Squash merge only |
 | Branch | Head branch deleted after merge |
 | Protection | No `--admin`, no force merge, no direct push to `main` |
 | Draft PRs | Auto-merge skipped; enable after marking ready |
-| Repo setting | **Allow auto-merge** must be on (GitHub → Settings → General). `open-agent-pr.sh` enables it via API when admin. |
+| Repo setting | **Allow auto-merge** must be on. `open-agent-pr.sh` enables via API when admin. |
 
-Cursor reports **PR link**, **check status**, and **auto-merge status** — do not ask for manual merge each time.
+**End-of-task report** (printed by script): branch, commit, PR URL, checks, auto-merge yes/no, local `main` sync, manual step if any.
+
+Cursor does not ask for routine manual merges.
 
 ### Manual merge fallback
 
@@ -243,12 +265,12 @@ Templates live in `scripts/hooks/`.
 
 ### CI steps
 
-1. `npm ci`
-2. `npm run lint`
-3. `npm run typecheck`
-4. `npm test` — **skipped** with notice if no `test` script in `package.json`
-5. `npm run build`
-6. `npm audit --audit-level=high` — warning only (`continue-on-error`)
+| Path | What runs |
+|------|-----------|
+| Code changes | `npm ci` (cached) → lint + typecheck **in parallel** → tests (if script exists) → build → advisory audit |
+| Docs/markdown only | Fast **CI checks** job (~30s), skips lint/build |
+
+**Required for merge:** job named **CI checks** only. Branch naming is a separate required check. PR summary and Vercel are optional for speed.
 
 ### Optional AI PR summary
 

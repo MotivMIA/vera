@@ -17,8 +17,11 @@ FEATURE_SLUG="$(echo "$FEATURE" | tr '[:upper:]' '[:lower:]' | tr ' _' '-')"
 BRANCH="agent-${AGENT}-${FEATURE_SLUG}"
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+# shellcheck source=lib/agent-git.sh
+source "$SCRIPT_DIR/lib/agent-git.sh"
 cd "$ROOT"
 
+assert_clean_worktree_or_exit
 "$SCRIPT_DIR/sync-main.sh"
 git checkout -b "$BRANCH"
 
