@@ -12,6 +12,8 @@ const isProtectedRoute = createRouteMatcher([
   "/api/documents/status(.*)",
   "/api/documents/submit(.*)",
   "/api/jotform/session(.*)",
+  "/api/onboarding/consent(.*)",
+  "/api/onboarding/status(.*)",
 ]);
 
 function collectAuthorizedParties(): string[] {

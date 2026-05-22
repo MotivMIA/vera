@@ -70,7 +70,7 @@ export function DiditEmbed() {
         const response = await fetch("/api/didit/start", {
           method: "POST",
           headers: { "content-type": "application/json" },
-          body: JSON.stringify({ consentsAccepted: true }),
+          body: JSON.stringify({}),
         });
 
         const data = (await response.json()) as {

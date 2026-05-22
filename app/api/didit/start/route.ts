@@ -1,19 +1,15 @@
 import { auth } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
-import { z } from "zod";
 import { createDiditSession, getMissingDiditEnvKeys } from "@/lib/didit";
 import { recordAuditLog } from "@/lib/onboarding/audit";
 import { rateLimit } from "@/lib/rate-limit";
 import { createSecureToken, getClientIp, hashToken } from "@/lib/security";
 import { getSupabaseAdmin } from "@/lib/supabase/server";
 import { getSiteUrl } from "@/lib/env";
+import { hasConsentAccepted } from "@/lib/onboarding/status";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-
-const startSchema = z.object({
-  consentsAccepted: z.literal(true).optional(),
-});
 
 export async function POST(request: NextRequest) {
   const authState = await auth().catch(() => ({ userId: null }));
@@ -28,9 +24,11 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: "Too many attempts. Please wait and try again." }, { status: 429 });
   }
 
-  const body = startSchema.safeParse(await request.json().catch(() => null));
-  if (!body.success) {
-    return NextResponse.json({ error: "Required consents must be accepted." }, { status: 400 });
+  if (!(await hasConsentAccepted(userId))) {
+    return NextResponse.json(
+      { error: "Complete consent and disclosures before starting verification." },
+      { status: 403 },
+    );
   }
 
   const missingDiditVars = getMissingDiditEnvKeys();
@@ -63,9 +61,6 @@ export async function POST(request: NextRequest) {
     await supabase.from("onboarding_status").upsert({
       clerk_user_id: userId,
       current_step: "identity",
-      terms_accepted_at: new Date().toISOString(),
-      privacy_accepted_at: new Date().toISOString(),
-      esign_accepted_at: new Date().toISOString(),
       updated_at: new Date().toISOString(),
     });
 

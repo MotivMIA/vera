@@ -1,14 +1,18 @@
 import { DocumentsStepIndicators } from "@/components/onboarding/documents-step-indicators";
 import { InternalSigningPacket } from "@/components/onboarding/internal-signing-packet";
 import { OnboardingShell } from "@/components/onboarding/onboarding-shell";
+import { ONBOARDING_STEP_PROGRESS, stepLabel } from "@/lib/onboarding/constants";
+import { enforceOnboardingPath } from "@/lib/onboarding/guards";
 
-export default function DocumentsPage() {
+export default async function DocumentsPage() {
+  await enforceOnboardingPath("/documents");
+
   return (
     <OnboardingShell
-      eyebrow="Step 2 of 3"
+      eyebrow={stepLabel("documents")}
       title="Sign your creator agreements"
       description="Complete both internal agreements below. Your signatures are captured in-app and stored with an auditable timestamp."
-      progress={67}
+      progress={ONBOARDING_STEP_PROGRESS.documents}
       asideExtra={<DocumentsStepIndicators />}
     >
       <InternalSigningPacket />

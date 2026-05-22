@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { Sparkles } from "lucide-react";
 import { AuthCard } from "@/components/marketing/auth-card";
+import { SiteFooter } from "@/components/marketing/site-footer";
 import { Badge } from "@/components/ui/badge";
 
 export function HomeHero() {
@@ -34,6 +35,7 @@ export function HomeHero() {
           </motion.div>
         </section>
       </div>
+      <SiteFooter />
     </main>
   );
 }

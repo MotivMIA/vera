@@ -5,7 +5,18 @@ const optionalUrl = z.preprocess((value) => {
   return value;
 }, z.string().url().optional());
 
+const productionRequiredKeys = [
+  "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY",
+  "CLERK_SECRET_KEY",
+  "NEXT_PUBLIC_SITE_URL",
+  "NEXT_PUBLIC_SUPABASE_URL",
+  "NEXT_PUBLIC_SUPABASE_ANON_KEY",
+  "SUPABASE_SERVICE_ROLE_KEY",
+] as const;
+
 const serverEnvSchema = z.object({
+  NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: z.string().optional(),
+  CLERK_SECRET_KEY: z.string().optional(),
   NEXT_PUBLIC_SITE_URL: optionalUrl,
   NEXT_PUBLIC_SUPABASE_URL: optionalUrl,
   NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().optional(),
@@ -35,6 +46,17 @@ function toOrigin(value?: string | null) {
   } catch {
     return null;
   }
+}
+
+export function validateProductionEnv() {
+  if (process.env.NODE_ENV !== "production") return;
+
+  const missing = productionRequiredKeys.filter((key) => !process.env[key]?.trim());
+  if (missing.length > 0) {
+    throw new Error(`Missing required production environment variables: ${missing.join(", ")}`);
+  }
+
+  getServerEnv();
 }
 
 export function getSiteUrl(preferredOrigin?: string | null) {
