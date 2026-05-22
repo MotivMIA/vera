@@ -10,7 +10,7 @@ Read this file first. It defines how **Cursor** (supervisor/orchestrator) and **
 4. **One writer per branch** — do not let Cursor and Codex edit the same branch concurrently.
 5. **Do not bypass CI** — no force-merge, no admin bypass for agent work.
 
-Optional later: require human approval (`required_approving_review_count: 1`) in branch protection.
+Human approval required: **1 approving review** on every PR to `main` (enforced via branch protection).
 
 ## Roles
 
