@@ -29,20 +29,6 @@ export function HomeHero() {
         </section>
 
         <section className="relative flex items-center justify-center pb-8 lg:pb-0">
-          <motion.div
-            aria-hidden="true"
-            initial={{ opacity: 0, x: 40, y: -20 }}
-            animate={{ opacity: 1, x: 0, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.25 }}
-            className="absolute right-0 top-10 hidden w-64 rounded-2xl border border-white/10 bg-white/[0.06] p-4 shadow-2xl backdrop-blur-xl xl:block"
-          >
-            <div className="mb-4 h-2 w-24 rounded-full bg-white/15" />
-            <div className="space-y-2">
-              <div className="h-2 rounded-full bg-accent/60" />
-              <div className="h-2 w-4/5 rounded-full bg-white/15" />
-              <div className="h-2 w-2/3 rounded-full bg-white/10" />
-            </div>
-          </motion.div>
           <motion.div initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.55 }}>
             <AuthCard />
           </motion.div>

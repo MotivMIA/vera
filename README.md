@@ -28,12 +28,25 @@ cp .env.example .env.local
 ```
 
 3. Add Clerk, Supabase, and DIDIT credentials.
+   - Keep `.env.local` set to local values, especially:
+     - `NEXT_PUBLIC_SITE_URL=http://localhost:3001`
+   - In Vercel, set production values separately (for example `https://visual-era.vercel.app`).
+   - Do not copy production URLs back into `.env.local`.
 
 4. Run the app:
 
 ```bash
 npm run dev
 ```
+
+## Local + Production without code changes
+
+- Local callbacks and packet URLs now use the active request origin automatically.
+- Production callbacks and packet URLs use your deployed Vercel origin.
+- In Clerk, allow both local and production origins/redirect URLs:
+  - `http://localhost:3001`
+  - `http://localhost:3000` (optional if you use this port)
+  - `https://visual-era.vercel.app`
 
 ## Required Routes
 

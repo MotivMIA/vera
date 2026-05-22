@@ -13,6 +13,7 @@ type SigningPacketInput = {
   userId: string;
   email?: string | null;
   name?: string | null;
+  siteUrl?: string | null;
 };
 
 function appendSharedParams(urlString: string, input: SigningPacketInput) {
@@ -26,7 +27,7 @@ function appendSharedParams(urlString: string, input: SigningPacketInput) {
 
 export function buildSigningPacket(input: SigningPacketInput) {
   const env = getServerEnv();
-  const siteUrl = getSiteUrl();
+  const siteUrl = getSiteUrl(input.siteUrl);
 
   const docs: SigningDocument[] = [
     {

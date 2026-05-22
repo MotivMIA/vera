@@ -1,4 +1,5 @@
 import { auth, currentUser } from "@clerk/nextjs/server";
+import { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { buildSigningPacket } from "@/lib/jotform";
 import { recordAuditLog } from "@/lib/onboarding/audit";
@@ -8,7 +9,7 @@ import { getSupabaseAdmin } from "@/lib/supabase/server";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-export async function POST() {
+export async function POST(request: NextRequest) {
   const authState = await auth().catch(() => ({ userId: process.env.NODE_ENV === "development" ? "local-preview-user" : null }));
   const userId = authState.userId;
   if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -41,6 +42,7 @@ export async function POST() {
     userId,
     email: user?.primaryEmailAddress?.emailAddress ?? null,
     name: user?.fullName ?? null,
+    siteUrl: request.nextUrl.origin,
   });
 
   return NextResponse.json(packet);

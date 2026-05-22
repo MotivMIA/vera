@@ -1,5 +1,6 @@
-import { SignUp } from "@clerk/nextjs";
+import { ClerkLoaded, ClerkLoading, SignUp } from "@clerk/nextjs";
 import Link from "next/link";
+import { LoaderCircle } from "lucide-react";
 
 export default function SignUpPage() {
   return (
@@ -8,7 +9,14 @@ export default function SignUpPage() {
         <Link href="/" className="block text-center text-sm font-medium text-muted-foreground hover:text-foreground">
           Visual Era
         </Link>
-        <SignUp routing="path" path="/sign-up" signInUrl="/sign-in" fallbackRedirectUrl="/verify-identity" />
+        <ClerkLoading>
+          <div className="flex min-h-[520px] items-center justify-center">
+            <LoaderCircle className="size-8 animate-spin text-accent" />
+          </div>
+        </ClerkLoading>
+        <ClerkLoaded>
+          <SignUp routing="path" path="/sign-up" signInUrl="/sign-in" fallbackRedirectUrl="/verify-identity" />
+        </ClerkLoaded>
       </div>
     </main>
   );

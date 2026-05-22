@@ -64,6 +64,10 @@ export function getDiditConfig() {
   };
 }
 
+export function getMissingDiditEnvKeys() {
+  return ["DIDIT_API_KEY", "DIDIT_WORKFLOW_ID"].filter((key) => !process.env[key]);
+}
+
 export async function fetchDiditWebhookSecrets() {
   const config = getDiditConfig();
   if (!config.apiKey) return [];
@@ -95,15 +99,9 @@ export async function fetchDiditWebhookSecrets() {
 
 export async function createDiditSession(input: CreateDiditSessionInput) {
   const config = getDiditConfig();
-  if (!config.configured || !config.apiKey || !config.workflowId) {
-    return {
-      live: false,
-      sessionId: crypto.randomUUID(),
-      embedUrl: null,
-      sessionToken: null,
-      providerStatus: "Not Started" as DiditProviderStatus,
-      metadata: serializeDiditMetadata({ mode: "mock", rawStatus: "Not Started" }),
-    };
+  const missing = getMissingDiditEnvKeys();
+  if (!config.configured || missing.length > 0) {
+    throw new Error(`DIDIT is not configured. Missing: ${missing.join(", ")}.`);
   }
 
   let response: Response;
@@ -112,7 +110,7 @@ export async function createDiditSession(input: CreateDiditSessionInput) {
       method: "POST",
       headers: {
         "content-type": "application/json",
-        "x-api-key": config.apiKey,
+        "x-api-key": config.apiKey!,
       },
       body: JSON.stringify({
         workflow_id: config.workflowId,
@@ -121,15 +119,9 @@ export async function createDiditSession(input: CreateDiditSessionInput) {
       }),
       cache: "no-store",
     });
-  } catch {
-    return {
-      live: false,
-      sessionId: crypto.randomUUID(),
-      embedUrl: null,
-      sessionToken: null,
-      providerStatus: "Not Started" as DiditProviderStatus,
-      metadata: serializeDiditMetadata({ mode: "mock", rawStatus: "Not Started" }),
-    };
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Unknown network error";
+    throw new Error(`Unable to reach DIDIT API: ${message}`);
   }
 
   if (!response.ok) {
@@ -138,6 +130,9 @@ export async function createDiditSession(input: CreateDiditSessionInput) {
   }
 
   const data = (await response.json()) as CreateDiditSessionResponse;
+  if (!data.url) {
+    throw new Error("DIDIT session response did not include a verification URL.");
+  }
 
   return {
     live: true,
@@ -212,7 +207,6 @@ function sortObjectKeys(value: unknown): unknown {
   return value;
 }
 
-// DIDIT V3 signature v2 canonicalization: shorten float-looking values then sort keys recursively.
 function shortenFloats(value: unknown): unknown {
   if (Array.isArray(value)) return value.map(shortenFloats);
   if (value && typeof value === "object") {

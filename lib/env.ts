@@ -28,6 +28,22 @@ export function getServerEnv() {
   return serverEnvSchema.parse(process.env);
 }
 
-export function getSiteUrl() {
-  return process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
+function toOrigin(value?: string | null) {
+  if (!value) return null;
+  try {
+    return new URL(value).origin;
+  } catch {
+    return null;
+  }
+}
+
+export function getSiteUrl(preferredOrigin?: string | null) {
+  const requestOrigin = toOrigin(preferredOrigin);
+  if (requestOrigin) return requestOrigin;
+
+  const configuredSiteUrl = toOrigin(process.env.NEXT_PUBLIC_SITE_URL);
+  if (configuredSiteUrl) return configuredSiteUrl;
+
+  if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
+  return "http://localhost:3001";
 }

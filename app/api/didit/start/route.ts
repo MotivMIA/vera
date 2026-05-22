@@ -1,7 +1,7 @@
 import { auth } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
-import { createDiditSession } from "@/lib/didit";
+import { createDiditSession, getMissingDiditEnvKeys } from "@/lib/didit";
 import { recordAuditLog } from "@/lib/onboarding/audit";
 import { rateLimit } from "@/lib/rate-limit";
 import { createSecureToken, getClientIp, hashToken } from "@/lib/security";
@@ -12,29 +12,50 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 const startSchema = z.object({
-  // Consent capture will ultimately live in the Clerk signup experience.
-  // For now, allow the client to omit this field (but never allow false).
   consentsAccepted: z.literal(true).optional(),
 });
 
 export async function POST(request: NextRequest) {
-  const authState = await auth().catch(() => ({ userId: process.env.NODE_ENV === "development" ? "local-preview-user" : null }));
+  const authState = await auth().catch(() => ({ userId: null }));
   const userId = authState.userId;
-  if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  if (!userId) {
+    return NextResponse.json({ error: "Unauthorized. Sign in and try again." }, { status: 401 });
+  }
 
   const ip = getClientIp(request);
   const limited = rateLimit(`didit:start:${userId}:${ip ?? "unknown"}`, 5, 60_000);
-  if (!limited.allowed) return NextResponse.json({ error: "Too many attempts. Please wait and try again." }, { status: 429 });
+  if (!limited.allowed) {
+    return NextResponse.json({ error: "Too many attempts. Please wait and try again." }, { status: 429 });
+  }
 
   const body = startSchema.safeParse(await request.json().catch(() => null));
-  if (!body.success) return NextResponse.json({ error: "Required consents must be accepted." }, { status: 400 });
+  if (!body.success) {
+    return NextResponse.json({ error: "Required consents must be accepted." }, { status: 400 });
+  }
+
+  const missingDiditVars = getMissingDiditEnvKeys();
+  if (missingDiditVars.length > 0) {
+    return NextResponse.json(
+      { error: `DIDIT is not configured on the server. Missing: ${missingDiditVars.join(", ")}.` },
+      { status: 500 },
+    );
+  }
+
+  const siteUrl = getSiteUrl(request.nextUrl.origin);
+  let diditSession;
+  try {
+    diditSession = await createDiditSession({
+      userId,
+      callbackUrl: `${siteUrl}/verify-identity`,
+    });
+  } catch (error) {
+    return NextResponse.json(
+      { error: error instanceof Error ? error.message : "Unable to start DIDIT verification." },
+      { status: 502 },
+    );
+  }
 
   const token = createSecureToken();
-  const siteUrl = request.nextUrl.origin || getSiteUrl();
-  const diditSession = await createDiditSession({
-    userId,
-    callbackUrl: `${siteUrl}/verify-identity`,
-  });
   const sessionId = diditSession.sessionId;
   const supabase = getSupabaseAdmin();
 
@@ -73,11 +94,9 @@ export async function POST(request: NextRequest) {
     verifyUrl.searchParams.set("diditUrl", diditSession.embedUrl);
   }
 
-  const verificationUrl = verifyUrl.toString();
-
   return NextResponse.json({
     sessionId,
-    verificationUrl,
+    verificationUrl: verifyUrl.toString(),
     diditUrl: diditSession.embedUrl,
     diditSessionToken: diditSession.sessionToken,
     live: diditSession.live,
