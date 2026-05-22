@@ -99,6 +99,7 @@ gh pr merge <PR> --auto --squash --delete-branch
 | Branch | Head branch deleted after merge |
 | Protection | No `--admin`, no force merge, no direct push to `main` |
 | Draft PRs | Auto-merge skipped; enable after marking ready |
+| Repo setting | **Allow auto-merge** must be on (GitHub → Settings → General). `open-agent-pr.sh` enables it via API when admin. |
 
 Cursor reports **PR link**, **check status**, and **auto-merge status** — do not ask for manual merge each time.
 

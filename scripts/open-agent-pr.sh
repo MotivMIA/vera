@@ -113,17 +113,32 @@ if [[ -n "$DRAFT" ]]; then
   exit 0
 fi
 
+enable_auto_merge() {
+  gh pr merge "$PR_NUMBER" --repo "$REPO" --auto --squash --delete-branch
+}
+
 echo "Enabling auto-merge (squash, delete branch when checks pass)..."
-if gh pr merge "$PR_NUMBER" --repo "$REPO" --auto --squash --delete-branch; then
-  echo ""
-  echo "Auto-merge: ENABLED"
-  echo "GitHub will squash-merge into main after required checks pass."
-  echo "Track: gh pr view $PR_NUMBER --repo $REPO"
-  echo "Checks: gh pr checks $PR_NUMBER --repo $REPO"
+if enable_auto_merge 2>"/tmp/merge-auto-err-$$.log"; then
+  :
+elif grep -q 'enablePullRequestAutoMerge' "/tmp/merge-auto-err-$$.log" 2>/dev/null; then
+  echo "Enabling allow_auto_merge on repository (one-time, requires admin)..."
+  if gh api "repos/${REPO}" -X PATCH -f allow_auto_merge=true >/dev/null 2>&1; then
+    enable_auto_merge
+  else
+    cat "/tmp/merge-auto-err-$$.log" >&2
+    echo "error: enable auto-merge in GitHub → Settings → General → Allow auto-merge" >&2
+    exit 1
+  fi
 else
-  echo ""
-  echo "warning: could not enable auto-merge. Enable manually in GitHub or run:" >&2
-  echo "  gh pr merge $PR_NUMBER --repo $REPO --auto --squash --delete-branch" >&2
+  cat "/tmp/merge-auto-err-$$.log" >&2
   echo "Fallback: ./scripts/merge-agent-pr.sh $PR_NUMBER" >&2
+  rm -f "/tmp/merge-auto-err-$$.log"
   exit 1
 fi
+rm -f "/tmp/merge-auto-err-$$.log"
+
+echo ""
+echo "Auto-merge: ENABLED"
+echo "GitHub will squash-merge into main after required checks pass."
+echo "Track: gh pr view $PR_NUMBER --repo $REPO"
+echo "Checks: gh pr checks $PR_NUMBER --repo $REPO"
