@@ -12,6 +12,33 @@ Read this file first. It defines how **Cursor** (supervisor/orchestrator) and **
 
 Optional later: require human approval (`required_approving_review_count: 1`) in branch protection.
 
+## Cursor automation (mandatory)
+
+| When | Command |
+|------|---------|
+| Start task (no branch given) | `./scripts/start-agent-task.sh cursor <feature-slug>` |
+| Assign Codex | `./scripts/start-agent-task.sh codex <feature-slug>` |
+| Before commit / PR | `./scripts/agent-status.sh` |
+| Open PR | `./scripts/open-agent-pr.sh "[cursor] short summary"` |
+| Merge PR (you confirm in terminal) | `./scripts/merge-agent-pr.sh` |
+
+**Never:** work on `main`, push to `main`, or bypass protection (`--admin`, auto-merge).
+
+### Terminal merge (Cursor + you)
+
+After a PR is open and **all checks are green**, Cursor asks:
+
+> Do you want me to run `./scripts/merge-agent-pr.sh` in the terminal?
+
+If you say **yes**:
+
+1. Cursor runs `./scripts/merge-agent-pr.sh` in the IDE terminal.
+2. The script stops at the confirmation prompt.
+3. **You** type `MERGE` in the terminal if you approve.
+4. Cursor must **not** type `MERGE`, auto-merge, use `--admin`, or bypass protections.
+
+**End of every task**, report: branch, commit hash, PR link, checks status, whether manual approval is needed.
+
 ## Roles
 
 | Role | Tool | Branch prefix | Can merge to `main`? |
@@ -34,6 +61,7 @@ CI & protection: [docs/CI_CD.md](docs/CI_CD.md)
 - **Open and maintain PRs** (`./scripts/open-agent-pr.sh`); write risk summary and rollback notes.
 - Read the **automated PR summary** comment on each PR.
 - **Do not merge** until CI checks (and Vercel, if UI) are green.
+- Offer terminal merge via `./scripts/merge-agent-pr.sh` only after checks pass and the human agrees; never type `MERGE` for them.
 - **Do not bypass** branch protection or push to `main`.
 - Coordinate with human on production deploys after merge to `main`.
 
@@ -74,6 +102,7 @@ Legacy `cursor:` / `codex:` prefixes are acceptable but prefer `[cursor]` / `[co
 | Start Codex task | `./scripts/start-agent-task.sh codex <feature>` |
 | Agent status | `./scripts/agent-status.sh` |
 | Open PR | `./scripts/open-agent-pr.sh "[cursor] short title"` |
+| Merge PR (you type `MERGE`) | `./scripts/merge-agent-pr.sh` |
 | Install local main guard | `./scripts/install-git-hooks.sh` |
 
 ---

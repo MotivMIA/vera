@@ -83,6 +83,34 @@ When done: list files changed and tests run.
 5. Cursor supervisor fills template: risks, rollback, screenshots.
 6. Merge when checks are green (human optional approval later).
 
+### Terminal merge from Cursor IDE
+
+When CI/Vercel checks are green, Cursor asks:
+
+> Do you want me to run `./scripts/merge-agent-pr.sh` in the terminal?
+
+If you approve:
+
+```bash
+./scripts/merge-agent-pr.sh          # current branch’s PR
+./scripts/merge-agent-pr.sh 5      # or explicit PR number
+```
+
+The script:
+
+1. Prints PR title, branch, URL, and `gh pr checks`
+2. Fails if any check failed
+3. Waits for you to type **`MERGE`** (exact match)
+4. Runs `gh pr merge --squash --delete-branch` (no `--admin`)
+
+Cursor must **not** type `MERGE`, auto-merge, or bypass branch protection.
+
+After merge:
+
+```bash
+git checkout main && git pull origin main
+```
+
 ## Commit messages
 
 ```text
