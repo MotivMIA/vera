@@ -27,6 +27,15 @@ You are **not** clashing because both agents are evil. Clashes happen when **two
 - **Cursor** → branch `cursor` → merge/review → PR to `main`
 - Only one PR merged at a time.
 
+### Style C — Per-feature agent branches (recommended)
+
+- **Codex** → `agent-codex-[feature]` → PR to `main`
+- **Cursor** → `agent-cursor-[feature]` → PR to `main`
+- Helper: `./scripts/agent-branch.sh cursor my-feature`
+- **Do not push directly to `main`** — GitHub Actions + branch protection enforce this.
+
+CI runs on every PR to `main` and on pushes to `agent-*`, `codex`, and `cursor`. Details: [CI_CD.md](./CI_CD.md).
+
 ## Who owns what (default)
 
 | Area | First choice |
