@@ -22,7 +22,14 @@ source "$SCRIPT_DIR/lib/agent-git.sh"
 cd "$ROOT"
 
 assert_clean_worktree_or_exit
-"$SCRIPT_DIR/sync-main.sh"
+if [[ "${SKIP_SYNC:-}" == "1" ]]; then
+  echo "SKIP_SYNC=1 — skipping sync-main (branch from current HEAD)."
+  if [[ "$(git rev-parse --abbrev-ref HEAD)" != "main" ]]; then
+    echo "warning: not on main; branch may not include latest origin/main." >&2
+  fi
+else
+  "$SCRIPT_DIR/sync-main.sh" --quiet
+fi
 git checkout -b "$BRANCH"
 
 echo "On branch: $BRANCH"

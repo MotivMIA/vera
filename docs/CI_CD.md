@@ -52,10 +52,17 @@ See [AI_AGENT_WORKFLOW.md](./AI_AGENT_WORKFLOW.md) for supervisor/worker roles a
 
 **Triggers**
 
-- Every **pull request** into `main`
-- Every **push** to `agent-*`, `codex`, or `cursor`
+- **Pull requests** into `main` only (no CI on every `agent-*` push — open the PR when ready)
 
-**Required check name for branch protection:** `CI checks` (Vercel preview is optional — do not add to required checks unless you want slower auto-merge)
+**CI tiers (single job, path-detected)**
+
+| Changes | What runs |
+|---------|-----------|
+| Docs/markdown only | Pass (~15s) |
+| `.github/`, `scripts/` only | `npm ci` + lint ∥ typecheck (no build) |
+| App code | Full lint, typecheck, build, advisory audit |
+
+**Required check name for branch protection:** `CI checks` (Vercel preview optional)
 
 ## Branch protection on `main` (enabled)
 
