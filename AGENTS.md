@@ -1,6 +1,6 @@
 # AI agents — Visual Era
 
-Read this file first. It defines how **Cursor** (supervisor/orchestrator) and **Codex** (worker) collaborate in this repo.
+Read this file first. **Cursor is the default coding agent** for this repo — it plans, implements, reviews, and opens PRs. **Codex is optional**: use it only for isolated, clearly scoped tasks when Cursor delegates. Cursor keeps **final authority** over architecture, file ownership, review, and PR creation.
 
 ## Golden rules
 
@@ -16,8 +16,8 @@ Optional later: require human approval (`required_approving_review_count: 1`) in
 
 | When | Command |
 |------|---------|
-| Start task | `./scripts/start-agent-task.sh cursor <feature-slug>` |
-| Assign Codex | `./scripts/start-agent-task.sh codex <feature-slug>` |
+| Start task (default) | `./scripts/start-agent-task.sh cursor <feature-slug>` |
+| Optional Codex worker | `./scripts/start-agent-task.sh codex <feature-slug>` — only when Cursor delegates |
 | Before commit / PR | `./scripts/agent-status.sh` (use `--pre-pr` before opening PR) |
 | Open PR (+ auto-merge) | `./scripts/open-agent-pr.sh "[cursor] short summary"` |
 | Sync local `main` | `./scripts/sync-main.sh` |
@@ -56,23 +56,24 @@ Commit + push + PR means merge approval is implied. `open-agent-pr.sh` enables `
 
 `./scripts/merge-agent-pr.sh` only if auto-merge failed — not the normal flow.
 
-### Automatic Codex delegation
+### Default agent: Cursor
 
-You describe the task in **plain English**. Cursor decides whether to work alone, pair with Codex, or send Codex first — **do not** require you to say “use Codex.”
+Unless Cursor explicitly opts into Codex help, treat every task as **Cursor work** on `agent-cursor-*`. You do **not** need to say “use Cursor” — that is the default.
 
 **Classifications** (Cursor reports briefly at task start):
 
-| Class | Meaning |
-|-------|---------|
-| **cursor-only** | Cursor plans and implements on `agent-cursor-*` |
-| **codex-assisted** | Codex implements on `agent-codex-*`; Cursor reviews and may fix on `agent-cursor-*` |
-| **codex-first** | Clear plan exists; Codex implements first; Cursor reviews before PR |
+| Class | When | Who codes |
+|-------|------|-----------|
+| **cursor-only** (default) | Normal tasks — planning, features, fixes, review, PR | Cursor on `agent-cursor-*` |
+| **codex-assisted** (optional) | Narrow scope, explicit Cursor delegation, Codex-safe paths only | Codex on `agent-codex-*`; Cursor reviews and **opens the PR** |
 
-**Cursor handles directly:** planning, architecture, reviewing Codex work, UI/UX judgment, final PR summary, risky changes, merge/auto-merge reporting.
+There is no **codex-first** default. Codex does not own the task, architecture, or merge path.
 
-**Delegate to Codex when useful:** isolated bug fixes, tests, refactors, repetitive edits, utility scripts, docs cleanup, small backend/API tasks, turning a clear plan into code.
+**Cursor always owns:** architecture, file ownership decisions, diff review, PR creation (`open-agent-pr.sh`), risk/rollback notes, auto-merge reporting, and any change to Cursor-owned paths.
 
-**Do not delegate to Codex:** secrets/auth/security-sensitive changes, database migrations, payment/billing, major architecture, legal/compliance copy, production deploy settings, anything ambiguous (plan in Cursor first).
+**Optional Codex (only when Cursor delegates):** isolated tests, utility scripts, repetitive edits, docs cleanup (non-deploy), or a **single** clearly bounded fix in Codex-safe paths — with a written brief from Cursor.
+
+**Never delegate to Codex:** secrets/auth, `middleware.ts`, env, migrations, payments, architecture, production/Vercel settings, ambiguous work, or anything touching Cursor-owned paths without Cursor implementing or reviewing on `agent-cursor-*`.
 
 ### Ownership locking (Cursor vs Codex)
 
@@ -90,64 +91,67 @@ You describe the task in **plain English**. Cursor decides whether to work alone
 
 #### Decision table
 
-| Task type | Owner |
-|-----------|--------|
+| Task type | Default owner |
+|-----------|----------------|
 | Planning / architecture | Cursor |
-| Simple implementation from clear plan | Codex |
-| Tests | Codex |
+| Implementation (features, fixes, refactors) | Cursor |
 | Review / final judgment | Cursor |
+| PR creation and auto-merge | Cursor only |
 | Security / auth / secrets | Cursor only |
-| Database migrations | Cursor only (unless you explicitly approve Codex) |
-| UI polish | Cursor |
-| Repetitive edits | Codex |
+| Database migrations | Cursor only |
+| UI polish and product judgment | Cursor |
+| Tests / utilities / repetitive edits | Cursor; Codex only if Cursor delegates |
+| Narrow Codex-safe fix with a written brief | Codex implements → Cursor reviews → Cursor opens PR |
 
-#### Delegation workflow
+#### Workflow
 
-1. You give a task → Cursor classifies (`cursor-only` \| `codex-assisted` \| `codex-first`) and states why.
-2. If Codex helps → `./scripts/start-agent-task.sh codex <feature-slug>` (Cursor creates the branch).
-3. Codex works only on that branch; commits `[codex] short summary`; pushes.
-4. Cursor reviews diff, runs checks, fixes on `agent-cursor-*` if needed.
-5. Cursor opens PR: `./scripts/open-agent-pr.sh "[cursor] …"` or `"[codex] …"` as appropriate.
+1. You describe the task → Cursor classifies (**cursor-only** unless delegation is justified).
+2. **Default:** `./scripts/start-agent-task.sh cursor <feature-slug>` → Cursor implements, commits `[cursor]`, pushes.
+3. **Optional Codex:** Cursor creates `agent-codex-*`, gives a tight brief; Codex commits `[codex]` and pushes; **does not open the PR**.
+4. Cursor reviews the diff (and patches on `agent-cursor-*` if needed).
+5. **Cursor** opens the PR: `./scripts/open-agent-pr.sh "[cursor] …"` — always, including after Codex work.
 6. Auto-merge after CI passes; never push to `main`; never `--admin`.
 
 ## Roles
 
-| Role | Tool | Branch prefix | Can merge to `main`? |
-|------|------|---------------|----------------------|
-| **Supervisor / orchestrator** | Cursor | `agent-cursor-*` | No — opens PR only |
-| **Worker** | Codex | `agent-codex-*` | No — pushes branch only |
-| **Human** | You | any `agent-*` | Yes, via PR UI after checks |
+| Role | Tool | Branch prefix | Authority |
+|------|------|---------------|-----------|
+| **Default coding agent** | Cursor | `agent-cursor-*` | Architecture, ownership, review, **PR creation**; no direct push to `main` |
+| **Optional worker** | Codex | `agent-codex-*` | Scoped edits only when Cursor delegates; push branch; **no PR, no merge** |
+| **Human** | You | any `agent-*` | Merge via PR UI after checks |
 
 Full playbook: [docs/AI_AGENT_WORKFLOW.md](docs/AI_AGENT_WORKFLOW.md)  
 CI & protection: [docs/CI_CD.md](docs/CI_CD.md)
 
 ---
 
-## Cursor — supervisor responsibilities
+## Cursor — default agent responsibilities
 
-- **Classify every task** automatically (`cursor-only`, `codex-assisted`, `codex-first`); tell the human in one sentence.
-- **Create Codex branches** when delegation helps — without being asked to “use Codex.”
-- Break large goals into **small, testable tasks** for Codex or yourself.
-- Assign **one branch per task** (`agent-cursor-*` or `agent-codex-*`).
-- **Review Codex output** before opening or updating a PR (diff, risks, scope).
+- **Implement by default** on `agent-cursor-*` — do not offload routine coding to Codex.
+- **Classify every task**; default to **cursor-only** unless Codex delegation is narrowly justified.
+- **Own architecture and file ownership** — decide what Codex may touch; enforce Cursor-owned paths.
+- **Optional:** create `agent-codex-*` only with a tight brief and Codex-safe scope.
+- **Review all Codex output** before any merge (diff, risks, scope); fix on `agent-cursor-*` when needed.
 - Run checks locally when possible: `npm run lint`, `npm run typecheck`, `npm run build`.
-- **Open PRs with auto-merge** (`./scripts/open-agent-pr.sh`); write risk summary and rollback notes.
-- Read the **automated PR summary** comment on each PR.
+- **Always open PRs** with `./scripts/open-agent-pr.sh "[cursor] …"` — including PRs that contain Codex commits.
+- Write risk summary and rollback notes; read the automated PR summary comment.
 - Report PR link, checks, and auto-merge status — do not ask for routine manual merges.
 - **Do not bypass** branch protection or push to `main`.
 - Coordinate with human on production deploys after merge to `main`.
 
 ---
 
-## Codex — worker responsibilities
+## Codex — optional worker (when Cursor delegates)
 
-- Work **only** on the branch named in the task (e.g. `agent-codex-onboarding-consent`).
-- Keep changes **scoped** to the assignment — no unrelated refactors.
-- Commit with prefix **`[codex]`** in the subject line.
-- **Do not merge** PRs and **do not push to `main`**.
-- **Do not change** `middleware.ts`, auth, or env unless the task explicitly allows it.
-- Before handoff: report **files changed**, **commands run**, and **remaining risks**.
-- Push the branch; let Cursor (supervisor) open or finalize the PR.
+Codex is **not** the default agent. Use it only when Cursor assigns a **small, isolated** task.
+
+- Work **only** on the branch Cursor named (e.g. `agent-codex-onboarding-consent`).
+- Stay inside the brief — no scope creep, no architecture changes, no unrelated refactors.
+- Commit with prefix **`[codex]`**; push the branch.
+- **Do not open PRs**, **do not merge**, **do not push to `main`**.
+- **Do not change** Cursor-owned paths (`middleware.ts`, auth, env, `app/api/*`, migrations, workflows, etc.) unless the brief explicitly allows each file.
+- Hand off to Cursor: **files changed**, **commands run**, **remaining risks**.
+- Cursor reviews and **creates the PR** — Codex never substitutes for Cursor’s final authority.
 
 ---
 
@@ -170,8 +174,8 @@ Legacy `cursor:` / `codex:` prefixes are acceptable but prefer `[cursor]` / `[co
 
 | Action | Command |
 |--------|---------|
-| Start Cursor task | `./scripts/start-agent-task.sh cursor <feature>` |
-| Start Codex task | `./scripts/start-agent-task.sh codex <feature>` |
+| Start task (default) | `./scripts/start-agent-task.sh cursor <feature>` |
+| Start Codex (optional) | `./scripts/start-agent-task.sh codex <feature>` — Cursor delegates only |
 | Agent status | `./scripts/agent-status.sh` |
 | Open PR (auto-merge on) | `./scripts/open-agent-pr.sh "[cursor] short title"` |
 | Sync `main` | `./scripts/sync-main.sh` |
