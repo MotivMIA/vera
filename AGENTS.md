@@ -12,6 +12,27 @@ Read this file first. It defines how **Cursor** (supervisor/orchestrator) and **
 
 Optional later: require human approval (`required_approving_review_count: 1`) in branch protection.
 
+## Cursor automation (mandatory)
+
+Cursor must use the daily workflow scripts automatically — never improvise branch/PR steps.
+
+| When | Command |
+|------|---------|
+| **Start any new task** (no branch given) | `./scripts/start-agent-task.sh cursor <feature-slug>` |
+| **Assign work to Codex** | `./scripts/start-agent-task.sh codex <feature-slug>` |
+| **Before commit or open PR** | `./scripts/agent-status.sh` |
+| **Open a PR** | `./scripts/open-agent-pr.sh "[cursor] short summary"` |
+
+**Never:** work on `main`, push to `main`, or bypass branch protection (`--admin`, `--no-verify` for merges).
+
+**End of every task**, report to the human:
+
+- Current branch
+- Commit hash
+- PR link (if opened)
+- Checks status (`gh pr checks` or CI URL)
+- Whether manual approval is required (0 approvals on `main` today; re-check branch protection if unsure)
+
 ## Roles
 
 | Role | Tool | Branch prefix | Can merge to `main`? |
