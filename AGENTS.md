@@ -12,6 +12,36 @@ Read this file first. It defines how **Cursor** (supervisor/orchestrator) and **
 
 Optional later: require human approval (`required_approving_review_count: 1`) in branch protection.
 
+## Cursor automation (mandatory)
+
+| When | Command |
+|------|---------|
+| Start task | `./scripts/start-agent-task.sh cursor <feature-slug>` |
+| Assign Codex | `./scripts/start-agent-task.sh codex <feature-slug>` |
+| Before commit / PR | `./scripts/agent-status.sh` |
+| Open PR | `./scripts/open-agent-pr.sh "[cursor] short summary"` |
+| Merge PR (interactive terminal) | `./scripts/merge-agent-pr.sh <PR_NUMBER>` |
+
+**Never:** work on `main`, push to `main`, bypass protection (`--admin`, `--force`), or auto-confirm merges for the human.
+
+### Terminal merge (Cursor + you)
+
+After a PR is open and **all checks are green**, Cursor asks:
+
+> Do you want me to run `./scripts/merge-agent-pr.sh <PR_NUMBER>` in the terminal?
+
+If you say **yes**:
+
+1. Cursor runs `./scripts/merge-agent-pr.sh <PR_NUMBER>` (requires PR number).
+2. In a **normal interactive** Cursor terminal, the script shows PR details and checks, then:
+   **Press Enter to merge this PR, or Ctrl+C to cancel.**
+3. **You** press Enter to approve. Cursor must **not** press Enter for you.
+4. Non-interactive agent terminals get a safe error — run the command yourself in the IDE terminal.
+
+The script uses squash merge, deletes the head branch, then `git checkout main && git pull`.
+
+**End of every task**, report: branch, commit hash, PR link, checks status, whether manual approval is needed.
+
 ## Roles
 
 | Role | Tool | Branch prefix | Can merge to `main`? |
@@ -34,6 +64,7 @@ CI & protection: [docs/CI_CD.md](docs/CI_CD.md)
 - **Open and maintain PRs** (`./scripts/open-agent-pr.sh`); write risk summary and rollback notes.
 - Read the **automated PR summary** comment on each PR.
 - **Do not merge** until CI checks (and Vercel, if UI) are green.
+- Offer `./scripts/merge-agent-pr.sh <PR_NUMBER>` only after checks pass and the human agrees; never confirm Enter for them.
 - **Do not bypass** branch protection or push to `main`.
 - Coordinate with human on production deploys after merge to `main`.
 
@@ -74,6 +105,7 @@ Legacy `cursor:` / `codex:` prefixes are acceptable but prefer `[cursor]` / `[co
 | Start Codex task | `./scripts/start-agent-task.sh codex <feature>` |
 | Agent status | `./scripts/agent-status.sh` |
 | Open PR | `./scripts/open-agent-pr.sh "[cursor] short title"` |
+| Merge PR (press Enter) | `./scripts/merge-agent-pr.sh <PR_NUMBER>` |
 | Install local main guard | `./scripts/install-git-hooks.sh` |
 
 ---

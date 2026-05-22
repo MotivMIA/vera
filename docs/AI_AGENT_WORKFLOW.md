@@ -83,6 +83,39 @@ When done: list files changed and tests run.
 5. Cursor supervisor fills template: risks, rollback, screenshots.
 6. Merge when checks are green (human optional approval later).
 
+### Terminal merge from Cursor IDE
+
+When checks are green, Cursor asks:
+
+> Do you want me to run `./scripts/merge-agent-pr.sh <PR_NUMBER>` in the terminal?
+
+```bash
+./scripts/merge-agent-pr.sh 7
+```
+
+The script prints:
+
+- PR number, title, branch
+- Check status (`gh pr checks`)
+- Merge method: **squash merge**
+
+If all checks pass, in an **interactive** terminal:
+
+```text
+Press Enter to merge this PR, or Ctrl+C to cancel.
+```
+
+**Safety:** no `--admin`, no force merge, no merge when checks fail. After merge: checks out `main` and `git pull --ff-only origin main`.
+
+**Non-interactive terminals** (e.g. Cursor agent shell) exit with:
+
+```text
+This terminal is non-interactive. Run this command in the normal Cursor terminal:
+./scripts/merge-agent-pr.sh <PR_NUMBER>
+```
+
+Cursor must not press Enter for you.
+
 ## Commit messages
 
 ```text
