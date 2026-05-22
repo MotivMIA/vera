@@ -16,6 +16,8 @@ const isProtectedRoute = createRouteMatcher([
   "/api/onboarding/status(.*)",
 ]);
 
+const STALE_CLERK_COOKIE_NAMES = ["__session", "__client_uat", "__clerk_db_jwt", "__refresh"] as const;
+
 function collectAuthorizedParties(): string[] {
   const origins = new Set<string>();
 
@@ -50,9 +52,16 @@ function collectAuthorizedParties(): string[] {
   return Array.from(origins);
 }
 
+function clearStaleClerkCookies(response: NextResponse) {
+  for (const name of STALE_CLERK_COOKIE_NAMES) {
+    response.cookies.delete(name);
+  }
+  return response;
+}
+
 /**
- * Clerk FAPI proxy was disabled — stale tabs still hit /__clerk/* and loop on handshake.
- * Send them to the app root so Clerk JS loads without a broken redirect_url chain.
+ * Stale /__clerk sessions (from older proxy config) handshake against `/` and loop.
+ * Break the loop and clear expired cookies.
  */
 function redirectLegacyClerkProxy(req: NextRequest): NextResponse | null {
   if (!req.nextUrl.pathname.startsWith("/__clerk")) {
@@ -60,13 +69,36 @@ function redirectLegacyClerkProxy(req: NextRequest): NextResponse | null {
   }
 
   const redirectParam = req.nextUrl.searchParams.get("redirect_url") ?? "";
+  const hsReason = req.nextUrl.searchParams.get("__clerk_hs_reason") ?? "";
+
+  if (req.nextUrl.pathname.includes("/client/handshake")) {
+    let redirectPath = "/";
+    try {
+      redirectPath = new URL(redirectParam, req.url).pathname;
+    } catch {
+      redirectPath = redirectParam;
+    }
+
+    const isBrokenHandshake =
+      hsReason.includes("session-token-expired") ||
+      hsReason.includes("refresh-non-eligible") ||
+      redirectParam.includes("/__clerk/") ||
+      redirectParam.length > 512 ||
+      redirectPath === "/";
+
+    if (isBrokenHandshake) {
+      return clearStaleClerkCookies(NextResponse.redirect(new URL("/sign-in", req.url)));
+    }
+  }
+
   const isHandshakeLoop =
     req.nextUrl.pathname.includes("/client/handshake") &&
     (redirectParam.includes("/__clerk/") || redirectParam.length > 512);
 
   const target = new URL(isHandshakeLoop ? "/sign-in" : "/", req.url);
   target.search = "";
-  return NextResponse.redirect(target);
+  const response = NextResponse.redirect(target);
+  return isHandshakeLoop ? clearStaleClerkCookies(response) : response;
 }
 
 const runClerkMiddleware = clerkMiddleware(
@@ -84,8 +116,8 @@ const runClerkMiddleware = clerkMiddleware(
   },
   {
     authorizedParties: collectAuthorizedParties(),
-    // Clerk 7 auto-enables /__clerk FAPI proxy on Vercel production without this.
-    frontendApiProxy: { enabled: false },
+    // Same-origin /__clerk — required because FAPI host clerk.visual-era.vercel.app is not on Vercel DNS.
+    frontendApiProxy: { enabled: true },
   },
 );
 
