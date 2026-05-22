@@ -59,7 +59,7 @@ To disable all Vercel Authentication (not recommended for previews):
 
 Production uses Clerk’s **hosted** Frontend API (standard `@clerk/nextjs` setup).
 
-**Do not set `NEXT_PUBLIC_CLERK_PROXY_URL` on Vercel** (Production or Preview). If it exists, delete it and redeploy. The app sets `ClerkProvider` `proxyUrl={undefined}`, strips the env at build time, and sets `frontendApiProxy: { enabled: false }` on `clerkMiddleware` (Clerk 7 otherwise auto-enables `/__clerk` on `*.vercel.app`).
+**Do not set `NEXT_PUBLIC_CLERK_PROXY_URL` on Vercel** (Production or Preview). If it exists, delete it and redeploy. The app passes a `ClerkProvider` `proxyUrl` sentinel (see `lib/clerk/hosted-only.ts`), strips `NEXT_PUBLIC_CLERK_PROXY_URL` at build time, and sets `frontendApiProxy: { enabled: false }` on `clerkMiddleware`. Without the sentinel, Clerk 7 auto-enables `/__clerk` on Vercel production via `getAutoProxyUrlFromEnvironment`.
 
 After deploy, verify:
 

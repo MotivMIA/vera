@@ -47,7 +47,6 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <ClerkProvider
       {...CLERK_HOSTED_PROVIDER_PROPS}
-      proxyUrl={undefined}
       appearance={{
         variables: {
           colorBackground: "#0d0f13",
