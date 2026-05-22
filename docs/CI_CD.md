@@ -48,6 +48,8 @@ File: [.github/workflows/ci.yml](../.github/workflows/ci.yml)
 
 Branch protection cannot live in git alone; enable it on GitHub (repo admin).
 
+**Private repos:** GitHub requires **Pro** (or Team/Enterprise), or a **public** repository, to use classic branch protection via the API/UI. If `setup-github-branch-protection.sh` returns HTTP 403, upgrade the org/account, make the repo public, or enforce the workflow manually (no direct pushes to `main` by convention) until protection is available.
+
 ### Option A — Script (GitHub CLI)
 
 ```bash
