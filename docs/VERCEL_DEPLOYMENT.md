@@ -55,24 +55,21 @@ To disable all Vercel Authentication (not recommended for previews):
 { "ssoProtection": null }
 ```
 
-## Clerk Frontend API proxy
+## Clerk auth (no Frontend API proxy)
 
-Production uses Clerk’s **middleware** `frontendApiProxy` (path `/__clerk`). The browser must load Clerk JS through that proxy with an **absolute** URL.
+Production uses Clerk’s **hosted** Frontend API (standard `@clerk/nextjs` setup). Do **not** set `NEXT_PUBLIC_CLERK_PROXY_URL` on Vercel.
 
 **Required on Vercel (Production + Preview):**
 
 ```text
 NEXT_PUBLIC_SITE_URL=https://visual-era.vercel.app
-NEXT_PUBLIC_CLERK_PROXY_URL=https://visual-era.vercel.app/__clerk
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_...
+CLERK_SECRET_KEY=sk_...
 ```
 
-Without `NEXT_PUBLIC_CLERK_PROXY_URL`, you may see:
+If you previously enabled the `/__clerk` proxy and see a **blank page** or **handshake redirect loop**, remove `NEXT_PUBLIC_CLERK_PROXY_URL` from Vercel env vars, redeploy, then **clear site data** for `visual-era.vercel.app` (stale `__session` cookies cause `session-token-expired-refresh-non-eligible-no-refresh-cookie`).
 
-- **404** on `/__clerk/npm/@clerk/clerk-js@6/dist/clerk.browser.js`
-- **307 loop** on `/__clerk/v1/client/handshake` with nested `redirect_url`
-- `session-token-expired-refresh-non-eligible-no-refresh-cookie` until cookies are cleared after a fix
-
-After deploying a proxy fix, hard-refresh or clear site data for `visual-era.vercel.app`.
+Middleware redirects any legacy `/__clerk/*` URL to `/` or `/sign-in` so old tabs recover without an infinite loop.
 
 ## Clerk vs Vercel 401
 

@@ -1,4 +1,6 @@
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
+import { NextResponse } from "next/server";
+import type { NextFetchEvent, NextRequest } from "next/server";
 
 const isProtectedRoute = createRouteMatcher([
   "/onboarding(.*)",
@@ -15,7 +17,6 @@ const isProtectedRoute = createRouteMatcher([
 function collectAuthorizedParties(): string[] {
   const origins = new Set<string>();
 
-  // Always allow local dev.
   origins.add("http://localhost:3000");
   origins.add("http://localhost:3001");
   origins.add("http://127.0.0.1:3000");
@@ -30,7 +31,6 @@ function collectAuthorizedParties(): string[] {
     }
   }
 
-  // Vercel provides the deployed hostname without protocol.
   const vercelUrl = process.env.VERCEL_URL;
   if (vercelUrl) {
     origins.add(`https://${vercelUrl}`);
@@ -48,24 +48,48 @@ function collectAuthorizedParties(): string[] {
   return Array.from(origins);
 }
 
-export default clerkMiddleware(
+/**
+ * Clerk FAPI proxy was disabled — stale tabs still hit /__clerk/* and loop on handshake.
+ * Send them to the app root so Clerk JS loads without a broken redirect_url chain.
+ */
+function redirectLegacyClerkProxy(req: NextRequest): NextResponse | null {
+  if (!req.nextUrl.pathname.startsWith("/__clerk")) {
+    return null;
+  }
+
+  const redirectParam = req.nextUrl.searchParams.get("redirect_url") ?? "";
+  const isHandshakeLoop =
+    req.nextUrl.pathname.includes("/client/handshake") &&
+    (redirectParam.includes("/__clerk/") || redirectParam.length > 512);
+
+  const target = new URL(isHandshakeLoop ? "/sign-in" : "/", req.url);
+  target.search = "";
+  return NextResponse.redirect(target);
+}
+
+const runClerkMiddleware = clerkMiddleware(
   async (auth, req) => {
     if (isProtectedRoute(req)) {
       await auth.protect();
     }
   },
   {
-    // Proxy Clerk Frontend API in middleware so /__clerk/npm/@clerk/*.js is not routed by App Router.
-    frontendApiProxy: { enabled: true },
-    // Protect against origin mixups / subdomain cookie leaking.
     authorizedParties: collectAuthorizedParties(),
   },
 );
+
+export default function middleware(req: NextRequest, event: NextFetchEvent) {
+  const legacyRedirect = redirectLegacyClerkProxy(req);
+  if (legacyRedirect) {
+    return legacyRedirect;
+  }
+  return runClerkMiddleware(req, event);
+}
 
 export const config = {
   matcher: [
     "/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)",
     "/(api|trpc)(.*)",
-    "/__clerk/(.*)",
+    "/__clerk/:path*",
   ],
 };

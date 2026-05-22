@@ -47,7 +47,6 @@ jobs:
             const cursorOwnedPatterns = [
               'middleware.ts',
               'lib/env.ts',
-              'lib/clerk-proxy.ts',
               'lib/didit.ts',
               'lib/security.ts',
               'app/api/',
