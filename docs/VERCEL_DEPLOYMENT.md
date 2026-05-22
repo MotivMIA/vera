@@ -57,7 +57,18 @@ To disable all Vercel Authentication (not recommended for previews):
 
 ## Clerk auth (no Frontend API proxy)
 
-Production uses Clerk’s **hosted** Frontend API (standard `@clerk/nextjs` setup). Do **not** set `NEXT_PUBLIC_CLERK_PROXY_URL` on Vercel.
+Production uses Clerk’s **hosted** Frontend API (standard `@clerk/nextjs` setup).
+
+**Do not set `NEXT_PUBLIC_CLERK_PROXY_URL` on Vercel** (Production or Preview). If it exists, delete it and redeploy. The app sets `ClerkProvider` `proxyUrl={undefined}` and strips the env at build time; a leftover Vercel variable can still enable `/__clerk` in the client bundle.
+
+After deploy, verify:
+
+```bash
+npm run smoke:clerk-proxy
+# or: ./scripts/production-clerk-proxy-smoke.sh https://visual-era.vercel.app
+```
+
+This fails when `/sign-in` HTML contains `data-clerk-proxy-url="/__clerk"` or `"proxyUrl":"/__clerk"`.
 
 **Required on Vercel (Production + Preview):**
 
