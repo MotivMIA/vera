@@ -84,7 +84,7 @@ Cursor prints: `Classification: <class> — <one-line reason>`.
 |--------------|------------|
 | Architecture, routing, `middleware.ts` | Scoped components |
 | Auth, security, Clerk, Supabase service wiring | Tests, utilities |
-| `app/api/*`, `lib/env.ts`, `lib/didit.ts`, `lib/clerk-proxy.ts` | Docs cleanup (non-deploy) |
+| `app/api/*`, `lib/env.ts`, `lib/didit.ts` | Docs cleanup (non-deploy) |
 | Migrations / schema | Repetitive refactors |
 | Vercel, env vars, production settings | Bug fixes with a clear plan |
 | `.github/workflows/`, protection scripts | |

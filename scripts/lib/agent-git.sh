@@ -15,7 +15,6 @@ CURSOR_OWNED_PATTERNS=(
   "middleware.ts"
   "app/api/"
   "lib/env.ts"
-  "lib/clerk-proxy.ts"
   "lib/didit.ts"
   "lib/security.ts"
   "supabase/migrations/"
