@@ -60,41 +60,36 @@ function clearStaleClerkCookies(response: NextResponse) {
 }
 
 /**
- * Stale /__clerk sessions (from older proxy config) handshake against `/` and loop.
- * Break the loop and clear expired cookies.
+ * Break stale /__clerk handshake loops only. Do not redirect /__clerk/npm/* — those
+ * must reach clerkMiddleware frontendApiProxy or Clerk JS never loads.
  */
 function redirectLegacyClerkProxy(req: NextRequest): NextResponse | null {
-  if (!req.nextUrl.pathname.startsWith("/__clerk")) {
+  if (!req.nextUrl.pathname.includes("/client/handshake")) {
     return null;
   }
 
   const redirectParam = req.nextUrl.searchParams.get("redirect_url") ?? "";
   const hsReason = req.nextUrl.searchParams.get("__clerk_hs_reason") ?? "";
 
-  if (req.nextUrl.pathname.includes("/client/handshake")) {
-    let redirectPath = "/";
-    try {
-      redirectPath = new URL(redirectParam, req.url).pathname;
-    } catch {
-      redirectPath = redirectParam;
-    }
-
-    const isBrokenHandshake =
-      hsReason.includes("session-token-expired") ||
-      hsReason.includes("refresh-non-eligible") ||
-      redirectParam.includes("/__clerk/") ||
-      redirectParam.length > 512 ||
-      redirectPath === "/";
-
-    if (isBrokenHandshake) {
-      return clearStaleClerkCookies(NextResponse.redirect(new URL("/sign-in", req.url)));
-    }
+  let redirectPath = "/";
+  try {
+    redirectPath = new URL(redirectParam, req.url).pathname;
+  } catch {
+    redirectPath = redirectParam;
   }
 
-  const isHandshakeLoop =
-    req.nextUrl.pathname.includes("/client/handshake") &&
-    (redirectParam.includes("/__clerk/") || redirectParam.length > 512);
+  const isBrokenHandshake =
+    hsReason.includes("session-token-expired") ||
+    hsReason.includes("refresh-non-eligible") ||
+    redirectParam.includes("/__clerk/") ||
+    redirectParam.length > 512 ||
+    redirectPath === "/";
 
+  if (isBrokenHandshake) {
+    return clearStaleClerkCookies(NextResponse.redirect(new URL("/sign-in", req.url)));
+  }
+
+  const isHandshakeLoop = redirectParam.includes("/__clerk/") || redirectParam.length > 512;
   const target = new URL(isHandshakeLoop ? "/sign-in" : "/", req.url);
   target.search = "";
   const response = NextResponse.redirect(target);
