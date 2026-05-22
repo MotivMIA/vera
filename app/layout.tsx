@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Toaster } from "@/components/ui/sonner";
+import { getClerkProxyUrl } from "@/lib/clerk-proxy";
 import { getSiteUrl } from "@/lib/env";
 import "./globals.css";
 
@@ -45,6 +46,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
 
   return (
     <ClerkProvider
+      proxyUrl={getClerkProxyUrl()}
       appearance={{
         variables: {
           colorBackground: "#0d0f13",
