@@ -71,9 +71,16 @@ function redirectLegacyClerkProxy(req: NextRequest): NextResponse | null {
 
 const runClerkMiddleware = clerkMiddleware(
   async (auth, req) => {
-    if (isProtectedRoute(req)) {
-      await auth.protect();
+    if (!isProtectedRoute(req)) return;
+
+    const authState = await auth();
+    if (authState.userId) return;
+
+    if (req.nextUrl.pathname.startsWith("/api/")) {
+      return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
     }
+
+    return authState.redirectToSignIn({ returnBackUrl: req.url });
   },
   {
     authorizedParties: collectAuthorizedParties(),

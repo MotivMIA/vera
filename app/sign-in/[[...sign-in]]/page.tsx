@@ -1,6 +1,7 @@
 import { ClerkLoaded, ClerkLoading, SignIn } from "@clerk/nextjs";
 import Link from "next/link";
 import { LoaderCircle } from "lucide-react";
+import { ONBOARDING_ENTRY_PATH } from "@/lib/onboarding/constants";
 
 export default function SignInPage() {
   return (
@@ -15,7 +16,13 @@ export default function SignInPage() {
           </div>
         </ClerkLoading>
         <ClerkLoaded>
-          <SignIn routing="path" path="/sign-in" signUpUrl="/sign-up" fallbackRedirectUrl="/verify-identity" />
+          <SignIn
+            routing="path"
+            path="/sign-in"
+            signUpUrl="/sign-up"
+            fallbackRedirectUrl={ONBOARDING_ENTRY_PATH}
+            forceRedirectUrl={ONBOARDING_ENTRY_PATH}
+          />
         </ClerkLoaded>
       </div>
     </main>

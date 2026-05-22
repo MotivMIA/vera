@@ -2,8 +2,11 @@ import type { OnboardingStep } from "@/types/onboarding";
 
 export const ONBOARDING_STEP_ORDER: OnboardingStep[] = ["consent", "identity", "documents", "complete"];
 
+/** Post-auth entry point (Clerk redirects + marketing CTAs). */
+export const ONBOARDING_ENTRY_PATH = "/onboarding/consent";
+
 export const ONBOARDING_STEP_PATH: Record<OnboardingStep, string> = {
-  consent: "/onboarding/consent",
+  consent: ONBOARDING_ENTRY_PATH,
   identity: "/verify-identity",
   documents: "/documents",
   complete: "/success",
