@@ -92,7 +92,4 @@ gh pr merge "$PR_NUMBER" --repo "$REPO" --squash --delete-branch
 
 echo ""
 echo "Merged PR #$PR_NUMBER."
-cd "$AGENT_GIT_ROOT"
-git checkout main
-git pull --ff-only origin main
-echo "Local main is up to date."
+"$SCRIPT_DIR/sync-main.sh"

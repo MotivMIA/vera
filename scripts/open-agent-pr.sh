@@ -140,5 +140,40 @@ rm -f "/tmp/merge-auto-err-$$.log"
 echo ""
 echo "Auto-merge: ENABLED"
 echo "GitHub will squash-merge into main after required checks pass."
+echo "Local main will sync automatically after merge (or run ./scripts/sync-main.sh)."
 echo "Track: gh pr view $PR_NUMBER --repo $REPO"
 echo "Checks: gh pr checks $PR_NUMBER --repo $REPO"
+echo ""
+
+wait_for_merge_and_sync() {
+  local timeout_secs="${MERGE_WAIT_TIMEOUT:-600}"
+  local interval_secs="${MERGE_POLL_INTERVAL:-15}"
+  local elapsed=0
+  local state
+
+  echo "Waiting for PR #$PR_NUMBER to merge (timeout ${timeout_secs}s)..."
+  while [[ "$elapsed" -lt "$timeout_secs" ]]; do
+    state="$(gh pr view "$PR_NUMBER" --repo "$REPO" --json state -q .state 2>/dev/null || echo "UNKNOWN")"
+    if [[ "$state" == "MERGED" ]]; then
+      echo "PR #$PR_NUMBER merged."
+      if "$SCRIPT_DIR/sync-main.sh"; then
+        echo "Local main synced."
+      else
+        echo "warning: merge completed but sync-main failed. Run: ./scripts/sync-main.sh" >&2
+      fi
+      return 0
+    fi
+    if [[ "$state" == "CLOSED" ]]; then
+      echo "PR #$PR_NUMBER closed without merge. Sync skipped." >&2
+      return 1
+    fi
+    sleep "$interval_secs"
+    elapsed=$((elapsed + interval_secs))
+  done
+
+  echo ""
+  echo "Auto-merge is pending. Later, run ./scripts/sync-main.sh or ask Cursor to sync main."
+  return 0
+}
+
+wait_for_merge_and_sync || true

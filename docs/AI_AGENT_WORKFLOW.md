@@ -112,14 +112,41 @@ flowchart TD
 3. Codex: `[codex]` commits only on its branch.
 4. Cursor reviews; optional `agent-cursor-*` follow-up.
 5. `./scripts/open-agent-pr.sh "[cursor|codex] summary"` → auto-merge when green.
-6. No direct `main` pushes; no `--admin`.
+6. Poll for merge → `./scripts/sync-main.sh` (or sync at next task start).
+7. No direct `main` pushes; no `--admin`.
+
+### Sync local `main`
+
+```bash
+./scripts/sync-main.sh
+```
+
+| Step | Action |
+|------|--------|
+| Safety | Abort if uncommitted changes exist |
+| Fetch | `git fetch origin` + prune deleted remote branches |
+| Update | `checkout main` → `pull --ff-only origin main` |
+| Report | Latest commit hash + clean/dirty status |
+
+**When it runs**
+
+- Automatically before `start-agent-task.sh` creates a branch
+- After `open-agent-pr.sh` detects PR merged (poll up to 600s)
+- At the start of the next Cursor task if merge completed earlier
+- After manual `merge-agent-pr.sh`
+
+If auto-merge is still pending after timeout:
+
+```text
+Auto-merge is pending. Later, run ./scripts/sync-main.sh or ask Cursor to sync main.
+```
 
 ## Starting work
 
 ### Cursor (supervisor) task
 
 ```bash
-./scripts/start-agent-task.sh cursor my-feature
+./scripts/start-agent-task.sh cursor my-feature   # syncs main first
 ./scripts/install-git-hooks.sh   # once per machine
 # … implement or orchestrate …
 git add -A && git commit -m "[cursor] short summary"

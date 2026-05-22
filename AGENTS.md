@@ -20,6 +20,7 @@ Optional later: require human approval (`required_approving_review_count: 1`) in
 | Assign Codex | `./scripts/start-agent-task.sh codex <feature-slug>` |
 | Before commit / PR | `./scripts/agent-status.sh` |
 | Open PR (+ auto-merge) | `./scripts/open-agent-pr.sh "[cursor] short summary"` |
+| Sync local `main` | `./scripts/sync-main.sh` |
 | Manual merge (fallback) | `./scripts/merge-agent-pr.sh <PR_NUMBER>` |
 
 **Never:** work on `main`, push to `main`, bypass protection (`--admin`, `--force`), or force-merge.
@@ -28,7 +29,15 @@ Optional later: require human approval (`required_approving_review_count: 1`) in
 
 Commit + push + PR means merge approval is implied. `open-agent-pr.sh` runs `gh pr merge --auto --squash --delete-branch`. GitHub merges when CI and branch protection pass. Cursor must **not** ask you to manually merge each PR.
 
-**End of every task**, report: branch, commit hash, PR link, checks status, auto-merge status.
+### Sync local `main` (automatic)
+
+- `start-agent-task.sh` syncs `main` before every new agent branch (`sync-main.sh`).
+- After auto-merge, `open-agent-pr.sh` polls for merge (up to 10 minutes), then runs `sync-main.sh`.
+- If polling times out: run `./scripts/sync-main.sh` or ask Cursor to sync at the next task start.
+- Cursor runs `sync-main.sh` at the **start of the next task** if merge finished while idle.
+- Never force-pull or hard-reset; fails if uncommitted changes would be at risk.
+
+**End of every task**, report: branch, commit hash, PR link, checks status, auto-merge status, local `main` commit after sync.
 
 ### Manual merge fallback
 
@@ -138,6 +147,7 @@ Legacy `cursor:` / `codex:` prefixes are acceptable but prefer `[cursor]` / `[co
 | Start Codex task | `./scripts/start-agent-task.sh codex <feature>` |
 | Agent status | `./scripts/agent-status.sh` |
 | Open PR (auto-merge on) | `./scripts/open-agent-pr.sh "[cursor] short title"` |
+| Sync `main` | `./scripts/sync-main.sh` |
 | Manual merge (fallback) | `./scripts/merge-agent-pr.sh <PR_NUMBER>` |
 | Install local main guard | `./scripts/install-git-hooks.sh` |
 

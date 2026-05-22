@@ -15,12 +15,11 @@ fi
 
 FEATURE_SLUG="$(echo "$FEATURE" | tr '[:upper:]' '[:lower:]' | tr ' _' '-')"
 BRANCH="agent-${AGENT}-${FEATURE_SLUG}"
-ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 cd "$ROOT"
 
-git fetch origin main
-git checkout main
-git pull --ff-only origin main
+"$SCRIPT_DIR/sync-main.sh"
 git checkout -b "$BRANCH"
 
 echo "On branch: $BRANCH"
