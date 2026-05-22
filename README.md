@@ -103,7 +103,7 @@ Signed documents are stored in a private Supabase Storage bucket named `signed-d
 
 Deploy to Vercel and configure the environment variables from `.env.example`.
 
-Production tracks **`main`** after merge. PRs get Vercel preview deploys when configured in the Vercel project.
+Production tracks **`main`** after merge. Public URL: **https://visual-era.vercel.app**. If you see Vercel “Authentication Required” (401), you may be on a protected preview/deployment URL — see [docs/VERCEL_DEPLOYMENT.md](docs/VERCEL_DEPLOYMENT.md).
 
 Before merging or deploying:
 
