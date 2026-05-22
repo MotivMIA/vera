@@ -4,6 +4,7 @@ import Link from "next/link";
 import { SignUp, UserButton, useUser } from "@clerk/nextjs";
 import { ArrowRight, LoaderCircle, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ONBOARDING_ENTRY_PATH } from "@/lib/onboarding/constants";
 
 export function AuthCard() {
   const { isLoaded, isSignedIn } = useUser();
@@ -18,8 +19,8 @@ export function AuthCard() {
 
       {isLoaded && !isSignedIn ? (
         <SignUp
-          fallbackRedirectUrl="/verify-identity"
-          forceRedirectUrl="/verify-identity"
+          fallbackRedirectUrl={ONBOARDING_ENTRY_PATH}
+          forceRedirectUrl={ONBOARDING_ENTRY_PATH}
           oauthFlow="auto"
           routing="hash"
           signInUrl="/sign-in"
@@ -40,8 +41,8 @@ export function AuthCard() {
             Your account is active and ready to continue.
           </div>
           <Button asChild className="mt-6 w-full">
-            <Link href="/verify-identity">
-              Continue to verification
+            <Link href={ONBOARDING_ENTRY_PATH}>
+              Continue onboarding
               <ArrowRight className="ml-auto size-4" />
             </Link>
           </Button>
