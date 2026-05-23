@@ -53,8 +53,33 @@ Templates: [prompts/chatgpt-orchestration-review.md](./prompts/chatgpt-orchestra
 
 - All routine implementation on `agent-cursor-*`
 - `./scripts/start-agent-task.sh cursor <slug>` → `agent-quick-check.sh` → `agent-finish.sh`
-- Cursor **always** opens PRs (including after Codex work)
+- Cursor **always** opens PRs (including after Codex or cloud worker commits)
 - Intake template: [prompts/cursor-implementation-intake.md](./prompts/cursor-implementation-intake.md)
+
+## Codex cloud delegation (Cursor Cloud / OpenAI Codex)
+
+When Cursor classifies **codex-assisted** and the slice is large or parallel-friendly, delegate to a **cloud worker** on `agent-codex-*`. Cursor local keeps review and PR authority.
+
+```text
+Cursor local → delegate-codex-cloud.sh → brief + branch
+    → Cursor Cloud or Codex (worker)
+    → push [codex] to agent-codex-*
+    → Cursor local review → agent-finish.sh → CI → auto-merge
+```
+
+| Step | Command / action |
+|------|------------------|
+| Prepare | `./scripts/delegate-codex-cloud.sh <slug>` |
+| Edit brief | `.agent/delegation/codex-<slug>.md` |
+| Cloud prompt | `./scripts/delegate-codex-cloud.sh <slug> --print-only` |
+| Review | `agent-status.sh --pre-pr`, `agent-quick-check.sh` |
+| Ship | `./scripts/agent-finish.sh "[cursor] … (codex-assisted)"` |
+
+**When appropriate:** tests, docs, repetitive edits, isolated UI — Codex-safe paths with allow-list.  
+**When not:** auth, middleware, API routes, migrations, ambiguous scope, high-risk without human ack.
+
+Details: [CODEX_CLOUD_DELEGATION.md](./CODEX_CLOUD_DELEGATION.md) · [prompts/codex-cloud-delegation.md](./prompts/codex-cloud-delegation.md)  
+Cloud env: `.cursor/environment.json`
 
 ## PR / CI governance & merge lifecycle
 
@@ -372,6 +397,7 @@ Re-run the script as repo admin.
 - [AGENTS.md](../AGENTS.md) — role summary for agents
 - [AI_OPERATING_MODEL.md](./AI_OPERATING_MODEL.md) — ChatGPT / Grok / Cursor authority
 - [GROK_REVIEW_MODEL.md](./GROK_REVIEW_MODEL.md) — safe Grok participation
+- [CODEX_CLOUD_DELEGATION.md](./CODEX_CLOUD_DELEGATION.md) — Cursor Cloud / Codex worker delegation
 - [AI_TASK_FLOW.md](./AI_TASK_FLOW.md) — issues, labels, idea → merge flow
 - [CI_CD.md](./CI_CD.md) — branch protection and CI details
 - [COLLABORATION.md](./COLLABORATION.md) — avoiding parallel edit conflicts
