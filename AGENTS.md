@@ -2,7 +2,7 @@
 
 Read this file first. **Cursor is the default coding agent** for this repo — it plans, implements, reviews, and opens PRs. **ChatGPT-style orchestration** is the authoritative workflow model for planning and filtering work before code. **Grok** is optional for innovation/product review only (no repo access). **Codex is optional**: use it only for isolated, clearly scoped tasks when Cursor delegates. Cursor keeps **final authority** over architecture, file ownership, review, and PR creation.
 
-**AI operating model:** [docs/AI_OPERATING_MODEL.md](docs/AI_OPERATING_MODEL.md) · Grok lane: [docs/GROK_REVIEW_MODEL.md](docs/GROK_REVIEW_MODEL.md) · Task flow: [docs/AI_TASK_FLOW.md](docs/AI_TASK_FLOW.md)
+**AI operating model:** [docs/AI_OPERATING_MODEL.md](docs/AI_OPERATING_MODEL.md) · Grok lane: [docs/GROK_REVIEW_MODEL.md](docs/GROK_REVIEW_MODEL.md) · Task flow: [docs/AI_TASK_FLOW.md](docs/AI_TASK_FLOW.md) · **Mobile tasks:** [docs/MOBILE_AI_TASK_WORKFLOW.md](docs/MOBILE_AI_TASK_WORKFLOW.md)
 
 ## Golden rules
 
@@ -153,13 +153,14 @@ GitHub + CI → merge gate (no AI bypass)
 
 ## Default workflow
 
-1. Human goal (or Grok idea → **ChatGPT filter** first).
-2. `./scripts/start-agent-task.sh cursor <feature-slug>`
-3. Implement → `./scripts/agent-quick-check.sh`
-4. `./scripts/agent-finish.sh "[cursor] …"` → PR + auto-merge when CI passes
-5. Optional review paste: `./scripts/ai-review-summary.sh` · status: `./scripts/ai-task-status.sh`
+1. Human goal (or mobile ChatGPT issue, or Grok idea → **ChatGPT filter** first).
+2. **From GitHub issue:** `./scripts/ai-issue-intake.sh <n>` → `./scripts/start-ai-issue-task.sh <n>`
+3. **Or ad hoc:** `./scripts/start-agent-task.sh cursor <feature-slug>`
+4. Implement → `./scripts/agent-quick-check.sh`
+5. `./scripts/agent-finish.sh "[cursor] …"` → PR + auto-merge when CI passes (includes `Closes #n` when started from issue)
+6. Optional review paste: `./scripts/ai-review-summary.sh` · status: `./scripts/ai-task-status.sh`
 
-Prompt templates: [docs/prompts/](docs/prompts/).
+Prompt templates: [docs/prompts/](docs/prompts/). Mobile: [docs/MOBILE_AI_TASK_WORKFLOW.md](docs/MOBILE_AI_TASK_WORKFLOW.md).
 
 ## Roles (branch workflow)
 
@@ -234,6 +235,9 @@ Legacy `cursor:` / `codex:` prefixes are acceptable but prefer `[cursor]` / `[co
 | Start task (default) | `./scripts/start-agent-task.sh cursor <feature>` |
 | Quick check | `./scripts/agent-quick-check.sh` |
 | Finish (push + PR) | `./scripts/agent-finish.sh "[cursor] short title"` |
+| Issue intake | `./scripts/ai-issue-intake.sh` or `… <issue#>` |
+| Start from issue | `./scripts/start-ai-issue-task.sh <issue#>` |
+| Setup issue labels | `./scripts/setup-ai-issue-labels.sh` |
 | Open PR only | `./scripts/open-agent-pr.sh "[cursor] short title"` |
 | Wait for merge | `open-agent-pr.sh "…" --wait` |
 | Agent status | `./scripts/agent-status.sh` |
@@ -263,6 +267,20 @@ Before **opening a PR**: `./scripts/agent-status.sh --pre-pr` — lists files vs
 | Vercel | Preview deploy per PR | No (unless you add it in branch protection) |
 
 Required status check on `main`: **CI checks** only.
+
+### GitHub issue labels (mobile AI tasks)
+
+| Label | Use |
+|-------|-----|
+| `ai-task` | Structured AI/mobile pipeline task |
+| `mobile-task` | From phone ChatGPT workflow |
+| `grok-idea` | Grok origin — needs triage |
+| `cursor-accepted` | OK to run `start-ai-issue-task.sh` |
+| `cursor-deferred` / `cursor-rejected` | Do not start |
+| `high-risk` / `low-risk` | Risk tier |
+| `product`, `ux`, `bug`, `enhancement` | Scope |
+
+Create with `./scripts/setup-ai-issue-labels.sh`. See [docs/MOBILE_AI_TASK_WORKFLOW.md](docs/MOBILE_AI_TASK_WORKFLOW.md).
 
 ---
 

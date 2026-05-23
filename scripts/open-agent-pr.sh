@@ -118,6 +118,18 @@ ${AGENT}
 <!-- How to revert safely -->
 EOF
 
+LINKED_ISSUE="$(agent_linked_issue_number || true)"
+if [[ -n "$LINKED_ISSUE" ]]; then
+  cat >>"$BODY_FILE" <<EOF
+
+## Linked issue
+
+https://github.com/${REPO}/issues/${LINKED_ISSUE}
+
+Closes #${LINKED_ISSUE}
+EOF
+fi
+
 CREATE_ARGS=(pr create --repo "$REPO" --base main --head "$BRANCH" --title "$TITLE" --body-file "$BODY_FILE")
 if [[ -n "$DRAFT" ]]; then
   CREATE_ARGS+=(--draft)

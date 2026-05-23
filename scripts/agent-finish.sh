@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # Push current branch and open PR with fast defaults (no merge wait).
+# If .agent/tasks/issue-N.md or branch agent-cursor-issue-N-* exists, PR body includes Closes #N.
 # Usage: ./scripts/agent-finish.sh "[cursor] short title" [--wait] [--draft]
 set -euo pipefail
 
