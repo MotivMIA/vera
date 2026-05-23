@@ -2,7 +2,7 @@
 
 Read this file first. **Cursor is the default coding agent** for this repo — it plans, implements, reviews, and opens PRs. **ChatGPT-style orchestration** is the authoritative workflow model for planning and filtering work before code. **Grok** is optional for innovation/product review only (no repo access). **Codex is optional**: use it only for isolated, clearly scoped tasks when Cursor delegates. Cursor keeps **final authority** over architecture, file ownership, review, and PR creation.
 
-**AI operating model:** [docs/AI_OPERATING_MODEL.md](docs/AI_OPERATING_MODEL.md) · Grok lane: [docs/GROK_REVIEW_MODEL.md](docs/GROK_REVIEW_MODEL.md) · Task flow: [docs/AI_TASK_FLOW.md](docs/AI_TASK_FLOW.md) · **Mobile tasks:** [docs/MOBILE_AI_TASK_WORKFLOW.md](docs/MOBILE_AI_TASK_WORKFLOW.md)
+**AI operating model:** [docs/AI_OPERATING_MODEL.md](docs/AI_OPERATING_MODEL.md) · Grok lane: [docs/GROK_REVIEW_MODEL.md](docs/GROK_REVIEW_MODEL.md) · Task flow: [docs/AI_TASK_FLOW.md](docs/AI_TASK_FLOW.md) · **Mobile tasks:** [docs/MOBILE_AI_TASK_WORKFLOW.md](docs/MOBILE_AI_TASK_WORKFLOW.md) · **Desktop (Work with Apps):** [docs/CHATGPT_DESKTOP_CURSOR_WORKFLOW.md](docs/CHATGPT_DESKTOP_CURSOR_WORKFLOW.md)
 
 ## Golden rules
 
@@ -153,14 +153,18 @@ GitHub + CI → merge gate (no AI bypass)
 
 ## Default workflow
 
-1. Human goal (or mobile ChatGPT issue, or Grok idea → **ChatGPT filter** first).
+**At computer (live):** ChatGPT Desktop + Cursor ([Work with Apps guide](docs/CHATGPT_DESKTOP_CURSOR_WORKFLOW.md)) → plan/debug → Cursor implements → PR/CI.
+
+**Mobile / async:** GitHub Issue → intake scripts → Cursor → PR/CI ([mobile guide](docs/MOBILE_AI_TASK_WORKFLOW.md)).
+
+1. Human goal (desktop session, mobile issue, or Grok idea → **ChatGPT filter** first).
 2. **From GitHub issue:** `./scripts/ai-issue-intake.sh <n>` → `./scripts/start-ai-issue-task.sh <n>`
 3. **Or ad hoc:** `./scripts/start-agent-task.sh cursor <feature-slug>`
 4. Implement → `./scripts/agent-quick-check.sh`
 5. `./scripts/agent-finish.sh "[cursor] …"` → PR + auto-merge when CI passes (includes `Closes #n` when started from issue)
 6. Optional review paste: `./scripts/ai-review-summary.sh` · status: `./scripts/ai-task-status.sh`
 
-Prompt templates: [docs/prompts/](docs/prompts/). Mobile: [docs/MOBILE_AI_TASK_WORKFLOW.md](docs/MOBILE_AI_TASK_WORKFLOW.md).
+Prompt templates: [docs/prompts/](docs/prompts/).
 
 ## Roles (branch workflow)
 

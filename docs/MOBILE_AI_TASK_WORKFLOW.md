@@ -1,6 +1,8 @@
 # Mobile AI task workflow
 
-Create tasks from your phone via ChatGPT or Grok, track output structured as structured **GitHub issues**, and let **Cursor** implement through the existing agent branch → PR → CI → auto-merge path.
+Create tasks from your phone via ChatGPT or Grok, track them as structured **GitHub issues**, and let **Cursor** implement through the existing agent branch → PR → CI → auto-merge path.
+
+**At your computer?** Use [CHATGPT_DESKTOP_CURSOR_WORKFLOW.md](./CHATGPT_DESKTOP_CURSOR_WORKFLOW.md) for live ChatGPT Desktop + Cursor orchestration. Issues remain the **async/mobile queue**; desktop sessions do not replace PR/CI.
 
 ## Architecture
 
@@ -14,6 +16,10 @@ Mobile ChatGPT / Grok
     → ./scripts/agent-finish.sh
     → PR with Closes #<n>
     → CI → auto-merge → issue closed
+
+Desktop (same repo rules):
+    ChatGPT Desktop ↔ Cursor → agent branch → PR → CI
+    (see CHATGPT_DESKTOP_CURSOR_WORKFLOW.md — issue optional for live work)
 ```
 
 No webhooks, daemons, or Grok repo access — only `gh` CLI on your machine.
@@ -140,5 +146,6 @@ Cursor **classifies at intake** and refuses unknown or blocked issues — it doe
 ## Related
 
 - [AGENTS.md](../AGENTS.md)
+- [CHATGPT_DESKTOP_CURSOR_WORKFLOW.md](./CHATGPT_DESKTOP_CURSOR_WORKFLOW.md) — live desktop orchestration
 - [AI_OPERATING_MODEL.md](./AI_OPERATING_MODEL.md)
 - [AI_TASK_FLOW.md](./AI_TASK_FLOW.md)

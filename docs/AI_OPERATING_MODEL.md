@@ -30,12 +30,21 @@ Cursor implementation (agent-cursor-* → PR)
 
 **Principles:** Reliability over unchecked autonomy. No AI bypasses branch protection, CI, or deployment safety. No infinite autonomous loops.
 
+**Two intake paths:**
+
+```text
+Computer:  ChatGPT Desktop ↔ Cursor (live) → agent branch → PR → CI
+Mobile:    ChatGPT/Grok → GitHub Issue → Cursor intake → PR → CI
+```
+
+Details: [CHATGPT_DESKTOP_CURSOR_WORKFLOW.md](./CHATGPT_DESKTOP_CURSOR_WORKFLOW.md) · [MOBILE_AI_TASK_WORKFLOW.md](./MOBILE_AI_TASK_WORKFLOW.md)
+
 ## Roles and responsibilities
 
 | Role | Tool | Repo access | Primary job |
 |------|------|-------------|-------------|
 | **Human** | You | Full (via PR merge) | Goals, approval on high-risk, production judgment |
-| **Orchestrator** | ChatGPT | None (read-only via pasted context) | Architecture, workflow, plans, risk, mediation |
+| **Orchestrator** | ChatGPT (web, mobile, or **Desktop + Work with Apps**) | Read-only / live context | Architecture, plans, risk, Grok filtering; **no merge** |
 | **Executor** | Cursor | Branch + PR | Default implementation, review, merge path |
 | **Innovator** | Grok | None | UX/product ideas, critique, brainstorming |
 | **Helper** | Codex | Branch only when delegated | Scoped edits, tests, utilities |
@@ -48,6 +57,7 @@ Cursor implementation (agent-cursor-* → PR)
 - Risk analysis and deployment reasoning
 - Mediation between human, Grok ideas, and Cursor execution
 - Validates Grok output before it becomes a Cursor brief
+- **Desktop:** live planning, debug, and Cursor prompt drafting via Work with Apps ([guide](./CHATGPT_DESKTOP_CURSOR_WORKFLOW.md))
 - **Does not** push code, merge PRs, or hold secrets
 
 ### Cursor (default executor)
@@ -73,7 +83,7 @@ Cursor implementation (agent-cursor-* → PR)
 
 ## Communication flow
 
-1. **Human** states goal (issue, chat, or brief).
+1. **Human** states goal (desktop session, GitHub issue, chat, or brief).
 2. **ChatGPT** classifies risk, scope, and owner; produces an implementation brief if coding is needed.
 3. **Grok** (optional) supplies ideas or review — output goes to ChatGPT, not straight to Cursor.
 4. **Cursor** runs `./scripts/start-agent-task.sh cursor <slug>`, implements, `./scripts/agent-finish.sh`.
@@ -172,3 +182,5 @@ Details: [GROK_REVIEW_MODEL.md](./GROK_REVIEW_MODEL.md).
 - [AI_AGENT_WORKFLOW.md](./AI_AGENT_WORKFLOW.md) — scripts and merge lifecycle
 - [AI_TASK_FLOW.md](./AI_TASK_FLOW.md) — issues and labels
 - [GROK_REVIEW_MODEL.md](./GROK_REVIEW_MODEL.md) — Grok lane
+- [CHATGPT_DESKTOP_CURSOR_WORKFLOW.md](./CHATGPT_DESKTOP_CURSOR_WORKFLOW.md) — Desktop Work with Apps + Cursor
+- [MOBILE_AI_TASK_WORKFLOW.md](./MOBILE_AI_TASK_WORKFLOW.md) — phone → issue queue
