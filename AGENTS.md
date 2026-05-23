@@ -1,6 +1,8 @@
 # AI agents — Visual Era
 
-Read this file first. **Cursor is the default coding agent** for this repo — it plans, implements, reviews, and opens PRs. **Codex is optional**: use it only for isolated, clearly scoped tasks when Cursor delegates. Cursor keeps **final authority** over architecture, file ownership, review, and PR creation.
+Read this file first. **Cursor is the default coding agent** for this repo — it plans, implements, reviews, and opens PRs. **ChatGPT-style orchestration** is the authoritative workflow model for planning and filtering work before code. **Grok** is optional for innovation/product review only (no repo access). **Codex is optional**: use it only for isolated, clearly scoped tasks when Cursor delegates. Cursor keeps **final authority** over architecture, file ownership, review, and PR creation.
+
+**AI operating model:** [docs/AI_OPERATING_MODEL.md](docs/AI_OPERATING_MODEL.md) · Grok lane: [docs/GROK_REVIEW_MODEL.md](docs/GROK_REVIEW_MODEL.md) · Task flow: [docs/AI_TASK_FLOW.md](docs/AI_TASK_FLOW.md)
 
 ## Golden rules
 
@@ -130,13 +132,50 @@ There is no **codex-first** default. Codex does not own the task, architecture, 
 5. **Cursor** opens the PR: `./scripts/open-agent-pr.sh "[cursor] …"` — always, including after Codex work.
 6. Auto-merge after CI passes; never push to `main`; never `--admin`.
 
-## Roles
+## Authority hierarchy
+
+```text
+Human (override) → ChatGPT orchestration (plan/filter) → Cursor execution (code/PR)
+Grok → briefs only → ChatGPT filter → Cursor (never direct to repo)
+Codex → delegated helper → Cursor review → Cursor opens PR
+GitHub + CI → merge gate (no AI bypass)
+```
+
+| Role | Tool | Repo access | Authority |
+|------|------|-------------|-----------|
+| **Human** | You | PR merge, production | Override any agent; high-risk approval |
+| **Orchestrator** | ChatGPT | None (pasted context) | Architecture, plans, risk, Grok filtering |
+| **Default executor** | Cursor | `agent-cursor-*` | Implementation, review, **PR creation** |
+| **Innovator** | Grok | None | UX/product ideas; **no edit, merge, deploy** |
+| **Optional helper** | Codex | `agent-codex-*` when delegated | Scoped edits; **no PR, no architecture** |
+
+**No autonomous production control** — no agent pushes to `main`, force-merges, modifies secrets, or runs infinite loops.
+
+## Default workflow
+
+1. Human goal (or Grok idea → **ChatGPT filter** first).
+2. `./scripts/start-agent-task.sh cursor <feature-slug>`
+3. Implement → `./scripts/agent-quick-check.sh`
+4. `./scripts/agent-finish.sh "[cursor] …"` → PR + auto-merge when CI passes
+5. Optional review paste: `./scripts/ai-review-summary.sh` · status: `./scripts/ai-task-status.sh`
+
+Prompt templates: [docs/prompts/](docs/prompts/).
+
+## Roles (branch workflow)
 
 | Role | Tool | Branch prefix | Authority |
 |------|------|---------------|-----------|
 | **Default coding agent** | Cursor | `agent-cursor-*` | Architecture, ownership, review, **PR creation**; no direct push to `main` |
 | **Optional worker** | Codex | `agent-codex-*` | Scoped edits only when Cursor delegates; push branch; **no PR, no merge** |
 | **Human** | You | any `agent-*` | Merge via PR UI after checks |
+
+### Prohibited behavior
+
+| Agent | Must NOT |
+|-------|----------|
+| **Grok** | Edit repo, merge PRs, deploy, modify secrets, change auth/security/payments directly, run autonomous loops |
+| **Codex** | Own architecture, open production PRs independently, modify Cursor-owned paths without Cursor review |
+| **Cursor** | Bypass branch protection, push to `main`, `--admin` merge, force merge |
 
 Full playbook: [docs/AI_AGENT_WORKFLOW.md](docs/AI_AGENT_WORKFLOW.md)  
 CI & protection: [docs/CI_CD.md](docs/CI_CD.md)
@@ -198,6 +237,8 @@ Legacy `cursor:` / `codex:` prefixes are acceptable but prefer `[cursor]` / `[co
 | Open PR only | `./scripts/open-agent-pr.sh "[cursor] short title"` |
 | Wait for merge | `open-agent-pr.sh "…" --wait` |
 | Agent status | `./scripts/agent-status.sh` |
+| AI task status | `./scripts/ai-task-status.sh` |
+| Review paste (Grok/ChatGPT) | `./scripts/ai-review-summary.sh` |
 | Sync `main` | `./scripts/sync-main.sh` |
 | Manual merge (fallback) | `./scripts/merge-agent-pr.sh <PR_NUMBER>` |
 | Install local main guard | `./scripts/install-git-hooks.sh` |

@@ -1,8 +1,75 @@
 # Multi-agent AI workflow
 
-Professional flow: **Cursor supervises**, **Codex builds**, **GitHub enforces** quality and branch rules.
+Professional flow: **ChatGPT orchestrates**, **Cursor executes by default**, **Grok innovates/reviews (optional, no repo)**, **Codex helps when delegated**, **GitHub enforces** quality and branch rules.
+
+**Safety philosophy:** Reliability over unchecked autonomy. No AI bypasses branch protection, CI, or deployment safety. No infinite autonomous loops.
+
+See [AI_OPERATING_MODEL.md](./AI_OPERATING_MODEL.md), [GROK_REVIEW_MODEL.md](./GROK_REVIEW_MODEL.md), [AI_TASK_FLOW.md](./AI_TASK_FLOW.md).
 
 ## Architecture
+
+```mermaid
+flowchart TB
+  Human[Human]
+  ChatGPT[ChatGPT orchestration]
+  Grok[Grok innovation/review]
+  Cursor[Cursor executor]
+  Codex[Codex helper optional]
+  GH[GitHub CI + branch rules]
+  Prod[Production Vercel]
+
+  Human --> ChatGPT
+  Grok -->|briefs only| ChatGPT
+  ChatGPT -->|implementation brief| Cursor
+  ChatGPT -->|optional delegate| Codex
+  Codex -->|push branch| Cursor
+  Cursor -->|PR auto-merge| GH
+  GH --> Prod
+```
+
+**Default path:** Human → ChatGPT plan → Cursor on `agent-cursor-*` → PR → CI → auto-merge → `main`.
+
+**Grok path:** Grok review → ChatGPT filter → Cursor (never Grok → repo directly).
+
+## ChatGPT orchestration layer
+
+ChatGPT does **not** push code. It:
+
+- Classifies tasks (`cursor-only`, `codex-assisted`, `docs-only`)
+- Produces implementation briefs for Cursor
+- Filters Grok output (implement now / deferred / reject / clarify)
+- Mediates risk, deployment reasoning, and scope
+
+Templates: [prompts/chatgpt-orchestration-review.md](./prompts/chatgpt-orchestration-review.md)
+
+## Grok innovation loop
+
+- Use [prompts/grok-product-review.md](./prompts/grok-product-review.md) or [grok-feature-innovation.md](./prompts/grok-feature-innovation.md)
+- Paste output into ChatGPT orchestration review before any coding
+- Max 1–3 **implement now** items per cycle; avoid innovation spirals
+- Details: [GROK_REVIEW_MODEL.md](./GROK_REVIEW_MODEL.md)
+
+## Cursor default execution model
+
+- All routine implementation on `agent-cursor-*`
+- `./scripts/start-agent-task.sh cursor <slug>` → `agent-quick-check.sh` → `agent-finish.sh`
+- Cursor **always** opens PRs (including after Codex work)
+- Intake template: [prompts/cursor-implementation-intake.md](./prompts/cursor-implementation-intake.md)
+
+## PR / CI governance & merge lifecycle
+
+1. Head branch: `agent-(cursor|codex|name)-<feature>`
+2. **CI checks** (required) + branch naming
+3. PR summary bot (informational)
+4. Auto-merge via `open-agent-pr.sh` / `agent-finish.sh` when green
+5. No `--admin`, no force merge, no direct `main` push
+6. Vercel deploys from `main` — agents do not trigger production APIs
+
+**Review helpers:** `./scripts/ai-review-summary.sh` (paste for Grok/ChatGPT), `./scripts/ai-task-status.sh` (branch/PR/ownership).
+
+---
+
+## Legacy supervisor/worker diagram (Cursor + Codex)
 
 ```mermaid
 flowchart LR
@@ -51,9 +118,9 @@ The human describes work in normal language. **Cursor classifies** before coding
 |-------|------|
 | **cursor-only** | Planning, architecture, security, UI judgment, ambiguity, risky areas |
 | **codex-assisted** | Codex builds; Cursor reviews and may patch |
-| **codex-first** | Plan is already clear; Codex implements; Cursor reviews before PR |
+| **codex-first** | Deprecated default — prefer **cursor-only**; Codex only when Cursor delegates |
 
-Cursor prints: `Classification: <class> — <one-line reason>`.
+Cursor prints: `Classification: <class> — <one-line reason>`. ChatGPT may supply the brief; Cursor still owns execution and PR.
 
 ### What Cursor keeps
 
@@ -303,5 +370,8 @@ Re-run the script as repo admin.
 ## Related docs
 
 - [AGENTS.md](../AGENTS.md) — role summary for agents
+- [AI_OPERATING_MODEL.md](./AI_OPERATING_MODEL.md) — ChatGPT / Grok / Cursor authority
+- [GROK_REVIEW_MODEL.md](./GROK_REVIEW_MODEL.md) — safe Grok participation
+- [AI_TASK_FLOW.md](./AI_TASK_FLOW.md) — issues, labels, idea → merge flow
 - [CI_CD.md](./CI_CD.md) — branch protection and CI details
 - [COLLABORATION.md](./COLLABORATION.md) — avoiding parallel edit conflicts
