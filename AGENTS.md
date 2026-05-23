@@ -2,7 +2,7 @@
 
 Read this file first. **Cursor is the default coding agent** for this repo — it plans, implements, reviews, and opens PRs. **ChatGPT-style orchestration** is the authoritative workflow model for planning and filtering work before code. **Grok** is optional for innovation/product review only (no repo access). **Codex is optional**: use it only for isolated, clearly scoped tasks when Cursor delegates. Cursor keeps **final authority** over architecture, file ownership, review, and PR creation.
 
-**AI operating model:** [docs/AI_OPERATING_MODEL.md](docs/AI_OPERATING_MODEL.md) · Grok lane: [docs/GROK_REVIEW_MODEL.md](docs/GROK_REVIEW_MODEL.md) · Task flow: [docs/AI_TASK_FLOW.md](docs/AI_TASK_FLOW.md) · **Mobile tasks:** [docs/MOBILE_AI_TASK_WORKFLOW.md](docs/MOBILE_AI_TASK_WORKFLOW.md)
+**AI operating model:** [docs/AI_OPERATING_MODEL.md](docs/AI_OPERATING_MODEL.md) · Grok lane: [docs/GROK_REVIEW_MODEL.md](docs/GROK_REVIEW_MODEL.md) · Task flow: [docs/AI_TASK_FLOW.md](docs/AI_TASK_FLOW.md) · **Mobile tasks:** [docs/MOBILE_AI_TASK_WORKFLOW.md](docs/MOBILE_AI_TASK_WORKFLOW.md) · **Codex cloud:** [docs/CODEX_CLOUD_DELEGATION.md](docs/CODEX_CLOUD_DELEGATION.md)
 
 ## Golden rules
 
@@ -20,6 +20,7 @@ Optional later: require human approval (`required_approving_review_count: 1`) in
 |------|---------|
 | Start task (default) | `./scripts/start-agent-task.sh cursor <feature-slug>` |
 | Optional Codex worker | `./scripts/start-agent-task.sh codex <feature-slug>` — only when Cursor delegates |
+| Codex cloud delegation | `./scripts/delegate-codex-cloud.sh <feature-slug>` — branch + brief + cloud prompt |
 | Fast local check | `./scripts/agent-quick-check.sh` (lint + typecheck, no build) |
 | Before PR (optional) | `./scripts/agent-status.sh --pre-pr` |
 | Finish task (fast) | `./scripts/agent-finish.sh "[cursor] short summary"` — push + PR, no wait |
@@ -91,7 +92,7 @@ There is no **codex-first** default. Codex does not own the task, architecture, 
 
 **Cursor always owns:** architecture, file ownership decisions, diff review, PR creation (`open-agent-pr.sh`), risk/rollback notes, auto-merge reporting, and any change to Cursor-owned paths.
 
-**Optional Codex (only when Cursor delegates):** isolated tests, utility scripts, repetitive edits, docs cleanup (non-deploy), or a **single** clearly bounded fix in Codex-safe paths — with a written brief from Cursor.
+**Optional Codex (only when Cursor delegates):** isolated tests, utility scripts, repetitive edits, docs cleanup (non-deploy), or a **single** clearly bounded fix in Codex-safe paths — with a written brief from Cursor. **Cloud:** run the worker in **Cursor Cloud** or **OpenAI Codex** on `agent-codex-*`; Cursor local reviews and opens the PR ([CODEX_CLOUD_DELEGATION.md](docs/CODEX_CLOUD_DELEGATION.md)).
 
 **Never delegate to Codex:** secrets/auth, `middleware.ts`, env, migrations, payments, architecture, production/Vercel settings, ambiguous work, or anything touching Cursor-owned paths without Cursor implementing or reviewing on `agent-cursor-*`.
 
@@ -127,9 +128,9 @@ There is no **codex-first** default. Codex does not own the task, architecture, 
 
 1. You describe the task → Cursor classifies (**cursor-only** unless delegation is justified).
 2. **Default:** `./scripts/start-agent-task.sh cursor <feature-slug>` → Cursor implements, commits `[cursor]`, pushes.
-3. **Optional Codex:** Cursor creates `agent-codex-*`, gives a tight brief; Codex commits `[codex]` and pushes; **does not open the PR**.
+3. **Optional Codex (local or cloud):** `./scripts/delegate-codex-cloud.sh <slug>` or `start-agent-task.sh codex <slug>`; worker commits `[codex]` and pushes; **does not open the PR**.
 4. Cursor reviews the diff (and patches on `agent-cursor-*` if needed).
-5. **Cursor** opens the PR: `./scripts/open-agent-pr.sh "[cursor] …"` — always, including after Codex work.
+5. **Cursor** opens the PR: `./scripts/open-agent-pr.sh "[cursor] …"` — always, including after Codex/cloud work.
 6. Auto-merge after CI passes; never push to `main`; never `--admin`.
 
 ## Authority hierarchy
@@ -147,7 +148,7 @@ GitHub + CI → merge gate (no AI bypass)
 | **Orchestrator** | ChatGPT | None (pasted context) | Architecture, plans, risk, Grok filtering |
 | **Default executor** | Cursor | `agent-cursor-*` | Implementation, review, **PR creation** |
 | **Innovator** | Grok | None | UX/product ideas; **no edit, merge, deploy** |
-| **Optional helper** | Codex | `agent-codex-*` when delegated | Scoped edits; **no PR, no architecture** |
+| **Optional helper** | Codex / Cursor Cloud | `agent-codex-*` when delegated | Scoped edits in cloud or local; **no PR, no merge** |
 
 **No autonomous production control** — no agent pushes to `main`, force-merges, modifies secrets, or runs infinite loops.
 
@@ -201,8 +202,9 @@ CI & protection: [docs/CI_CD.md](docs/CI_CD.md)
 
 ## Codex — optional worker (when Cursor delegates)
 
-Codex is **not** the default agent. Use it only when Cursor assigns a **small, isolated** task.
+Codex is **not** the default agent. Use it only when Cursor assigns a **small, isolated** task — locally, in **Cursor Cloud**, or via **OpenAI Codex**, all on the same branch rules.
 
+- Prepare cloud/local delegation: `./scripts/delegate-codex-cloud.sh <feature-slug>` ([docs/CODEX_CLOUD_DELEGATION.md](docs/CODEX_CLOUD_DELEGATION.md)).
 - Work **only** on the branch Cursor named (e.g. `agent-codex-onboarding-consent`).
 - Stay inside the brief — no scope creep, no architecture changes, no unrelated refactors.
 - Commit with prefix **`[codex]`**; push the branch.
@@ -233,6 +235,8 @@ Legacy `cursor:` / `codex:` prefixes are acceptable but prefer `[cursor]` / `[co
 | Action | Command |
 |--------|---------|
 | Start task (default) | `./scripts/start-agent-task.sh cursor <feature>` |
+| Delegate Codex cloud | `./scripts/delegate-codex-cloud.sh <feature>` |
+| Start Codex branch | `./scripts/start-agent-task.sh codex <feature>` |
 | Quick check | `./scripts/agent-quick-check.sh` |
 | Finish (push + PR) | `./scripts/agent-finish.sh "[cursor] short title"` |
 | Issue intake | `./scripts/ai-issue-intake.sh` or `… <issue#>` |
@@ -291,3 +295,23 @@ Create with `./scripts/setup-ai-issue-labels.sh`. See [docs/MOBILE_AI_TASK_WORKF
 - Sensitive areas: `middleware.ts`, `lib/didit.ts`, `lib/env.ts`, `app/api/*`
 
 See also [docs/COLLABORATION.md](docs/COLLABORATION.md) for collision avoidance between agents.
+
+---
+
+## Cursor Cloud agents (Codex cloud delegation)
+
+Cloud agents run in Cursor-hosted VMs (Desktop agent → **Cloud**, or [cursor.com/agents](https://cursor.com/agents)). They are **workers only** — same rules as local Codex on `agent-codex-*`.
+
+**Configured in repo:** `.cursor/environment.json` (`npm ci` before each cloud run).
+
+**Delegate a task:**
+
+```bash
+./scripts/delegate-codex-cloud.sh <feature-slug>   # branch + brief
+# edit .agent/delegation/codex-<slug>.md, commit, push
+./scripts/delegate-codex-cloud.sh <feature-slug> --print-only   # cloud prompt
+```
+
+**After cloud worker pushes:** Cursor local checks out the branch, runs `agent-status.sh --pre-pr`, reviews, then **`agent-finish.sh`** (Cursor opens PR; cloud worker does not).
+
+Full guide: [docs/CODEX_CLOUD_DELEGATION.md](docs/CODEX_CLOUD_DELEGATION.md) · prompt: [docs/prompts/codex-cloud-delegation.md](docs/prompts/codex-cloud-delegation.md).
