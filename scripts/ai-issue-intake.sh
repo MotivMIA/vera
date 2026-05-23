@@ -38,7 +38,7 @@ extract_field() {
 has_label() {
   local labels_json="$1"
   local want="$2"
-  echo "$labels_json" | jq -e --arg w "$want" '.[] | select(.name == $w)' >/dev/null 2>&1
+  echo "$labels_json" | jq -e --arg w "$want" '.[]? | select(.name == $w)' >/dev/null 2>&1
 }
 
 classify_issue() {
@@ -102,29 +102,46 @@ classify_issue() {
   echo "$verdict|$action|$reason|$priority|$risk|$slug"
 }
 
+fetch_issue_json() {
+  local number="$1"
+  local out
+  if ! out="$(gh issue view "$number" --repo "$REPO" --json number,title,body,labels,url,state 2>&1)"; then
+    echo "error: could not fetch issue #${number} from ${REPO}." >&2
+    echo "$out" >&2
+    exit 1
+  fi
+  if [[ -z "$out" ]]; then
+    echo "error: empty response for issue #${number}." >&2
+    exit 1
+  fi
+  echo "$out"
+}
+
 print_issue_intake() {
   local number="$1"
-  local json
-  json="$(gh issue view "$number" --repo "$REPO" --json number,title,body,labels,url,state)"
-  local state
-  state="$(echo "$json" | jq -r .state)"
+  local issue_json state title body url labels_json
+  issue_json="$(fetch_issue_json "$number")"
+  state="$(echo "$issue_json" | jq -r '.state // empty')"
+  if [[ -z "$state" || "$state" == "null" ]]; then
+    echo "error: invalid JSON for issue #${number} (missing state)." >&2
+    exit 1
+  fi
   if [[ "$state" != "OPEN" ]]; then
     echo "error: issue #${number} is not open (state: ${state})." >&2
     exit 1
   fi
 
-  local title body url labels_json
-  title="$(echo "$json" | jq -r .title)"
-  body="$(echo "$json" | jq -r .body // "")"
-  url="$(echo "$json" | jq -r .url)"
-  labels_json="$(echo "$json" | jq -c .labels)"
+  title="$(echo "$issue_json" | jq -r '.title // empty')"
+  body="$(echo "$issue_json" | jq -r '.body // empty')"
+  url="$(echo "$issue_json" | jq -r '.url // empty')"
+  labels_json="$(echo "$issue_json" | jq -c '.labels // []')"
 
   IFS='|' read -r verdict action reason priority risk slug <<< "$(classify_issue "$number" "$title" "$body" "$labels_json")"
 
   echo "=== AI issue intake — #${number} ==="
   echo "Title:     $title"
   echo "URL:       $url"
-  echo "Labels:    $(echo "$labels_json" | jq -r '[.[].name] | join(", ")')"
+  echo "Labels:    $(echo "$labels_json" | jq -r '[.[].name] | join(", ") // empty')"
   echo "Priority:  $priority"
   echo "Risk:      ${risk:-(not set)}"
   echo ""
