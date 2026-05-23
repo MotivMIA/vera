@@ -120,6 +120,41 @@ file_is_cursor_owned() {
   return 1
 }
 
+# Issue number from branch name (e.g. agent-cursor-issue-123-slug → 123).
+agent_issue_number_from_branch() {
+  local branch="${1:-$(current_branch)}"
+  if [[ "$branch" =~ issue-([0-9]+) ]]; then
+    echo "${BASH_REMATCH[1]}"
+    return 0
+  fi
+  return 1
+}
+
+# Issue number from committed .agent/tasks/issue-N.md brief.
+agent_issue_number_from_brief() {
+  local brief
+  for brief in "$AGENT_GIT_ROOT"/.agent/tasks/issue-*.md; do
+    [[ -f "$brief" ]] || continue
+    if [[ "$brief" =~ issue-([0-9]+)\.md$ ]]; then
+      echo "${BASH_REMATCH[1]}"
+      return 0
+    fi
+  done
+  return 1
+}
+
+# Prefer brief file, then branch name.
+agent_linked_issue_number() {
+  agent_issue_number_from_brief 2>/dev/null || agent_issue_number_from_branch 2>/dev/null || true
+}
+
+# Slugify text for branch names (lowercase, hyphens, max 40 chars).
+slugify() {
+  local s="$1"
+  s="$(echo "$s" | tr '[:upper:]' '[:lower:]' | tr -cs 'a-z0-9' '-' | sed 's/^-//;s/-$//;s/--*/-/g')"
+  echo "${s:0:40}" | sed 's/-$//'
+}
+
 # Print cursor-owned paths among changed files; returns 1 if any found.
 report_cursor_owned_files() {
   local found=0
