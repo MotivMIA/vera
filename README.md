@@ -91,13 +91,11 @@ Signed documents are stored in a private Supabase Storage bucket named `signed-d
 
 ## AI agents & CI/CD
 
-- Read **[AGENTS.md](AGENTS.md)** first (Cursor supervisor, Codex worker).
-- Playbook: [docs/AI_AGENT_WORKFLOW.md](docs/AI_AGENT_WORKFLOW.md)
-- **`main`** is protected: PR only, **CI checks** + branch naming required.
-- Start task: `./scripts/start-agent-task.sh cursor|codex <feature>`
-- Open PR: `./scripts/open-agent-pr.sh "[cursor] title"`
-- Status: `./scripts/agent-status.sh`
-- Local guard: `./scripts/install-git-hooks.sh`
+- Read **[AGENTS.md](AGENTS.md)** — [CHATGPT + Cursor + Codex stack](docs/CHATGPT_CURSOR_CODEX_STACK.md)
+- **`main`** protected: PR only, **CI checks** required
+- Start: `./scripts/start-agent-task.sh cursor <feature>`
+- Iterate: `./scripts/agent-quick-check.sh`
+- Ship: `./scripts/agent-finish.sh "[cursor] title"`
 
 ## Deployment
 

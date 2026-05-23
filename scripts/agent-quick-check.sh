@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# Fast local gate before commit/PR — lint + typecheck in parallel (no production build).
+# Fast local gate during iteration — lint + typecheck (no production build).
+# Use often while committing on agent-*; does not open a PR.
 # Usage: ./scripts/agent-quick-check.sh
 set -euo pipefail
 
