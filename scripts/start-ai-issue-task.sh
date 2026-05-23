@@ -27,25 +27,44 @@ if ! command -v gh >/dev/null 2>&1; then
   exit 1
 fi
 
+if ! gh auth status >/dev/null 2>&1; then
+  echo "error: run gh auth login" >&2
+  exit 1
+fi
+
 assert_clean_worktree_or_exit
 
 echo "Syncing main before issue branch..."
 "$SCRIPT_DIR/sync-main.sh" --quiet
 
-JSON="$(gh issue view "$ISSUE_NUM" --repo "$REPO" --json number,title,body,labels,url,state)"
-STATE="$(echo "$JSON" | jq -r .state)"
-if [[ "$STATE" != "OPEN" ]]; then
-  echo "error: issue #${ISSUE_NUM} is not open." >&2
+issue_json=""
+if ! issue_json="$(gh issue view "$ISSUE_NUM" --repo "$REPO" --json number,title,body,labels,url,state 2>&1)"; then
+  echo "error: could not fetch issue #${ISSUE_NUM} from ${REPO}." >&2
+  echo "$issue_json" >&2
+  exit 1
+fi
+if [[ -z "$issue_json" ]]; then
+  echo "error: empty response for issue #${ISSUE_NUM}." >&2
   exit 1
 fi
 
-TITLE="$(echo "$JSON" | jq -r .title)"
-BODY="$(echo "$JSON" | jq -r .body // "")"
-URL="$(echo "$JSON" | jq -r .url)"
-LABELS="$(echo "$JSON" | jq -r '[.labels[].name] | join(", ")')"
+STATE="$(echo "$issue_json" | jq -r '.state // empty')"
+if [[ -z "$STATE" || "$STATE" == "null" ]]; then
+  echo "error: invalid JSON for issue #${ISSUE_NUM} (missing state)." >&2
+  exit 1
+fi
+if [[ "$STATE" != "OPEN" ]]; then
+  echo "error: issue #${ISSUE_NUM} is not open (state: ${STATE})." >&2
+  exit 1
+fi
+
+TITLE="$(echo "$issue_json" | jq -r '.title // empty')"
+BODY="$(echo "$issue_json" | jq -r '.body // empty')"
+URL="$(echo "$issue_json" | jq -r '.url // empty')"
+LABELS="$(echo "$issue_json" | jq -r '[.labels[].name] | join(", ") // empty')"
 
 has_label() {
-  echo "$JSON" | jq -e --arg w "$1" '.labels[] | select(.name == $w)' >/dev/null 2>&1
+  echo "$issue_json" | jq -e --arg w "$1" '.labels[]? | select(.name == $w)' >/dev/null 2>&1
 }
 
 if has_label "cursor-rejected"; then
