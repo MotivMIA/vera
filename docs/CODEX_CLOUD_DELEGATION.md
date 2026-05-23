@@ -1,6 +1,8 @@
 # Codex cloud delegation
 
-Run **large or parallel-friendly** work in the cloud while **Cursor (local)** keeps architecture, review, and **PR/merge authority**. This repo treats **Codex** as the optional worker role (`agent-codex-*`, `[codex]` commits) whether the worker runs locally, in **Cursor Cloud**, or in **OpenAI Codex** (CLI/app).
+> **Operational workflow:** [CODEX_CLOUD_WORKFLOW.md](./CODEX_CLOUD_WORKFLOW.md) · **Full stack:** [CHATGPT_CURSOR_CODEX_STACK.md](./CHATGPT_CURSOR_CODEX_STACK.md)
+
+Setup, prompts, and runtime notes for **Codex Cloud** (Cursor Cloud Agent or external Codex) as the **heavy-lift worker** on `agent-codex-*`.
 
 ## Is cloud execution supported?
 

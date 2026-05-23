@@ -1,10 +1,10 @@
 # Multi-agent AI workflow
 
-Professional flow: **ChatGPT orchestrates**, **Cursor executes by default**, **Grok innovates/reviews (optional, no repo)**, **Codex helps when delegated**, **GitHub enforces** quality and branch rules.
+**Stack:** ChatGPT Desktop orchestrates · Cursor leads locally · Codex Cloud for heavy lifts · Codex IDE panel for polish · GitHub/CI releases · Grok optional.
 
-**Safety philosophy:** Reliability over unchecked autonomy. No AI bypasses branch protection, CI, or deployment safety. No infinite autonomous loops.
+**Hub:** [CHATGPT_CURSOR_CODEX_STACK.md](./CHATGPT_CURSOR_CODEX_STACK.md) · [AI_OPERATING_MODEL.md](./AI_OPERATING_MODEL.md)
 
-See [AI_OPERATING_MODEL.md](./AI_OPERATING_MODEL.md), [GROK_REVIEW_MODEL.md](./GROK_REVIEW_MODEL.md), [AI_TASK_FLOW.md](./AI_TASK_FLOW.md).
+**Safety:** Reliability over unchecked autonomy. **Batch local commits** on `agent-*`; **one PR per complete unit** via `agent-finish.sh`. No AI bypasses CI or `main`.
 
 ## Architecture
 
@@ -27,15 +27,26 @@ flowchart TB
   GH --> Prod
 ```
 
-**Default path:** Human → ChatGPT plan → Cursor on `agent-cursor-*` → PR → CI → auto-merge → `main`.
+**Default path:** ChatGPT Desktop → Cursor on `agent-cursor-*` (iterate) → optional Codex Cloud → review → **`agent-finish.sh` when ready** → CI → auto-merge.
 
-**Grok path:** Grok review → ChatGPT filter → Cursor (never Grok → repo directly).
+**Grok path:** Grok → ChatGPT filter → Cursor (never Grok → repo directly).
 
-## ChatGPT orchestration layer
+## Local iteration vs ship
+
+| Phase | Goal | Commands | Opens PR? |
+|-------|------|----------|-----------|
+| **Iterate** | Build a complete unit on `agent-*` | `start-agent-task.sh`, commits, `agent-quick-check.sh` | No |
+| **Ship** | Release that unit | `agent-status.sh --pre-pr`, `agent-finish.sh` | Yes |
+
+- Push to origin during iteration is fine (backup, handoff) — still no PR until ship.
+- **CI runs on the PR**, not on every local commit.
+- **Auto-merge** enables only when `agent-finish.sh` / `open-agent-pr.sh` runs.
+
+## ChatGPT Desktop orchestration
 
 ChatGPT does **not** push code. It:
 
-- Classifies tasks (`cursor-only`, `codex-assisted`, `docs-only`)
+- Classifies tasks (`cursor-only`, `codex-cloud`, `codex-assisted`, `docs-only`)
 - Produces implementation briefs for Cursor
 - Filters Grok output (implement now / deferred / reject / clarify)
 - Mediates risk, deployment reasoning, and scope
@@ -51,35 +62,32 @@ Templates: [prompts/chatgpt-orchestration-review.md](./prompts/chatgpt-orchestra
 
 ## Cursor default execution model
 
-- All routine implementation on `agent-cursor-*`
-- `./scripts/start-agent-task.sh cursor <slug>` → `agent-quick-check.sh` → `agent-finish.sh`
-- Cursor **always** opens PRs (including after Codex or cloud worker commits)
-- Intake template: [prompts/cursor-implementation-intake.md](./prompts/cursor-implementation-intake.md)
+- Routine work on `agent-cursor-*`
+- `./scripts/start-agent-task.sh cursor <slug>` → iterate with `agent-quick-check.sh`
+- Ship once: `./scripts/agent-finish.sh` when the unit is complete
+- Cursor **always** opens PRs (including after Codex Cloud work)
+- Intake: [prompts/cursor-implementation-intake.md](./prompts/cursor-implementation-intake.md)
 
-## Codex cloud delegation (Cursor Cloud / OpenAI Codex)
+## Codex Cloud (heavy-lift worker)
 
-When Cursor classifies **codex-assisted** and the slice is large or parallel-friendly, delegate to a **cloud worker** on `agent-codex-*`. Cursor local keeps review and PR authority.
+Large isolated jobs on `agent-codex-*`. Cursor reviews; **Codex IDE panel** for local polish. Codex Cloud does not open PRs or merge.
+
+Full flow: [CODEX_CLOUD_WORKFLOW.md](./CODEX_CLOUD_WORKFLOW.md) · setup: [CODEX_CLOUD_DELEGATION.md](./CODEX_CLOUD_DELEGATION.md)
 
 ```text
-Cursor local → delegate-codex-cloud.sh → brief + branch
-    → Cursor Cloud or Codex (worker)
-    → push [codex] to agent-codex-*
-    → Cursor local review → agent-finish.sh → CI → auto-merge
+ChatGPT brief → delegate-codex-cloud.sh → Codex Cloud → [codex] push
+    → Cursor review (+ Codex panel) → agent-finish.sh when ready → CI
 ```
 
-| Step | Command / action |
-|------|------------------|
-| Prepare | `./scripts/delegate-codex-cloud.sh <slug>` |
-| Edit brief | `.agent/delegation/codex-<slug>.md` |
-| Cloud prompt | `./scripts/delegate-codex-cloud.sh <slug> --print-only` |
+| Step | Command |
+|------|---------|
+| Delegate | `./scripts/delegate-codex-cloud.sh <slug>` |
+| Iterate (cloud) | worker runs; no PR |
 | Review | `agent-status.sh --pre-pr`, `agent-quick-check.sh` |
-| Ship | `./scripts/agent-finish.sh "[cursor] … (codex-assisted)"` |
+| Ship | `agent-finish.sh "[cursor] …"` |
 
-**When appropriate:** tests, docs, repetitive edits, isolated UI — Codex-safe paths with allow-list.  
-**When not:** auth, middleware, API routes, migrations, ambiguous scope, high-risk without human ack.
-
-Details: [CODEX_CLOUD_DELEGATION.md](./CODEX_CLOUD_DELEGATION.md) · [prompts/codex-cloud-delegation.md](./prompts/codex-cloud-delegation.md)  
-Cloud env: `.cursor/environment.json`
+**Use for:** large refactors, multi-file cleanup, test generation, isolated features, repetitive migrations.  
+**Not for:** secrets, auth architecture, prod deploy, env, payments, unclear product decisions.
 
 ## PR / CI governance & merge lifecycle
 
@@ -394,10 +402,12 @@ Re-run the script as repo admin.
 
 ## Related docs
 
-- [AGENTS.md](../AGENTS.md) — role summary for agents
-- [AI_OPERATING_MODEL.md](./AI_OPERATING_MODEL.md) — ChatGPT / Grok / Cursor authority
-- [GROK_REVIEW_MODEL.md](./GROK_REVIEW_MODEL.md) — safe Grok participation
-- [CODEX_CLOUD_DELEGATION.md](./CODEX_CLOUD_DELEGATION.md) — Cursor Cloud / Codex worker delegation
-- [AI_TASK_FLOW.md](./AI_TASK_FLOW.md) — issues, labels, idea → merge flow
+- [AGENTS.md](../AGENTS.md)
+- [CHATGPT_CURSOR_CODEX_STACK.md](./CHATGPT_CURSOR_CODEX_STACK.md)
+- [AI_OPERATING_MODEL.md](./AI_OPERATING_MODEL.md)
+- [CODEX_CLOUD_WORKFLOW.md](./CODEX_CLOUD_WORKFLOW.md)
+- [CODEX_CLOUD_DELEGATION.md](./CODEX_CLOUD_DELEGATION.md)
+- [GROK_REVIEW_MODEL.md](./GROK_REVIEW_MODEL.md)
+- [AI_TASK_FLOW.md](./AI_TASK_FLOW.md)
 - [CI_CD.md](./CI_CD.md) — branch protection and CI details
 - [COLLABORATION.md](./COLLABORATION.md) — avoiding parallel edit conflicts
