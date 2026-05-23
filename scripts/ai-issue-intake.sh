@@ -8,19 +8,13 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 # shellcheck source=lib/agent-git.sh
 source "$SCRIPT_DIR/lib/agent-git.sh"
+# shellcheck source=lib/gh-issue.sh
+source "$SCRIPT_DIR/lib/gh-issue.sh"
 
 REPO="${GITHUB_REPO:-MotivMIA/vera}"
 INTAKE_LABELS=(ai-task mobile-task grok-idea)
 
-if ! command -v gh >/dev/null 2>&1; then
-  echo "error: install GitHub CLI — https://cli.github.com/" >&2
-  exit 1
-fi
-
-if ! gh auth status >/dev/null 2>&1; then
-  echo "error: run gh auth login" >&2
-  exit 1
-fi
+gh_issue_require_tools
 
 list_open_ai_issues() {
   local query="repo:${REPO} is:issue is:open (label:ai-task OR label:mobile-task OR label:grok-idea)"
@@ -29,99 +23,67 @@ list_open_ai_issues() {
     || true
 }
 
-extract_field() {
-  local body="$1"
-  local field="$2"
-  echo "$body" | sed -n "/^## ${field}\$/,\$p" | sed '1d;/^## /q' | sed '/^$/d' | head -5 | tr '\n' ' ' | sed 's/  */ /g;s/^ //;s/ $//'
-}
-
-has_label() {
-  local labels_json="$1"
-  local want="$2"
-  echo "$labels_json" | jq -e --arg w "$want" '.[]? | select(.name == $w)' >/dev/null 2>&1
-}
-
 classify_issue() {
   local number="$1"
   local title="$2"
   local body="$3"
-  local labels_json="$4"
+  local issue_json="$4"
 
   local verdict="cursor-only"
   local action="start"
   local reason="Default Cursor implementation on agent-cursor-* branch."
 
-  if has_label "$labels_json" "cursor-rejected"; then
+  if issue_has_label "$issue_json" "cursor-rejected"; then
     verdict="reject"
     action="none"
     reason="Label cursor-rejected — do not implement."
-  elif has_label "$labels_json" "cursor-deferred"; then
+  elif issue_has_label "$issue_json" "cursor-deferred"; then
     verdict="defer"
     action="none"
     reason="Label cursor-deferred — not scheduled."
-  elif has_label "$labels_json" "grok-idea" && ! has_label "$labels_json" "cursor-accepted"; then
+  elif issue_has_label "$issue_json" "grok-idea" && ! issue_has_label "$issue_json" "cursor-accepted"; then
     verdict="defer"
     action="review"
     reason="Grok idea without cursor-accepted — ChatGPT/human triage first."
   fi
 
   local risk
-  risk="$(extract_field "$body" "Risk level")"
-  [[ -z "$risk" ]] && risk="$(extract_field "$body" "Risk Level")"
+  risk="$(issue_body_field_value "$body" "Risk level")"
+  [[ -z "$risk" ]] && risk="$(issue_body_field_value "$body" "Risk Level")"
   risk="$(echo "$risk" | tr '[:upper:]' '[:lower:]')"
 
-  if [[ "$risk" == *high* ]] || has_label "$labels_json" "high-risk"; then
+  if [[ "$risk" == *high* ]] || issue_has_label "$issue_json" "high-risk"; then
     verdict="cursor-only"
     reason="High risk — Cursor only; human acknowledgment recommended before coding."
   fi
 
-  local owner
-  owner="$(extract_field "$body" "Suggested owner")"
-  owner="$(echo "$owner" | tr '[:upper:]' '[:lower:]')"
-  if [[ "$owner" == *codex* ]] && [[ "$verdict" != "reject" && "$verdict" != "defer" ]]; then
+  if owner_suggests_codex "$body" && [[ "$verdict" != "reject" && "$verdict" != "defer" ]]; then
     verdict="codex-assisted"
     reason="Suggested owner includes Codex — Cursor supervises; Codex may implement scoped slice only."
   fi
 
   local do_not
-  do_not="$(extract_field "$body" "Do-not-touch areas")"
+  do_not="$(issue_body_field "$body" "Do-not-touch areas")"
   if echo "$do_not" | grep -qiE 'middleware|auth|clerk|env|payment|secret|migration'; then
     verdict="cursor-only"
     reason="Do-not-touch includes sensitive areas — Cursor-only; no Codex without explicit Cursor review."
   fi
 
   local priority
-  priority="$(extract_field "$body" "Priority")"
+  priority="$(issue_body_field_value "$body" "Priority")"
   [[ -z "$priority" ]] && priority="(not set)"
 
   local slug
-  slug="$(slugify "${title#\[*\]}")"
-  slug="${slug:-task}"
-  slug="issue-${number}-${slug}"
+  slug="$(issue_slug_from_title_and_body "$number" "$title" "$body")"
 
   echo "$verdict|$action|$reason|$priority|$risk|$slug"
 }
 
-fetch_issue_json() {
-  local number="$1"
-  local out
-  if ! out="$(gh issue view "$number" --repo "$REPO" --json number,title,body,labels,url,state 2>&1)"; then
-    echo "error: could not fetch issue #${number} from ${REPO}." >&2
-    echo "$out" >&2
-    exit 1
-  fi
-  if [[ -z "$out" ]]; then
-    echo "error: empty response for issue #${number}." >&2
-    exit 1
-  fi
-  echo "$out"
-}
-
 print_issue_intake() {
   local number="$1"
-  local issue_json state title body url labels_json
-  issue_json="$(fetch_issue_json "$number")"
-  state="$(echo "$issue_json" | jq -r '.state // empty')"
+  local issue_json state title body url
+  issue_json="$(gh_issue_fetch_json "$REPO" "$number")"
+  state="$(jq_from_issue_json "$issue_json" '.state // empty')"
   if [[ -z "$state" || "$state" == "null" ]]; then
     echo "error: invalid JSON for issue #${number} (missing state)." >&2
     exit 1
@@ -131,17 +93,16 @@ print_issue_intake() {
     exit 1
   fi
 
-  title="$(echo "$issue_json" | jq -r '.title // empty')"
-  body="$(echo "$issue_json" | jq -r '.body // empty')"
-  url="$(echo "$issue_json" | jq -r '.url // empty')"
-  labels_json="$(echo "$issue_json" | jq -c '.labels // []')"
+  title="$(jq_from_issue_json "$issue_json" '.title // empty')"
+  body="$(jq_from_issue_json "$issue_json" '.body // empty')"
+  url="$(jq_from_issue_json "$issue_json" '.url // empty')"
 
-  IFS='|' read -r verdict action reason priority risk slug <<< "$(classify_issue "$number" "$title" "$body" "$labels_json")"
+  IFS='|' read -r verdict action reason priority risk slug <<< "$(classify_issue "$number" "$title" "$body" "$issue_json")"
 
   echo "=== AI issue intake — #${number} ==="
   echo "Title:     $title"
   echo "URL:       $url"
-  echo "Labels:    $(echo "$labels_json" | jq -r '[.[].name] | join(", ") // empty')"
+  echo "Labels:    $(jq_from_issue_json "$issue_json" '[.labels[]?.name] | join(", ")')"
   echo "Priority:  $priority"
   echo "Risk:      ${risk:-(not set)}"
   echo ""
@@ -176,7 +137,7 @@ print_issue_intake() {
   echo "  ./scripts/agent-finish.sh \"[cursor] ${title}\""
   echo ""
   echo "Brief preview (Goal):"
-  extract_field "$body" "Goal" | sed 's/^/  /'
+  issue_body_field_value "$body" "Goal" | sed 's/^/  /'
   echo ""
 }
 
