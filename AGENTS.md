@@ -208,4 +208,4 @@ Required on `main`: **CI checks**. Branch naming enforced on PRs.
 - Production: `https://visual-era.vercel.app`
 - Sensitive: `middleware.ts`, `lib/didit.ts`, `lib/env.ts`, `app/api/*`
 
-See [docs/COLLABORATION.md](docs/COLLABORATION.md).
+See [docs/COLLABORATION.md](docs/COLLABORATION.md) · Enterprise API access: [docs/ENTERPRISE_AUTOMATION_ACCESS.md](docs/ENTERPRISE_AUTOMATION_ACCESS.md).
