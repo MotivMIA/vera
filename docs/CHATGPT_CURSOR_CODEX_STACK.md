@@ -12,6 +12,7 @@ Daily workflow for Visual Era — each tool used for what it does best. **GitHub
 | **Codex IDE panel** | Local review, fixes, finishing touches | Same machine as Cursor |
 | **Grok** | Optional innovation reviewer | None — ideas only |
 | **GitHub + CI + Vercel** | Safety / governance / production | Merge gate |
+| **Platform agents** | Narrow infra checks (API/MCP/scripts) | Cursor dispatches — no merge authority |
 
 ```text
 ChatGPT Desktop (plan)
@@ -60,7 +61,17 @@ See [CODEX_CLOUD_WORKFLOW.md](./CODEX_CLOUD_WORKFLOW.md).
 - Use **Codex IDE panel** for local review passes, small fixes, and polish on the same branch.
 - `./scripts/agent-status.sh --pre-pr` before shipping.
 
-### 5. PR only when ready
+### 5. Platform checks (infra-related work)
+
+Cursor delegates tedious platform work to **platform agents** (read-only Phase 2):
+
+```bash
+./scripts/ops/run-phase2-verify.sh
+```
+
+Use [prompts/platform-agent-task.md](./prompts/platform-agent-task.md) for scoped tasks. ChatGPT innovation stays in planning; agents execute narrow checks only.
+
+### 6. PR only when ready
 
 Open a PR when the change is a **complete unit** (feature, fix, or doc set) — not every tiny tweak.
 
@@ -73,7 +84,7 @@ Open a PR when the change is a **complete unit** (feature, fix, or doc set) — 
 - CI **CI checks** must pass before merge.
 - Vercel deploys from `main` after merge.
 
-### 6. Mobile / async queue
+### 7. Mobile / async queue
 
 Phone → GitHub Issue → `./scripts/ai-issue-intake.sh` → `./scripts/start-ai-issue-task.sh` — same stack, same ship rules. See [MOBILE_AI_TASK_WORKFLOW.md](./MOBILE_AI_TASK_WORKFLOW.md).
 
@@ -108,5 +119,8 @@ Codex Cloud **never** merges, deploys, or opens PRs.
 
 - [AGENTS.md](../AGENTS.md) — entry point
 - [AI_OPERATING_MODEL.md](./AI_OPERATING_MODEL.md) — authority detail
+- [PLATFORM_AGENT_ARCHITECTURE.md](./PLATFORM_AGENT_ARCHITECTURE.md) — dispatcher + agents
+- [PLATFORM_AGENT_ROLLOUT.md](./PLATFORM_AGENT_ROLLOUT.md) — phases
+- [ENTERPRISE_AUTOMATION_ACCESS.md](./ENTERPRISE_AUTOMATION_ACCESS.md) — token scopes
 - [CODEX_CLOUD_WORKFLOW.md](./CODEX_CLOUD_WORKFLOW.md) — cloud heavy lifts
 - [AI_AGENT_WORKFLOW.md](./AI_AGENT_WORKFLOW.md) — scripts and CI lifecycle

@@ -208,4 +208,15 @@ Required on `main`: **CI checks**. Branch naming enforced on PRs.
 - Production: `https://visual-era.vercel.app`
 - Sensitive: `middleware.ts`, `lib/didit.ts`, `lib/env.ts`, `app/api/*`
 
-See [docs/COLLABORATION.md](docs/COLLABORATION.md) · Enterprise API access: [docs/ENTERPRISE_AUTOMATION_ACCESS.md](docs/ENTERPRISE_AUTOMATION_ACCESS.md).
+See [docs/COLLABORATION.md](docs/COLLABORATION.md) · Enterprise API access: [docs/ENTERPRISE_AUTOMATION_ACCESS.md](docs/ENTERPRISE_AUTOMATION_ACCESS.md) · Platform agents: [docs/PLATFORM_AGENT_ARCHITECTURE.md](docs/PLATFORM_AGENT_ARCHITECTURE.md).
+
+## Platform agents (Cursor dispatches)
+
+Cursor stays lead engineer. For infra checks, delegate to **platform agents** (scripts + MCP read) — see [PLATFORM_AGENT_ARCHITECTURE.md](docs/PLATFORM_AGENT_ARCHITECTURE.md).
+
+| Phase | What |
+|-------|------|
+| Read-only | `./scripts/ops/run-phase2-verify.sh` before infra-adjacent ships |
+| Delegate | [docs/prompts/platform-agent-task.md](docs/prompts/platform-agent-task.md) |
+
+Safest agents first: GitHub → Vercel → Supabase → Resend → Cloudflare → Clerk (restricted). No daemons; no tokens in repo.
