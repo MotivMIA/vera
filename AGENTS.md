@@ -208,7 +208,7 @@ Required on `main`: **CI checks**. Branch naming enforced on PRs.
 - Production: `https://visual-era.vercel.app`
 - Sensitive: `middleware.ts`, `lib/didit.ts`, `lib/env.ts`, `app/api/*`
 
-See [docs/COLLABORATION.md](docs/COLLABORATION.md) · Enterprise API access: [docs/ENTERPRISE_AUTOMATION_ACCESS.md](docs/ENTERPRISE_AUTOMATION_ACCESS.md) · Platform agents: [docs/PLATFORM_AGENT_ARCHITECTURE.md](docs/PLATFORM_AGENT_ARCHITECTURE.md).
+See [docs/COLLABORATION.md](docs/COLLABORATION.md) · Enterprise API access: [docs/ENTERPRISE_AUTOMATION_ACCESS.md](docs/ENTERPRISE_AUTOMATION_ACCESS.md) · Platform agents: [docs/PLATFORM_AGENT_ARCHITECTURE.md](docs/PLATFORM_AGENT_ARCHITECTURE.md) · Repo migration (planned): [docs/GITHUB_REPO_MIGRATION.md](docs/GITHUB_REPO_MIGRATION.md).
 
 ## Platform agents (Cursor dispatches)
 

@@ -1,8 +1,15 @@
 #!/usr/bin/env bash
-# Enable branch protection on main (requires gh auth + admin on MotivMIA/vera).
+# Enable branch protection on main (requires gh auth + admin on target repo).
+# Usage:
+#   ./scripts/setup-github-branch-protection.sh
+#   GITHUB_REPO=visualera/vera ./scripts/setup-github-branch-protection.sh
+# See docs/GITHUB_REPO_MIGRATION.md
 set -euo pipefail
 
-REPO="${GITHUB_REPO:-MotivMIA/vera}"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+# shellcheck source=lib/github-repo.sh
+source "$SCRIPT_DIR/lib/github-repo.sh"
+REPO="$(github_repo_slug)"
 BRANCH="${PROTECTED_BRANCH:-main}"
 REQUIRED_CHECK="${REQUIRED_STATUS_CHECK:-CI checks}"
 
