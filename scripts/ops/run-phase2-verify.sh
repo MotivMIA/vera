@@ -6,6 +6,7 @@ cd "$ROOT"
 
 scripts=(
   verify-github-repo-health.sh
+  verify-git-identity.sh
   verify-cloudflare-dns.sh
   verify-email-dns.sh
   verify-vercel-env.sh
