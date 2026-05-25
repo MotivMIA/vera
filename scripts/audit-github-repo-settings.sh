@@ -21,23 +21,24 @@ fi
 section() { echo ""; echo "=== $* ==="; }
 
 section "Repository: ${REPO}"
-gh repo view "$REPO" --json \
+if ! gh repo view "$REPO" --json \
   name,owner,visibility,defaultBranchRef,url,deleteBranchOnMerge,\
-  mergeCommitAllowed,squashMergeAllowed,rebaseMergeAllowed,\
-  hasIssuesEnabled,hasWikiEnabled,hasProjectsEnabled \
+  mergeCommitAllowed,squashMergeAllowed,rebaseMergeAllowed,isInOrganization \
   --jq '{
     name,
     owner: .owner.login,
-    owner_type: .owner.__typename,
+    owner_type: (if .isInOrganization then "Organization" else "User" end),
     visibility,
     default_branch: .defaultBranchRef.name,
     url,
     delete_branch_on_merge: .deleteBranchOnMerge,
     merge_commit: .mergeCommitAllowed,
     squash_merge: .squashMergeAllowed,
-    rebase_merge: .rebaseMergeAllowed,
-    issues: .hasIssuesEnabled
-  }' 2>/dev/null || { echo "Cannot read repo (permissions or missing)."; exit 1; }
+    rebase_merge: .rebaseMergeAllowed
+  }' 2>/dev/null; then
+  echo "Cannot read repo (permissions or missing)."
+  exit 1
+fi
 
 section "Auto-merge (repo feature)"
 gh api "repos/${REPO}" --jq '{allow_auto_merge, allow_update_branch}' 2>/dev/null || echo "(unavailable)"
