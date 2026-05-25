@@ -15,8 +15,10 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 # shellcheck source=lib/agent-git.sh
 source "$SCRIPT_DIR/lib/agent-git.sh"
+# shellcheck source=lib/github-repo.sh
+source "$SCRIPT_DIR/lib/github-repo.sh"
 
-REPO="${GITHUB_REPO:-MotivMIA/vera}"
+REPO="$(github_repo_slug)"
 TITLE=""
 DRAFT=""
 FAST=1

@@ -5,7 +5,10 @@ ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 # shellcheck source=scripts/ops/lib/common.sh
 source "$ROOT/scripts/ops/lib/common.sh"
 
-REPO="${GITHUB_REPO:-MotivMIA/vera}"
+SCRIPT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+# shellcheck source=lib/github-repo.sh
+source "$SCRIPT_DIR/lib/github-repo.sh"
+REPO="$(github_repo_slug)"
 
 if ! command -v gh >/dev/null 2>&1; then
   ops_skip "gh CLI not installed"

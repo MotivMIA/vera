@@ -280,7 +280,7 @@ This PR addresses the operational identity standardization request and prepares 
 
 ## References
 
-- GitHub: https://github.com/MotivMIA/vera
+- GitHub: https://github.com/Vera-Platforms/vera
 - Branch: `agent-cursor-operational-identity-standardization`
 - Commits in this PR:
   - docs: operational identity and GitHub structure standardization

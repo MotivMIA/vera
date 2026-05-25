@@ -52,7 +52,7 @@ Visual Era / VERA — which services may be automated, how agents authenticate, 
 |-------|--------|
 | **API availability** | REST, GraphQL, GitHub Apps, fine-grained PATs, `gh` CLI |
 | **Recommended auth** | **Primary:** `gh auth login` on developer/CI machines (OAuth). **Agents:** GitHub MCP (`api.githubcopilot.com/mcp`) with PAT from env (not committed). **CI:** `GITHUB_TOKEN` or GitHub App installation token |
-| **Minimum permissions** | Single repo (`MotivMIA/vera`): Contents (read/write on branches), Pull requests, Issues, Actions (read), Metadata (read). No org admin |
+| **Minimum permissions** | Single repo (`Vera-Platforms/vera`): Contents (read/write on branches), Pull requests, Issues, Actions (read), Metadata (read). No org admin |
 | **Allowed AI actions** | Create/update issues and PRs on `agent-*` branches; comment on PRs; read checks and workflow runs; suggest code via PR (merge via CI + auto-merge policy) |
 | **Prohibited AI actions** | Push to `main`; force-push; disable branch protection; create org-wide PATs; add collaborators; modify billing; delete repository |
 | **Human approval** | Organization settings, SSO, billing, default branch protection changes, required reviewers count, repo transfer/delete |
@@ -292,7 +292,7 @@ Suggested GitHub issues (create when starting Phase 2):
 2. **Cloudflare write token + Phase 3 DNS script** — labels: `ops`, `high-risk`
 3. **Clerk production change runbook** — labels: `security`, `documentation`
 
-Existing issues: [#35](https://github.com/MotivMIA/vera/issues/35)–[#38](https://github.com/MotivMIA/vera/issues/38) (security hardening), [#40](https://github.com/MotivMIA/vera/issues/40) (Cloudflare email routing).
+Existing issues: [#35](https://github.com/Vera-Platforms/vera/issues/35)–[#38](https://github.com/Vera-Platforms/vera/issues/38) (security hardening), [#40](https://github.com/Vera-Platforms/vera/issues/40) (Cloudflare email routing).
 
 ---
 

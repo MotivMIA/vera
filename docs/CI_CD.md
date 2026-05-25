@@ -66,7 +66,7 @@ See [AI_AGENT_WORKFLOW.md](./AI_AGENT_WORKFLOW.md) for supervisor/worker roles a
 
 ## Branch protection on `main` (enabled)
 
-`main` is protected on **MotivMIA/vera** with:
+`main` is protected on **Vera-Platforms/vera** with:
 
 | Rule | Setting |
 |------|---------|
@@ -101,7 +101,7 @@ Re-apply after changes: `./scripts/setup-github-branch-protection.sh`
 ### Option C — `gh api` manually
 
 ```bash
-gh api repos/MotivMIA/vera/branches/main/protection \
+gh api repos/Vera-Platforms/vera/branches/main/protection \
   --method PUT \
   --input - <<'EOF'
 {

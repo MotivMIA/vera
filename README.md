@@ -30,7 +30,7 @@ cp .env.example .env.local
 3. Add Clerk, Supabase, and DIDIT credentials.
    - Keep `.env.local` set to local values, especially:
      - `NEXT_PUBLIC_SITE_URL=http://localhost:3001`
-   - In Vercel, set production values separately (for example `https://visual-era.vercel.app`).
+   - In Vercel production, set `NEXT_PUBLIC_SITE_URL=https://visual-era.com`.
    - Do not copy production URLs back into `.env.local`.
 
 4. Run the app:
@@ -46,7 +46,7 @@ npm run dev
 - In Clerk, allow both local and production origins/redirect URLs:
   - `http://localhost:3001`
   - `http://localhost:3000` (optional if you use this port)
-  - `https://visual-era.vercel.app`
+  - `https://visual-era.com`
 
 ## Required Routes
 
@@ -101,16 +101,16 @@ Signed documents are stored in a private Supabase Storage bucket named `signed-d
 
 | | |
 |--|--|
-| **Current repository** | [github.com/natew-dev/vera](https://github.com/natew-dev/vera) |
-| **Intended production org** | [Vera-Platforms/vera](https://github.com/Vera-Platforms/vera) (transfer not done until approved) |
+| **Repository** | [github.com/Vera-Platforms/vera](https://github.com/Vera-Platforms/vera) |
+| **Production URL** | [https://visual-era.com](https://visual-era.com) (Vercel: `visual-era.vercel.app`) |
 
-Migration prep: [docs/ops/GITHUB_ORG_MIGRATION.md](docs/ops/GITHUB_ORG_MIGRATION.md) · `./scripts/check-github-owner-refs.sh`
+Setup: [docs/ops/POST_MIGRATION_CONNECTIONS.md](docs/ops/POST_MIGRATION_CONNECTIONS.md) · [docs/ops/CUSTOM_DOMAIN_SETUP.md](docs/ops/CUSTOM_DOMAIN_SETUP.md)
 
 ## Deployment
 
 Deploy to Vercel and configure the environment variables from `.env.example`.
 
-Production tracks **`main`** after merge. Public URL: **https://visual-era.vercel.app**. If you see Vercel “Authentication Required” (401), you may be on a protected preview/deployment URL — see [docs/VERCEL_DEPLOYMENT.md](docs/VERCEL_DEPLOYMENT.md).
+Production tracks **`main`** after merge. Public URL: **https://visual-era.com**. If you see Vercel “Authentication Required” (401), you may be on a protected preview/deployment URL — see [docs/VERCEL_DEPLOYMENT.md](docs/VERCEL_DEPLOYMENT.md).
 
 Before merging or deploying:
 

@@ -1,13 +1,13 @@
 # GitHub organization migration — natew-dev/vera → Vera-Platforms/vera
 
-**Status:** Preparation only. **No transfer executed.** **Do not delete** the old repo or account.
+**Status:** **Transfer completed** (2026-05). Repo lives at [**Vera-Platforms/vera**](https://github.com/Vera-Platforms/vera). Old URLs redirect.
 
-**Intended production GitHub organization:** [**Vera-Platforms**](https://github.com/Vera-Platforms)
+**Next:** [POST_MIGRATION_CONNECTIONS.md](./POST_MIGRATION_CONNECTIONS.md) · [CUSTOM_DOMAIN_SETUP.md](./CUSTOM_DOMAIN_SETUP.md)
 
 | | |
 |--|--|
-| **Current (live)** | https://github.com/natew-dev/vera |
-| **Target** | https://github.com/Vera-Platforms/vera |
+| **Repository** | https://github.com/Vera-Platforms/vera |
+| **Previous** | natew-dev/vera (redirect) |
 | **Repo name** | `vera` (unchanged) |
 
 ---

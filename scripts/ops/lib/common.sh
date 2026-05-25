@@ -4,7 +4,7 @@
 set -euo pipefail
 
 OPS_DOMAIN="${OPS_DOMAIN:-visual-era.com}"
-OPS_APP_URL="${OPS_APP_URL:-https://visual-era.vercel.app}"
+OPS_APP_URL="${OPS_APP_URL:-https://visual-era.com}"
 
 : "${OPS_FAIL:=0}"
 : "${OPS_SKIP:=0}"

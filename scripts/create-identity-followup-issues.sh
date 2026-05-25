@@ -3,7 +3,10 @@
 # Usage: ./scripts/create-identity-followup-issues.sh
 set -euo pipefail
 
-REPO="${GITHUB_REPO:-MotivMIA/vera}"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+# shellcheck source=lib/github-repo.sh
+source "$SCRIPT_DIR/lib/github-repo.sh"
+REPO="$(github_repo_slug)"
 
 if ! command -v gh >/dev/null 2>&1; then
   echo "error: install GitHub CLI — https://cli.github.com/" >&2

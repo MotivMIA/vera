@@ -54,7 +54,7 @@ You + Cursor (local supervisor)
 ### Cursor Cloud Agents
 
 1. Cursor → **Settings** → confirm **Cloud Agents** enabled for your plan.
-2. Connect **GitHub** (MotivMIA/vera) in Cursor Cloud Agents dashboard.
+2. Connect **GitHub** (Vera-Platforms/vera) in Cursor Cloud Agents dashboard.
 3. Repo includes `.cursor/environment.json` (`npm ci` on agent start).
 4. Optional: save an environment **snapshot** in the dashboard after first successful cloud run.
 

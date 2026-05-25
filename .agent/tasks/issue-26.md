@@ -1,7 +1,7 @@
 # Issue #26 — [mobile]
 
 -identity: issue-26
-github: https://github.com/MotivMIA/vera/issues/26
+github: https://github.com/Vera-Platforms/vera/issues/26
 closes: #26
 
 ## Labels

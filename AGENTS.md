@@ -205,12 +205,12 @@ Required on `main`: **CI checks**. Branch naming enforced on PRs.
 ## Project context
 
 - Next.js 15, Clerk, Supabase, Didit, Vercel.
-- Production: `https://visual-era.vercel.app`
+- Production: `https://visual-era.com` (Vercel alias: `https://visual-era.vercel.app`)
 - Sensitive: `middleware.ts`, `lib/didit.ts`, `lib/env.ts`, `app/api/*`
 
 See [docs/COLLABORATION.md](docs/COLLABORATION.md) · Enterprise API access: [docs/ENTERPRISE_AUTOMATION_ACCESS.md](docs/ENTERPRISE_AUTOMATION_ACCESS.md) · Platform agents: [docs/PLATFORM_AGENT_ARCHITECTURE.md](docs/PLATFORM_AGENT_ARCHITECTURE.md).
 
-**GitHub (repo):** live owner `natew-dev/vera` today · **intended production org:** [`Vera-Platforms/vera`](https://github.com/Vera-Platforms/vera) · prep: [docs/ops/GITHUB_ORG_MIGRATION.md](docs/ops/GITHUB_ORG_MIGRATION.md) · scan: `./scripts/check-github-owner-refs.sh`
+**GitHub (repo):** [`Vera-Platforms/vera`](https://github.com/Vera-Platforms/vera) · connections reset: [docs/ops/POST_MIGRATION_CONNECTIONS.md](docs/ops/POST_MIGRATION_CONNECTIONS.md) · domain: [docs/ops/CUSTOM_DOMAIN_SETUP.md](docs/ops/CUSTOM_DOMAIN_SETUP.md)
 
 ## Platform agents (Cursor dispatches)
 

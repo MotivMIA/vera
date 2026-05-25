@@ -99,8 +99,8 @@ Only after Phase 3 is stable:
 
 | Issue | Topic |
 |-------|--------|
-| [#40](https://github.com/MotivMIA/vera/issues/40) | Cloudflare email routing (human + Phase 3 script) |
-| [#35–#38](https://github.com/MotivMIA/vera/issues/35) | Security hardening backlog |
+| [#40](https://github.com/Vera-Platforms/vera/issues/40) | Cloudflare email routing (human + Phase 3 script) |
+| [#35–#38](https://github.com/Vera-Platforms/vera/issues/35) | Security hardening backlog |
 
 Suggested new issue after this PR merges: **“Platform agents Phase 2 — wire CI dig-only checks”** (`ops`, `enhancement`).
 

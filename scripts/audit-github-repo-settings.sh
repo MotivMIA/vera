@@ -5,7 +5,10 @@
 #   GITHUB_REPO=visualera/vera ./scripts/audit-github-repo-settings.sh
 set -euo pipefail
 
-REPO="${GITHUB_REPO:-MotivMIA/vera}"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+# shellcheck source=lib/github-repo.sh
+source "$SCRIPT_DIR/lib/github-repo.sh"
+REPO="$(github_repo_slug)"
 BRANCH="${PROTECTED_BRANCH:-main}"
 
 if ! command -v gh >/dev/null 2>&1; then

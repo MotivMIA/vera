@@ -9,7 +9,10 @@ source "$SCRIPT_DIR/lib/agent-git.sh"
 # shellcheck source=lib/gh-issue.sh
 source "$SCRIPT_DIR/lib/gh-issue.sh"
 
-REPO="${GITHUB_REPO:-MotivMIA/vera}"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+# shellcheck source=lib/github-repo.sh
+source "$SCRIPT_DIR/lib/github-repo.sh"
+REPO="$(github_repo_slug)"
 ISSUE_NUM="${1:-}"
 
 if [[ -z "$ISSUE_NUM" ]]; then
