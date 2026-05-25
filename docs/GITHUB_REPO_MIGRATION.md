@@ -13,7 +13,8 @@
 | **Recommended name** | **`visualera/vera`** — matches product (VERA), company (Visual Era), minimal rename friction |
 | **Risk level** | **Medium** — low code risk; **Vercel GitHub link** and **local remotes** need deliberate follow-up |
 | **Safe to transfer now?** | **Almost** — confirm checklist below first |
-| **Owner today** | User account **`MotivMIA`** (not an org) → transferring to **`visualera`** org |
+| **Owner today** | User account **`MotivMIA`** → transferring to **`visualera`** account |
+| **Target owner type** | **`visualera` is a GitHub User account** (Visual Era), not an Organization — transfer still yields `visualera/vera` |
 
 ### Alternatives considered
 
@@ -165,7 +166,7 @@ When you transfer **MotivMIA/vera** → **visualera** org (same repo name `vera`
 1. Open https://github.com/MotivMIA/vera/settings
 2. **General** → scroll to **Danger Zone**
 3. **Transfer ownership**
-4. New owner: **`visualera`** (organization)
+4. New owner: **`visualera`** (user account — or organization if you convert/create one later)
 5. Type repository name to confirm: `vera`
 6. Complete transfer
 
@@ -312,7 +313,7 @@ No MotivMIA hardcoding in PR/issue templates today — no change required.
 
 | # | Requirement | Status |
 |---|-------------|--------|
-| 1 | `visualera` org exists and you are owner | ⏳ **Verify** (`gh api orgs/visualera` failed at audit — create org first) |
+| 1 | `visualera` account exists and you control it | ✅ User `visualera` exists (public profile). Confirm you can log in and receive transfers. |
 | 2 | Branch protection documented & script ready | ✅ |
 | 3 | No undeclared Actions secrets to migrate | ✅ (none) |
 | 4 | Workflows committed in repo | ✅ |
@@ -321,7 +322,7 @@ No MotivMIA hardcoding in PR/issue templates today — no change required.
 | 7 | Post-migration PR plan for slug updates | ✅ (this doc) |
 | 8 | Open PRs merged or paused | ⏳ Check before transfer |
 
-**Verdict:** **Ready to transfer after `visualera` org exists** and you accept a short Vercel Git reconnect. **Not ready** if the org does not exist or Vercel cannot be touched during the migration window.
+**Verdict:** **Ready to transfer** — `main` is current, no open PRs, `visualera` user exists. Plan Vercel Git reconnect immediately after transfer.
 
 ---
 
