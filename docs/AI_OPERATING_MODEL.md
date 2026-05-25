@@ -54,7 +54,9 @@ Grok → ChatGPT filter → issue or brief → Cursor / Codex Cloud → PR
 - Repo consistency and ownership enforcement
 - Review of Codex Cloud output
 - **PR creation** and `agent-finish.sh` — sole ship path
+- **Dispatcher** for platform agents (GitHub, Vercel, Supabase, Resend, Cloudflare, Clerk, Docs) — see [PLATFORM_AGENT_ARCHITECTURE.md](./PLATFORM_AGENT_ARCHITECTURE.md)
 - **Does not** push to `main` or bypass CI
+- **Does not** run every infra check itself — delegates read-only scripts (`scripts/ops/`) and MCP reads
 
 ### Codex Cloud (heavy-lift worker)
 
@@ -118,10 +120,26 @@ Human instructions override any agent plan. Human approves high-risk work.
 agent-finish.sh → PR → branch naming + CI checks → auto-merge → production (main)
 ```
 
+## Platform agents (under Cursor)
+
+| Agent | Role |
+|-------|------|
+| **GitHub** | Issues, PRs, CI status |
+| **Vercel** | Deployments, env key checks |
+| **Supabase** | Schema/RLS read; migrations via PR only |
+| **Resend** | Domain / DNS alignment |
+| **Cloudflare** | DNS, email DNS (restricted) |
+| **Clerk** | Redirect/origin checks (restricted) |
+| **Docs/Research** | Official docs, no prod API |
+
+Rollout: [PLATFORM_AGENT_ROLLOUT.md](./PLATFORM_AGENT_ROLLOUT.md) · Task template: [prompts/platform-agent-task.md](./prompts/platform-agent-task.md)
+
 ## Related docs
 
 - [AGENTS.md](../AGENTS.md)
 - [CHATGPT_CURSOR_CODEX_STACK.md](./CHATGPT_CURSOR_CODEX_STACK.md)
+- [PLATFORM_AGENT_ARCHITECTURE.md](./PLATFORM_AGENT_ARCHITECTURE.md)
+- [ENTERPRISE_AUTOMATION_ACCESS.md](./ENTERPRISE_AUTOMATION_ACCESS.md)
 - [CODEX_CLOUD_WORKFLOW.md](./CODEX_CLOUD_WORKFLOW.md)
 - [CODEX_CLOUD_DELEGATION.md](./CODEX_CLOUD_DELEGATION.md) — setup & prompts
 - [AI_AGENT_WORKFLOW.md](./AI_AGENT_WORKFLOW.md)

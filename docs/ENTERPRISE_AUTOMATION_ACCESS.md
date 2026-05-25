@@ -239,15 +239,18 @@ High-risk paths remain **Cursor-owned** per [AGENTS.md](../AGENTS.md): `middlewa
 
 **Goal:** Safe diagnostics runnable locally or in CI with read-only tokens.
 
-| Script (planned) | Service | Checks |
-|------------------|---------|--------|
-| `scripts/ops/verify-cloudflare-dns.sh` | Cloudflare | Apex/www records, proxy status |
-| `scripts/ops/verify-email-dns.sh` | Cloudflare + Resend | MX, SPF, DKIM for transactional domain |
-| `scripts/ops/verify-vercel-env.sh` | Vercel | Required env **keys** present per environment (not values) |
-| `scripts/ops/verify-resend-domain.sh` | Resend | Domain verified, DNS alignment |
-| `scripts/ops/verify-clerk-redirects.sh` | Clerk | Allowed origins / redirect URLs vs app URLs |
+| Script | Service | Checks |
+|--------|---------|--------|
+| `scripts/ops/verify-github-repo-health.sh` | GitHub | Open PRs, branch protection |
+| `scripts/ops/verify-cloudflare-dns.sh` | Cloudflare | Apex/www records; optional CF API read |
+| `scripts/ops/verify-email-dns.sh` | Cloudflare + Resend | MX, SPF, DKIM (dig) |
+| `scripts/ops/verify-vercel-env.sh` | Vercel | Required env **keys** (not values) |
+| `scripts/ops/verify-resend-domain.sh` | Resend | Domain list via API |
+| `scripts/ops/verify-clerk-redirects.sh` | Clerk | Redirect env + optional instance read |
 
-**Requirements:** Tokens from 1Password or env (gitignored); exit non-zero on drift; no writes; log redacted output only.
+**Runner:** `./scripts/ops/run-phase2-verify.sh` · See [scripts/ops/README.md](../scripts/ops/README.md) and [PLATFORM_AGENT_ARCHITECTURE.md](PLATFORM_AGENT_ARCHITECTURE.md).
+
+**Requirements:** Tokens from 1Password or env (gitignored); `SKIP` when unset; `FAIL` on drift; no writes; redacted logs only.
 
 ---
 
@@ -293,4 +296,4 @@ Existing issues: [#35](https://github.com/MotivMIA/vera/issues/35)–[#38](https
 
 ---
 
-**Last updated:** Phase 1 documentation — no live automation credentials in repository.
+**Last updated:** Phase 2 read-only scripts shipped; Phase 3 writes not implemented. No credentials in repository.
