@@ -97,6 +97,15 @@ Signed documents are stored in a private Supabase Storage bucket named `signed-d
 - Iterate: `./scripts/agent-quick-check.sh`
 - Ship: `./scripts/agent-finish.sh "[cursor] title"`
 
+## GitHub
+
+| | |
+|--|--|
+| **Current repository** | [github.com/natew-dev/vera](https://github.com/natew-dev/vera) |
+| **Intended production org** | [Vera-Platforms/vera](https://github.com/Vera-Platforms/vera) (transfer not done until approved) |
+
+Migration prep: [docs/ops/GITHUB_ORG_MIGRATION.md](docs/ops/GITHUB_ORG_MIGRATION.md) · `./scripts/check-github-owner-refs.sh`
+
 ## Deployment
 
 Deploy to Vercel and configure the environment variables from `.env.example`.

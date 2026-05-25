@@ -107,4 +107,4 @@ else
 fi
 
 echo ""
-echo "Done. Compare output before/after migration. See docs/GITHUB_REPO_MIGRATION.md"
+echo "Done. Compare output before/after migration. See docs/ops/GITHUB_ORG_MIGRATION.md"

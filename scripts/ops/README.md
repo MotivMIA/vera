@@ -22,6 +22,14 @@ Read-only checks for platform agents and humans. **No writes.** No secrets commi
 
 Store tokens in 1Password or local gitignored env — see [docs/ENTERPRISE_AUTOMATION_ACCESS.md](../../docs/ENTERPRISE_AUTOMATION_ACCESS.md).
 
+## GitHub org migration
+
+```bash
+./scripts/check-github-owner-refs.sh
+```
+
+See [docs/ops/GITHUB_ORG_MIGRATION.md](../../docs/ops/GITHUB_ORG_MIGRATION.md).
+
 ## Exit codes
 
 - `SKIP` — token not configured (not a failure in Phase 2 rollout)
