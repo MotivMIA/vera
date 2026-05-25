@@ -223,6 +223,8 @@ Email Routing (Cloudflare)
 | `docs/ACCOUNT_STRUCTURE.md` | 12 KB | Account reference and access matrix |
 | `docs/GIT_CONFIG_SETUP.md` | 7.1 KB | Quick setup guide for developers |
 | `docs/IDENTITY_STANDARDIZATION_SUMMARY.md` | This file | Overview of changes |
+| `docs/ops/TEAM_ANNOUNCEMENT.md` | — | Copy-paste team announcement |
+| `docs/ops/CLOUDFLARE_EMAIL_ROUTING.md` | — | Email routing checklist |
 
 **Total**: ~32.7 KB of documentation (lightweight, config-only changes)
 
@@ -279,7 +281,7 @@ This PR addresses the operational identity standardization request and prepares 
 ## References
 
 - GitHub: https://github.com/MotivMIA/vera
-- Branch: `cursor/operational-identity-standardization`
+- Branch: `agent-cursor-operational-identity-standardization`
 - Commits in this PR:
   - docs: operational identity and GitHub structure standardization
   - docs: account structure and ownership reference
