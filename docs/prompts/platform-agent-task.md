@@ -10,7 +10,7 @@ Copy into Cursor (or ChatGPT → Cursor handoff). **Cursor dispatches;** the pla
 Platform agent: <GitHub | Vercel | Supabase | Cloudflare | Resend | Clerk | Docs/Research>
 Risk: <low | medium | high>
 Phase: <2 read-only | 3 controlled write — requires human approval ID>
-Related issue: MotivMIA/vera#<number>
+Related issue: Vera-Platforms/vera#<number>
 ```
 
 ---

@@ -28,7 +28,7 @@ if [[ -f "$ROOT/.env.local" ]]; then
     ops_warn "NEXT_PUBLIC_SITE_URL missing or empty in .env.local"
   fi
 else
-  ops_skip "No .env.local — production URLs must match ${OPS_APP_URL} in Vercel"
+  ops_skip "No .env.local — production must use ${OPS_APP_URL} in Vercel (and Clerk allowed origins)"
 fi
 
 if ops_env_present CLERK_SECRET_KEY; then

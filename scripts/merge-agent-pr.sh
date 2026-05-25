@@ -7,8 +7,9 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 # shellcheck source=lib/agent-git.sh
 source "$SCRIPT_DIR/lib/agent-git.sh"
-
-REPO="${GITHUB_REPO:-MotivMIA/vera}"
+# shellcheck source=lib/github-repo.sh
+source "$SCRIPT_DIR/lib/github-repo.sh"
+REPO="$(github_repo_slug)"
 MERGE_METHOD="squash merge"
 
 if ! command -v gh >/dev/null 2>&1; then

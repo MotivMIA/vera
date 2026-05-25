@@ -3,7 +3,7 @@
 # Usage: ./scripts/production-clerk-proxy-smoke.sh [base-url]
 set -euo pipefail
 
-BASE_URL="${1:-${PRODUCTION_URL:-https://visual-era.vercel.app}}"
+BASE_URL="${1:-${PRODUCTION_URL:-https://visual-era.com}}"
 BASE_URL="${BASE_URL%/}"
 
 echo "Checking Clerk script setup on ${BASE_URL}/sign-in ..."

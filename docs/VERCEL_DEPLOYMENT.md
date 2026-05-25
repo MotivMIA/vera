@@ -4,7 +4,11 @@
 
 Use this for users and `NEXT_PUBLIC_SITE_URL`:
 
-**https://visual-era.vercel.app**
+**https://visual-era.com** (canonical)
+
+Vercel default alias (keep during transition): **https://visual-era.vercel.app**
+
+Custom domain setup: [ops/CUSTOM_DOMAIN_SETUP.md](./ops/CUSTOM_DOMAIN_SETUP.md)
 
 | Check | Result |
 |-------|--------|

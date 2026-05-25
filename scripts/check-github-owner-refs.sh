@@ -55,7 +55,7 @@ section() { echo ""; echo "=== $* ==="; }
 section "GitHub ownership reference scan"
 echo "Repo root: ${ROOT}"
 echo "Intended target org: Vera-Platforms/vera"
-echo "Current production remote (verify): natew-dev/vera"
+echo "Canonical repo slug: Vera-Platforms/vera"
 echo ""
 
 total_github=0

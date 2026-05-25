@@ -29,7 +29,7 @@ VERA (platform/product)
 **Account**: `MotivMIA` (GitHub user)  
 **Email**: Personal Gmail (for account login and recovery)  
 **Purpose**: Primary contributor identity across all repositories  
-**Repositories**: All VERA stack repositories are owned by the `MotivMIA` GitHub organization
+**Repositories**: VERA stack repositories are owned by the [**Vera-Platforms**](https://github.com/Vera-Platforms) GitHub organization (e.g. `vera`)
 
 **Configuration**:
 ```bash
@@ -121,10 +121,10 @@ security@visual-era.com  → vera.platforms@gmail.com
 
 ## Repository Ownership
 
-All repositories in the VERA stack are owned by the **MotivMIA GitHub Organization**:
+All repositories in the VERA stack are owned by the **Vera-Platforms** GitHub organization:
 
 ```
-https://github.com/MotivMIA/vera
+https://github.com/Vera-Platforms/vera
 https://github.com/MotivMIA/{other-repos}
 ```
 
@@ -270,7 +270,7 @@ git commit -m "Your message"
 │  │                                                          │  │
 │  │  ┌──────────────────────────────────────────────────┐   │  │
 │  │  │   VERA Platform (Product/Repository)             │   │  │
-│  │  │   github.com/MotivMIA/vera                       │   │  │
+│  │  │   github.com/Vera-Platforms/vera                       │   │  │
 │  │  │                                                   │   │  │
 │  │  │  Contributors:                                    │   │  │
 │  │  │    - GitHub: MotivMIA user                        │   │  │

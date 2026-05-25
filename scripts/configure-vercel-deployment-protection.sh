@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Set Vercel Deployment Protection so production is public (preview stays protected).
-# Requires: vercel CLI logged in (motivmia) with access to MotivMIA/vera project.
+# Requires: vercel CLI logged in with access to visual-era project (Vera-Platforms/vera on GitHub).
 # Does not store secrets in the repo.
 set -euo pipefail
 

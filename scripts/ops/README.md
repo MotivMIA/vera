@@ -28,7 +28,11 @@ Store tokens in 1Password or local gitignored env — see [docs/ENTERPRISE_AUTOM
 ./scripts/check-github-owner-refs.sh
 ```
 
-See [docs/ops/GITHUB_ORG_MIGRATION.md](../../docs/ops/GITHUB_ORG_MIGRATION.md).
+See [docs/ops/GITHUB_ORG_MIGRATION.md](../../docs/ops/GITHUB_ORG_MIGRATION.md) · [POST_MIGRATION_CONNECTIONS.md](../../docs/ops/POST_MIGRATION_CONNECTIONS.md) · [CUSTOM_DOMAIN_SETUP.md](../../docs/ops/CUSTOM_DOMAIN_SETUP.md).
+
+```bash
+./scripts/ops/verify-custom-domain.sh
+```
 
 ## Exit codes
 
