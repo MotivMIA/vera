@@ -18,6 +18,7 @@ Read-only checks for platform agents and humans. **No writes.** No secrets commi
 | `verify-vercel-env.sh` | Vercel | Optional: `VERCEL_TOKEN` + Vercel CLI |
 | `verify-resend-domain.sh` | Resend | `RESEND_API_KEY` |
 | `verify-clerk-redirects.sh` | Clerk | Optional: `CLERK_SECRET_KEY` |
+| `verify-git-identity.sh` | GitHub / onboarding | `gh auth` optional |
 
 Store tokens in 1Password or local gitignored env — see [docs/ENTERPRISE_AUTOMATION_ACCESS.md](../../docs/ENTERPRISE_AUTOMATION_ACCESS.md).
 
