@@ -208,7 +208,9 @@ Required on `main`: **CI checks**. Branch naming enforced on PRs.
 - Production: `https://visual-era.vercel.app`
 - Sensitive: `middleware.ts`, `lib/didit.ts`, `lib/env.ts`, `app/api/*`
 
-See [docs/COLLABORATION.md](docs/COLLABORATION.md) · Enterprise API access: [docs/ENTERPRISE_AUTOMATION_ACCESS.md](docs/ENTERPRISE_AUTOMATION_ACCESS.md) · Platform agents: [docs/PLATFORM_AGENT_ARCHITECTURE.md](docs/PLATFORM_AGENT_ARCHITECTURE.md) · Repo migration (planned): [docs/GITHUB_REPO_MIGRATION.md](docs/GITHUB_REPO_MIGRATION.md).
+See [docs/COLLABORATION.md](docs/COLLABORATION.md) · Enterprise API access: [docs/ENTERPRISE_AUTOMATION_ACCESS.md](docs/ENTERPRISE_AUTOMATION_ACCESS.md) · Platform agents: [docs/PLATFORM_AGENT_ARCHITECTURE.md](docs/PLATFORM_AGENT_ARCHITECTURE.md).
+
+**GitHub (repo):** live owner `natew-dev/vera` today · **intended production org:** [`Vera-Platforms/vera`](https://github.com/Vera-Platforms/vera) · prep: [docs/ops/GITHUB_ORG_MIGRATION.md](docs/ops/GITHUB_ORG_MIGRATION.md) · scan: `./scripts/check-github-owner-refs.sh`
 
 ## Platform agents (Cursor dispatches)
 

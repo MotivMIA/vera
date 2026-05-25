@@ -1,5 +1,7 @@
 # GitHub repository migration — MotivMIA/vera → visualera/vera
 
+> **Superseded.** Use **[docs/ops/GITHUB_ORG_MIGRATION.md](ops/GITHUB_ORG_MIGRATION.md)** for the current plan: **natew-dev/vera → Vera-Platforms/vera**. This file is kept for historical context only.
+
 **Status:** Pre-migration preparation only. **No transfer executed.** **Old repo must not be deleted.**
 
 **Recommended target:** `visualera/vera` → https://github.com/visualera/vera
