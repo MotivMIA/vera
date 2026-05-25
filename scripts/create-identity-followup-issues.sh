@@ -15,8 +15,11 @@ ensure_label() {
   if gh label list --repo "$REPO" --json name -q '.[].name' | grep -qxF "$name"; then
     echo "label exists: $name"
   else
-    gh label create "$name" --repo "$REPO" --color "$color" --description "$desc"
-    echo "created label: $name"
+    if gh label create "$name" --repo "$REPO" --color "$color" --description "$desc" 2>/dev/null; then
+      echo "created label: $name"
+    else
+      echo "label exists: $name"
+    fi
   fi
 }
 
