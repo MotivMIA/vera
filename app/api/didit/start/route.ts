@@ -6,7 +6,7 @@ import { rateLimit } from "@/lib/rate-limit";
 import { createSecureToken, getClientIp, hashToken } from "@/lib/security";
 import { getSupabaseAdmin } from "@/lib/supabase/server";
 import { getSiteUrl } from "@/lib/env";
-import { hasConsentAccepted } from "@/lib/onboarding/status";
+import { ensureUserRow, hasConsentAccepted } from "@/lib/onboarding/status";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -58,6 +58,8 @@ export async function POST(request: NextRequest) {
   const supabase = getSupabaseAdmin();
 
   if (supabase) {
+    await ensureUserRow(userId);
+
     await supabase.from("onboarding_status").upsert({
       clerk_user_id: userId,
       current_step: "identity",

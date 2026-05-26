@@ -1,4 +1,5 @@
-import { auth, currentUser } from "@clerk/nextjs/server";
+import { currentUser } from "@clerk/nextjs/server";
+import { getAuthenticatedUserId } from "@/lib/auth/session";
 import { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 import { buildSigningPacket } from "@/lib/jotform";
@@ -10,8 +11,7 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function POST(request: NextRequest) {
-  const authState = await auth().catch(() => ({ userId: process.env.NODE_ENV === "development" ? "local-preview-user" : null }));
-  const userId = authState.userId;
+  const userId = await getAuthenticatedUserId();
   if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const user = await currentUser().catch(() => null);

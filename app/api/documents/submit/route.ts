@@ -1,5 +1,5 @@
-import { auth } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
+import { getAuthenticatedUserId } from "@/lib/auth/session";
 import { z } from "zod";
 import { buildSignedDocumentPdf } from "@/lib/onboarding/pdf";
 import { recordAuditLog } from "@/lib/onboarding/audit";
@@ -53,8 +53,7 @@ async function ensureDocumentBucket(supabase: ReturnType<typeof getSupabaseAdmin
 }
 
 export async function POST(request: NextRequest) {
-  const authState = await auth().catch(() => ({ userId: process.env.NODE_ENV === "development" ? "local-preview-user" : null }));
-  const userId = authState.userId;
+  const userId = await getAuthenticatedUserId();
   if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
   const parsed = submitSchema.safeParse(await request.json().catch(() => null));

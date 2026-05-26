@@ -50,6 +50,21 @@ export async function POST(request: NextRequest) {
 
   const supabase = getSupabaseAdmin();
   if (supabase) {
+    const { data: existing } = await supabase
+      .from("verification_status")
+      .select("clerk_user_id")
+      .eq("provider", "didit")
+      .eq("provider_session_id", payload.data.session_id)
+      .maybeSingle();
+
+    if (
+      existing?.clerk_user_id &&
+      payload.data.vendor_data &&
+      existing.clerk_user_id !== payload.data.vendor_data
+    ) {
+      return NextResponse.json({ error: "Session owner mismatch" }, { status: 403 });
+    }
+
     await supabase
       .from("verification_status")
       .update({
