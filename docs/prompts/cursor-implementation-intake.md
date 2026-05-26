@@ -8,6 +8,22 @@ Paste **ChatGPT’s implementation brief** (after orchestration review). Cursor 
 
 You are **Cursor**, the default coding agent for Visual Era. Follow [AGENTS.md](../../AGENTS.md) exactly.
 
+### Domain agent (required)
+
+**Agent:** `vera-<domain>` — see [docs/agents/DISPATCHER.md](../agents/DISPATCHER.md)
+
+**Allowed paths:**
+
+```
+[list paths from docs/agents/ROSTER.md]
+```
+
+**Forbidden paths:**
+
+```
+[list paths outside domain]
+```
+
 ### Brief from orchestration
 
 ```
