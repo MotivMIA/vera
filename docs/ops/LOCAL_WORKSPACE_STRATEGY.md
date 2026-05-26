@@ -44,7 +44,7 @@ Do **not** use `~/Projects` unless you explicitly create and standardize on that
 
 | Goal | How parent folder helps |
 |------|-------------------------|
-| Fewer Cursor sandbox prompts | Trust each repo once; **separate Cursor windows** per repo (see below) |
+| Fewer Cursor sandbox prompts | **`~/.cursor/sandbox.json`** grants `~/Documents/projects` (see [CURSOR_SANDBOX_SETUP.md](./CURSOR_SANDBOX_SETUP.md)) |
 | Easier repo switching | Predictable paths under `~/Documents/projects`; optional shell helpers |
 | Shared tooling | `shared-tools` repo on PATH or sourced helpers — not copied into each app |
 | Keep sandbox on | Per-repo isolation preserved; avoid disabling sandbox globally |
@@ -72,7 +72,7 @@ Do **not** use `~/Projects` unless you explicitly create and standardize on that
 |------|----------|-------------------|
 | Git conditional config | `docs/GIT_CONFIG_SETUP.md` — `[includeIf "gitdir:..."]` | Use **`~/Documents/projects/visual-era/`** (trailing slash) |
 | Developer docs | `docs/OPERATIONAL_IDENTITY.md` — `cd /path/to/personal-repo` | Update examples only |
-| Cursor / IDE | User settings, recent folders, MCP project config | **VERA only:** `visual-era.code-workspace` or folder `visual-era` — **not** ai-ops in same window |
+| Cursor / IDE | Open folder `visual-era`; sandbox via `~/.cursor/sandbox.json` | See [CURSOR_SANDBOX_SETUP.md](./CURSOR_SANDBOX_SETUP.md) |
 | Shell aliases | `~/.zshrc` — `cd .../visual-era` | Point to `~/Documents/projects/visual-era` |
 
 ### Not in repo (machine-local — verify after move)
@@ -127,33 +127,33 @@ No automatic cross-repo imports in application code unless explicitly designed.
 
 ## Sandbox workflow guidance (Cursor)
 
-### Recommended approach — **separate workspaces** (not VERA + ai-ops together)
+### Recommended: open `visual-era`, grant sandbox access to parent `projects/`
 
-| Repo | Open in Cursor |
-|------|----------------|
-| **VERA (product)** | `~/Documents/projects/visual-era.code-workspace` **or** **File → Open Folder** → `~/Documents/projects/visual-era` |
-| **ai-ops (planning)** | **Separate window:** `~/Documents/projects/ai-ops/ai-ops.code-workspace` or open folder `~/Documents/projects/ai-ops` |
+1. **`~/.cursor/sandbox.json`** — set `additionalReadwritePaths` to **`/Users/<you>/Documents/projects`** so the agent can read/write sibling repos (`ai-ops`, `shared-tools`, …) without repeated approval. Full steps: [CURSOR_SANDBOX_SETUP.md](./CURSOR_SANDBOX_SETUP.md).
 
-**Do not** add ai-ops to the VERA workspace. They are sibling folders on disk, not one product. A combined multi-root workspace blurs that boundary.
+2. **Open Cursor on the product repo** — **File → Open Folder** → `~/Documents/projects/visual-era`. No `.code-workspace` file required.
 
-1. **Keep sandbox enabled** — do not disable globally for convenience.
-2. **Grant network** when scripts need `gh`, `npm`, Vercel, etc.
-3. **Council / Grok / Claude** → work in **ai-ops** window; paste approved brief into **VERA** window for implementation.
-4. **One writer per repo per task** — unchanged from [AGENTS.md](../../AGENTS.md).
+3. **Keep sandbox enabled** — do not set `"type": "insecure_none"` globally unless you accept no sandbox.
 
-### What sandbox does *not* require
+4. **Auto-Run** — **Cursor Settings → Agents → Auto-Run:** **Allowlist (with Sandbox)**.
 
-- Repos do not need to live under a single git root.
-- Repos do not need shared `node_modules`.
-- CI does not depend on local path.
+5. **Repo boundaries unchanged** — council in `ai-ops`; implement only approved briefs in `visual-era`. Sibling filesystem access ≠ one git repo.
 
-### Cursor project settings
+Optional: second Cursor window on `~/Documents/projects/ai-ops` for planning-only work.
+
+### What this does *not* do
+
+- Does not merge git history or create a monorepo.
+- Does not add ai-ops code to the VERA repo.
+- Does not replace PR/CI rules in [AGENTS.md](../../AGENTS.md).
+
+### Cursor project files
 
 | File | Notes |
 |------|-------|
-| `.cursor/environment.json` | Only `npm ci` — portable |
-| `.cursor/mcp.env` | Local secrets — move with repo; never commit |
-| `.cursor/settings.json` | If untracked, per-machine |
+| `~/.cursor/sandbox.json` | User machine — projects parent path |
+| `.cursor/environment.json` | `npm ci` on open — portable |
+| `.cursor/mcp.env` | Local secrets — never commit |
 
 ---
 
@@ -257,7 +257,7 @@ Optional `~/Documents/projects/README.md` or `shared-tools/manifest.json` listin
 3. **Verify** remotes unchanged:  
    `git -C ~/Documents/projects/visual-era remote -v` → `Vera-Platforms/vera`  
    `git -C ~/Documents/projects/ai-ops remote -v` → `natew-dev/ai-ops`
-4. **Cursor (VERA):** open `~/Documents/projects/visual-era.code-workspace` only — ai-ops in its own window when needed.
+4. **Cursor:** open `~/Documents/projects/visual-era`; confirm `~/.cursor/sandbox.json` includes `Documents/projects`.
 5. **Git:** set `includeIf "gitdir:~/Documents/projects/visual-era/"` in `~/.gitconfig` (see [GIT_CONFIG_SETUP.md](../GIT_CONFIG_SETUP.md)).
 6. **Run** in VERA: `./scripts/agent-quick-check.sh`.
 7. **Run** `./scripts/ops/verify-git-identity.sh` if needed.

@@ -15,7 +15,7 @@ Read this file first.
 
 **Hub:** [docs/CHATGPT_CURSOR_CODEX_STACK.md](docs/CHATGPT_CURSOR_CODEX_STACK.md) · [docs/AI_OPERATING_MODEL.md](docs/AI_OPERATING_MODEL.md) · Codex Cloud: [docs/CODEX_CLOUD_WORKFLOW.md](docs/CODEX_CLOUD_WORKFLOW.md) · Local workspace: [docs/ops/LOCAL_WORKSPACE_STRATEGY.md](docs/ops/LOCAL_WORKSPACE_STRATEGY.md)
 
-**AI council / planning (external):** [natew-dev/ai-ops](https://github.com/natew-dev/ai-ops) — separate repo and **separate Cursor window**; not inside this repo. Implement only approved briefs here.
+**AI council / planning (external):** [natew-dev/ai-ops](https://github.com/natew-dev/ai-ops) — sibling under `~/Documents/projects`; not in this repo. Local sandbox: [docs/ops/CURSOR_SANDBOX_SETUP.md](docs/ops/CURSOR_SANDBOX_SETUP.md). Implement only approved briefs here.
 
 ## Golden rules
 
