@@ -1,5 +1,5 @@
-import { auth } from "@clerk/nextjs/server";
 import { NextRequest, NextResponse } from "next/server";
+import { getAuthenticatedUserId } from "@/lib/auth/session";
 import { decryptMetadata } from "@/lib/security";
 import { retrieveDiditSession, sanitizeDiditProviderStatus } from "@/lib/didit";
 import { getSupabaseAdmin } from "@/lib/supabase/server";
@@ -9,8 +9,7 @@ export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 export async function GET(request: NextRequest) {
-  const authState = await auth().catch(() => ({ userId: process.env.NODE_ENV === "development" ? "local-preview-user" : null }));
-  const userId = authState.userId;
+  const userId = await getAuthenticatedUserId();
   const requestedSessionId = request.nextUrl.searchParams.get("sessionId");
   if (!userId && !requestedSessionId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 

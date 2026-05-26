@@ -29,9 +29,14 @@ export function verifyWebhookSignature(rawBody: string, signature: string | null
 }
 
 function getEncryptionKey() {
-  const key = process.env.SUPABASE_SERVICE_ROLE_KEY?.slice(0, 32);
-  if (!key || key.length < 32) return null;
-  return Buffer.from(key);
+  const dedicated = process.env.AUDIT_ENCRYPTION_KEY?.trim();
+  if (dedicated && dedicated.length >= 32) {
+    return Buffer.from(dedicated.slice(0, 32), "utf8");
+  }
+
+  const legacy = process.env.SUPABASE_SERVICE_ROLE_KEY?.slice(0, 32);
+  if (!legacy || legacy.length < 32) return null;
+  return Buffer.from(legacy, "utf8");
 }
 
 export function encryptMetadata(metadata: unknown) {

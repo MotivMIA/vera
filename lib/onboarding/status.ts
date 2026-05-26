@@ -73,6 +73,22 @@ export async function getOnboardingSnapshot(clerkUserId: string): Promise<Onboar
   };
 }
 
+export async function ensureUserRow(
+  clerkUserId: string,
+  options?: { email?: string | null; fullName?: string | null },
+) {
+  const supabase = getSupabaseAdmin();
+  if (!supabase) return;
+
+  const now = new Date().toISOString();
+  await supabase.from("users").upsert({
+    clerk_user_id: clerkUserId,
+    email: options?.email ?? null,
+    full_name: options?.fullName ?? null,
+    updated_at: now,
+  });
+}
+
 export async function recordConsentAccepted(
   clerkUserId: string,
   options?: { email?: string | null; fullName?: string | null },
@@ -94,12 +110,7 @@ export async function recordConsentAccepted(
     return;
   }
 
-  await supabase.from("users").upsert({
-    clerk_user_id: clerkUserId,
-    email: options?.email ?? null,
-    full_name: options?.fullName ?? null,
-    updated_at: now,
-  });
+  await ensureUserRow(clerkUserId, options);
 
   await supabase.from("onboarding_status").upsert({
     clerk_user_id: clerkUserId,
