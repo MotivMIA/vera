@@ -13,9 +13,9 @@ Read this file first.
 | **GitHub + CI** | Release gate — PR, checks, auto-merge; **main** protected |
 | **Grok** | Optional innovation reviewer only — no repo access |
 
-**Hub:** [docs/CHATGPT_CURSOR_CODEX_STACK.md](docs/CHATGPT_CURSOR_CODEX_STACK.md) · [docs/AI_OPERATING_MODEL.md](docs/AI_OPERATING_MODEL.md) · Codex Cloud: [docs/CODEX_CLOUD_WORKFLOW.md](docs/CODEX_CLOUD_WORKFLOW.md) · Local workspace: [docs/ops/LOCAL_WORKSPACE_STRATEGY.md](docs/ops/LOCAL_WORKSPACE_STRATEGY.md)
+**Hub:** [docs/CHATGPT_CURSOR_CODEX_STACK.md](docs/CHATGPT_CURSOR_CODEX_STACK.md) · [docs/AI_OPERATING_MODEL.md](docs/AI_OPERATING_MODEL.md) · Codex Cloud: [docs/CODEX_CLOUD_WORKFLOW.md](docs/CODEX_CLOUD_WORKFLOW.md) · Workspace: [docs/ops/LOCAL_WORKSPACE_STRATEGY.md](docs/ops/LOCAL_WORKSPACE_STRATEGY.md)
 
-**AI council / planning (external):** [natew-dev/ai-ops](https://github.com/natew-dev/ai-ops) — sibling under `~/Documents/projects`; not in this repo. Local sandbox: [docs/ops/CURSOR_SANDBOX_SETUP.md](docs/ops/CURSOR_SANDBOX_SETUP.md). Implement only approved briefs here.
+**Repo scope:** Visual Era product only (`Vera-Platforms/vera`). Open Cursor on this repo root — not a parent multi-repo folder. Do not add planning/orchestration scaffolding, council workflows, or references to other projects in this codebase.
 
 ## Golden rules
 

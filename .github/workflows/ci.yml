@@ -78,6 +78,10 @@ jobs:
         if: steps.filter.outputs.docs_only != 'true'
         run: npm ci
 
+      - name: Repo boundary check
+        if: steps.filter.outputs.docs_only != 'true'
+        run: chmod +x ./scripts/check-repo-boundaries.sh && ./scripts/check-repo-boundaries.sh
+
       - name: Lint and typecheck
         if: steps.filter.outputs.docs_only != 'true'
         run: |
