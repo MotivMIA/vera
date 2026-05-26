@@ -1,306 +1,71 @@
-# Local workspace strategy — ~/Documents/projects multi-repo layout
+# Local workspace — Visual Era (`visual-era`)
 
-**Status:** Planning / readiness only — **no migration executed** by this document.  
-**Audit date:** 2026-05-25  
-**Scope:** VERA (`Vera-Platforms/vera`) assumptions; applies to sibling repos under a shared parent folder.
+**Scope:** This repository only — [Vera-Platforms/vera](https://github.com/Vera-Platforms/vera).
 
 ---
 
-## Executive summary
+## Canonical layout
 
-| Verdict | Detail |
-|---------|--------|
-| **Repo scripts** | ✅ **Portable** — roots derived from `scripts/` location (`AGENT_GIT_ROOT`, `ROOT`), not absolute Mac paths |
-| **CI / deploy** | ✅ **Unaffected** — GitHub Actions and Vercel use repo-relative config |
-| **Parent folder** | ✅ **`~/Documents/projects`** — already in use; no move to `~/Projects` planned |
-| **Manual follow-ups** | ⚠️ Git `includeIf` paths, Cursor trusted workspace, shell aliases, per-repo `.env*` |
-| **Not a monorepo** | Separate git history per folder; no shared `package.json` workspace required |
+| Item | Value |
+|------|--------|
+| **Local folder** | `~/Documents/projects/visual-era` (name is arbitrary; remote is authoritative) |
+| **GitHub** | `Vera-Platforms/vera` |
+| **Production** | https://visual-era.com |
+| **Cursor workspace** | Open **this folder** — not a parent directory |
 
-**Current machine state (observed):**
-
-| Path | Repo |
-|------|------|
-| `~/Documents/projects/visual-era` | VERA (this repo) |
-| `~/Documents/projects/ai-ops` | Personal ai-ops ([natew-dev/ai-ops](https://github.com/natew-dev/ai-ops)) |
-
-**Canonical parent path:** `~/Documents/projects` (macOS: `Documents/projects` under your home folder).  
-Do **not** use `~/Projects` unless you explicitly create and standardize on that later.
-
-**Intended layout (same parent — organize in place):**
-
-```text
-~/Documents/projects/
-├── visual-era/          # Vera-Platforms/vera (product only)
-├── ai-ops/              # natew-dev/ai-ops (council / AI ops scaffolding)
-├── motivmia-site/       # separate repo (future)
-├── trading-ecosystem/   # separate repo (future)
-├── shared-tools/        # separate repo (future) — cross-repo scripts, templates
-└── experiments/         # separate repo or sandbox clones (future)
-```
+Other projects on your machine use **separate folders and separate Cursor windows**. They are not documented here.
 
 ---
 
-## Goals (why a shared parent)
+## Script portability
 
-| Goal | How parent folder helps |
-|------|-------------------------|
-| Fewer Cursor sandbox prompts | **`~/.cursor/sandbox.json`** grants `~/Documents/projects` (see [CURSOR_SANDBOX_SETUP.md](./CURSOR_SANDBOX_SETUP.md)) |
-| Easier repo switching | Predictable paths under `~/Documents/projects`; optional shell helpers |
-| Shared tooling | `shared-tools` repo on PATH or sourced helpers — not copied into each app |
-| Keep sandbox on | Per-repo isolation preserved; avoid disabling sandbox globally |
-| Multi-project orchestration | ChatGPT/Cursor context: list repos by role, not one git root |
-| Repo isolation | Independent remotes, branches, CI, secrets |
+VERA shell scripts resolve the repo root from their own path (`AGENT_GIT_ROOT`, `ROOT="$(cd "$(dirname "$0")/.." && pwd)"`). Cloning to a different path does not break agent or ops scripts.
 
----
+**Machine-local (update if you move the clone):**
 
-## What we reviewed in VERA
-
-### Script root resolution (portable)
-
-| Pattern | Example | Move-safe? |
-|---------|---------|------------|
-| `AGENT_GIT_ROOT` | `scripts/lib/agent-git.sh` → repo root | ✅ Yes |
-| `ROOT="$(cd "$(dirname "$0")/.." && pwd)"` | `agent-quick-check.sh`, `scripts/ops/*` | ✅ Yes |
-| `GITHUB_REPO` override | `scripts/lib/github-repo.sh` | ✅ Yes (env, not path) |
-| `npm ci` / `node_modules` | Run inside repo after `cd "$ROOT"` | ✅ Yes (reinstall if needed) |
-
-**Conclusion:** No VERA **shell scripts** embed `~/Documents/projects` or `/Users/...` for repo operations.
-
-### Intentionally absolute (update manually after move)
-
-| Item | Location | Action after move |
-|------|----------|-------------------|
-| Git conditional config | `docs/GIT_CONFIG_SETUP.md` — `[includeIf "gitdir:..."]` | Use **`~/Documents/projects/visual-era/`** (trailing slash) |
-| Developer docs | `docs/OPERATIONAL_IDENTITY.md` — `cd /path/to/personal-repo` | Update examples only |
-| Cursor / IDE | Open folder `visual-era`; sandbox via `~/.cursor/sandbox.json` | See [CURSOR_SANDBOX_SETUP.md](./CURSOR_SANDBOX_SETUP.md) |
-| Shell aliases | `~/.zshrc` — `cd .../visual-era` | Point to `~/Documents/projects/visual-era` |
-
-### Not in repo (machine-local — verify after move)
-
-| Item | Risk |
-|------|------|
-| `.env`, `.env.local` | Stay inside repo; move with folder |
-| `.cursor/mcp.env` | Often gitignored; may reference tokens only — re-check MCP paths if any |
-| `.vercel/project.json` | If present locally, regenerated by `vercel link` in new cwd |
-| `node_modules/` | Rebuild with `npm ci` if permissions or architecture glitch |
-| Global `gh`, `vercel`, `git` | Unaffected by folder path |
-| Stashes / agent branches | Git-internal; move with repo |
-
-### Product vs AI ops (unchanged by layout)
-
-| Repo | Role |
-|------|------|
-| **`~/Documents/projects/visual-era`** | VERA product only — PR, CI, deploy |
-| **`~/Documents/projects/ai-ops`** | Council briefs, prompts — **not** product code |
-| **`~/Documents/projects/shared-tools`** (future) | Optional scripts used by multiple repos |
-
-No automatic cross-repo imports in application code unless explicitly designed.
+| Item | Action |
+|------|--------|
+| Git `includeIf` | `docs/GIT_CONFIG_SETUP.md` — point `gitdir` at your `visual-era/` path |
+| `.env.local` | Stays inside this repo |
+| `.cursor/mcp.env` | Local MCP secrets — gitignored |
+| `node_modules/` | Run `npm ci` after clone or move |
 
 ---
 
-## Path-hardcoding risks (by severity)
+## Cursor workflow
 
-### Low — no code change expected
-
-- All `scripts/*.sh` using `dirname` / `AGENT_GIT_ROOT`
-- `.github/workflows/*` (runs on GitHub runners)
-- `package.json` scripts (`./scripts/...`)
-- Domain constants (`visual-era.com`) — not filesystem paths
-- `.agent/tasks/`, `.agent/delegation/` — **relative to repo root**
-
-### Medium — documentation / developer ergonomics
-
-- `docs/GIT_CONFIG_SETUP.md` — `includeIf` paths
-- README clone instructions (if they mention old path)
-- ChatGPT “open repo at X” muscle memory
-
-### High — only if misconfigured after move
-
-| Misconfiguration | Symptom |
-|------------------|---------|
-| Wrong folder opened in Cursor | Wrong branch, missing `.env`, stale MCP |
-| `includeIf` still pointing at old `gitdir` | Wrong `user.email` / `user.name` on commits |
-| Symlinks mixing repos | Accidental cross-commit, sandbox confusion — **avoid** unless deliberate |
-| Monorepo tooling (npm workspaces across repos) | Violates isolation goal — **do not** introduce for this strategy |
+1. **Open** `~/Documents/projects/visual-era` in Cursor.
+2. **Sandbox** — keep enabled; see [CURSOR_SANDBOX_SETUP.md](./CURSOR_SANDBOX_SETUP.md).
+3. **Agents** — read [AGENTS.md](../../AGENTS.md) and [docs/agents/ROSTER.md](../agents/ROSTER.md); use `agent-cursor-*` branches only.
+4. **Domain discipline** — one domain per chat (`vera-clerk`, `vera-onboarding`, etc.); new chat when switching domains.
 
 ---
 
-## Sandbox workflow guidance (Cursor)
-
-### Recommended: open `visual-era`, grant sandbox access to parent `projects/`
-
-1. **`~/.cursor/sandbox.json`** — set `additionalReadwritePaths` to **`/Users/<you>/Documents/projects`** so the agent can read/write sibling repos (`ai-ops`, `shared-tools`, …) without repeated approval. Full steps: [CURSOR_SANDBOX_SETUP.md](./CURSOR_SANDBOX_SETUP.md).
-
-2. **Open Cursor on the product repo** — **File → Open Folder** → `~/Documents/projects/visual-era`. No `.code-workspace` file required.
-
-3. **Keep sandbox enabled** — do not set `"type": "insecure_none"` globally unless you accept no sandbox.
-
-4. **Auto-Run** — **Cursor Settings → Agents → Auto-Run:** **Allowlist (with Sandbox)**.
-
-5. **Repo boundaries unchanged** — council in `ai-ops`; implement only approved briefs in `visual-era`. Sibling filesystem access ≠ one git repo.
-
-Optional: second Cursor window on `~/Documents/projects/ai-ops` for planning-only work.
-
-### What this does *not* do
-
-- Does not merge git history or create a monorepo.
-- Does not add ai-ops code to the VERA repo.
-- Does not replace PR/CI rules in [AGENTS.md](../../AGENTS.md).
-
-### Cursor project files
-
-| File | Notes |
-|------|-------|
-| `~/.cursor/sandbox.json` | User machine — projects parent path |
-| `.cursor/environment.json` | `npm ci` on open — portable |
-| `.cursor/mcp.env` | Local secrets — never commit |
-
----
-
-## Shared tooling strategy (`shared-tools` repo — future)
-
-### Principles
-
-| Do | Don't |
-|----|--------|
-| Put **reusable** bash helpers, lint configs, doc templates in `shared-tools` | Copy VERA product scripts into shared-tools without abstraction |
-| Expose via **PATH** or `source ~/Documents/projects/shared-tools/lib/common.sh` | Add TypeScript imports from `../shared-tools` in VERA |
-| Version shared-tools as its own repo | Submodule into every repo unless team agrees |
-| Document entry points in each repo's `docs/ops/` | Auto-run cross-repo scripts from CI without review |
-
-### Suggested `shared-tools` layout (future)
-
-```text
-shared-tools/
-├── bin/              # on PATH: st, workspace-status, etc.
-├── lib/              # sourcable bash (logging, colors, confirm)
-├── templates/        # PR body, council snippet, issue templates
-├── docs/             # how to wire each consumer repo
-└── README.md
-```
-
-### VERA-specific scripts stay in VERA
-
-Keep in `Vera-Platforms/vera`:
-
-- `start-agent-task.sh`, `agent-finish.sh`, `agent-quick-check.sh`
-- `scripts/ops/run-phase2-verify.sh` (product + infra coupling)
-- Ownership checks (`agent-status.sh`, Cursor-owned paths)
-
-Extract to `shared-tools` only when **second repo** needs the same behavior unchanged.
-
----
-
-## Repo discovery & portability recommendations
-
-### Environment variables (optional convention)
+## Shell helper (optional)
 
 ```bash
-# ~/.zshrc (example — manual)
-export PROJECTS_ROOT="$HOME/Documents/projects"
-export VERA_ROOT="$PROJECTS_ROOT/visual-era"
-export AI_OPS_ROOT="$PROJECTS_ROOT/ai-ops"
-```
-
-Scripts in VERA should **continue** to use `AGENT_GIT_ROOT` — not `$VERA_ROOT` — so clones work anywhere.
-
-### Shell ergonomics (manual)
-
-```bash
-# Example helpers — not shipped by this repo
-p() { cd "$HOME/Documents/projects/$1" || return 1; }
+# ~/.zshrc — example only
 alias vera='cd "$HOME/Documents/projects/visual-era"'
-alias aiops='cd "$HOME/Documents/projects/ai-ops"'
 ```
 
-### Repo manifest (future, low priority)
-
-Optional `~/Documents/projects/README.md` or `shared-tools/manifest.json` listing:
-
-| Slug | GitHub | Purpose |
-|------|--------|---------|
-| visual-era | Vera-Platforms/vera | Product |
-| ai-ops | natew-dev/ai-ops | AI council scaffolding |
+Scripts in this repo use `AGENT_GIT_ROOT`, not `$vera` — so clones work without the alias.
 
 ---
 
-## Multi-repo orchestration (ChatGPT / Cursor)
+## Verification
 
-| Phase | Where |
-|-------|--------|
-| Innovation / council | `ai-ops` — `.agent/council/<task>/` |
-| Approved implementation | `visual-era` — `agent-cursor-*` → PR |
-| Incubator / other sites | `motivmia-site`, `trading-ecosystem`, etc. |
-
-**Rule:** Paste **only** `07-final-cursor-brief.md` (approved) into VERA Cursor — not full council folders.
-
----
-
-## Future scalability
-
-| Scale need | Approach |
-|------------|----------|
-| More products | New repo under `~/Documents/projects` + new GitHub org/repo as today |
-| More agents | Keep agent scripts per product repo; ai-ops stays planning-only |
-| Shared CI snippets | Reusable workflow **templates** in `shared-tools` or org `.github` — not monorepo |
-| Experiments | `experiments/` repo or dated folders — never default merge to VERA |
-
----
-
-## Low-risk setup steps (when you execute — not now)
-
-**No parent-folder move required** if repos already live under `~/Documents/projects`.
-
-1. **Confirm** canonical parent: `~/Documents/projects` (create only if missing: `mkdir -p ~/Documents/projects`).
-2. **Clone or move in** future repos as siblings (each its own git root):  
-   `motivmia-site`, `trading-ecosystem`, `shared-tools`, `experiments`.
-3. **Verify** remotes unchanged:  
-   `git -C ~/Documents/projects/visual-era remote -v` → `Vera-Platforms/vera`  
-   `git -C ~/Documents/projects/ai-ops remote -v` → `natew-dev/ai-ops`
-4. **Cursor:** open `~/Documents/projects/visual-era`; confirm `~/.cursor/sandbox.json` includes `Documents/projects`.
-5. **Git:** set `includeIf "gitdir:~/Documents/projects/visual-era/"` in `~/.gitconfig` (see [GIT_CONFIG_SETUP.md](../GIT_CONFIG_SETUP.md)).
-6. **Run** in VERA: `./scripts/agent-quick-check.sh`.
-7. **Run** `./scripts/ops/verify-git-identity.sh` if needed.
-8. **Do not** change GitHub remotes, CI, or Vercel project linkage unless something breaks.
-
-### Do not (per policy)
-
-- Merge git histories
-- Create symlinks from VERA into other repos without a documented reason
-- Add npm workspaces spanning repos
-- Commit council scaffolding into VERA
-- Run automated bulk path rewrites in scripts (unnecessary)
-
----
-
-## Manual verification checklist
-
-| Check | Command / action |
-|-------|------------------|
-| Git remote | `git remote -v` in each repo |
-| Branch / stash | `git status`; `git stash list` |
-| Node | `npm ci && npm run dev` in VERA |
+| Check | Command |
+|-------|---------|
+| Remote | `git remote -v` → `Vera-Platforms/vera` |
+| Dev server | `npm ci && npm run dev` |
 | Agent scripts | `./scripts/agent-status.sh` |
-| Ops verify | `./scripts/ops/run-phase2-verify.sh` (needs tokens) |
-| Commit identity | `./scripts/ops/verify-git-identity.sh` |
-| Env files | `.env.local` present; `NEXT_PUBLIC_SITE_URL` localhost |
-| Cursor MCP | MCP tools connect after reopen |
-| Vercel CLI | `vercel whoami`; relink only if project lookup fails |
-| ai-ops scaffold | `./scripts/create-council-brief.sh test && rm -rf .agent/council/test` |
+| Ops verify | `./scripts/ops/run-phase2-verify.sh` |
+| Repo boundaries | `./scripts/check-repo-boundaries.sh` |
 
 ---
 
 ## Related docs
 
-- [REPO_RESTRUCTURE_AUDIT.md](./REPO_RESTRUCTURE_AUDIT.md) — GitHub org layout (legal vs platform)
-- [POST_MIGRATION_CONNECTIONS.md](./POST_MIGRATION_CONNECTIONS.md) — Vercel / Clerk / Cloudflare
-- [GIT_CONFIG_SETUP.md](../GIT_CONFIG_SETUP.md) — update `includeIf` after move
-- [natew-dev/ai-ops](https://github.com/natew-dev/ai-ops) — council workflow (external product planning)
-
----
-
-## Audit conclusion
-
-**VERA is already compatible with `~/Documents/projects` from a scripting and CI perspective.** This strategy is **organize in place** under that parent — not a move to `~/Projects`. Risk is concentrated in **developer machine configuration** (Cursor workspace, git `includeIf`, aliases), not in repository code. Introduce `shared-tools` only when a second consumer repo needs shared scripts; keep VERA product-only.
-
-*Next step (human): add future sibling repos under `~/Documents/projects`, one Cursor workspace per repo, update `includeIf` paths to match.*
+- [POST_MIGRATION_CONNECTIONS.md](./POST_MIGRATION_CONNECTIONS.md)
+- [REPO_RESTRUCTURE_AUDIT.md](./REPO_RESTRUCTURE_AUDIT.md)
+- [VERCEL_DEPLOYMENT.md](../VERCEL_DEPLOYMENT.md)

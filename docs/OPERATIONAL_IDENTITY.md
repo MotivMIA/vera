@@ -154,7 +154,6 @@ security@visual-era.com  → vera.platforms@gmail.com
 |------------|------------|---------|
 | **VERA product (production)** | **Vera-Platforms** | https://github.com/Vera-Platforms/vera |
 | **Incubator / other projects** | **MotivMIA** | https://github.com/MotivMIA/{repo} |
-| **Future ai-ops / council** | TBD (external to `vera`) | Not in this product repo |
 
 **Do not** assume `vera` lives under MotivMIA on GitHub. Legal parent/subsidiary (Motiv MIA → Visual Era) does **not** mean the Vera-Platforms org is inside the MotivMIA org.
 
@@ -306,8 +305,6 @@ git commit -m "Your message"
                               Infrastructure owner: vera.platforms@gmail.com
                                 (Vercel, Supabase, Clerk, Resend, Cloudflare)
 ```
-
-**Not shown:** future **ai-ops** repo (AI governance) — external to `vera`; org TBD.
 
 ```
 ┌─────────────────────────────────────────────────────────────┐

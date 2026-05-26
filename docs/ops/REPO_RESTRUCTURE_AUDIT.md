@@ -98,7 +98,7 @@ Philosophy on `main` remains consistent with [AGENTS.md](../../AGENTS.md):
 | Abandoned branch `agent-cursor-multi-model-council-workflow` | **Deleted** locally (never merged) |
 | Product code focus | `app/`, `lib/`, platform stack — appropriate |
 
-**Future ai-ops / council repo:** **TBD** (org + name not chosen). Must **not** live in `Vera-Platforms/vera`. VERA may add a **single hub link** later — not a full council system.
+**Planning/orchestration repos:** Must **not** live in `Vera-Platforms/vera`. No council or external planning scaffolding in this product repo.
 
 ---
 
@@ -164,7 +164,7 @@ Use these **in order** when docs conflict:
 | Vercel still linked to old GitHub path | High | [POST_MIGRATION_CONNECTIONS.md](./POST_MIGRATION_CONNECTIONS.md) §2 |
 | Clerk origin missing custom domain | High | Same doc §4 |
 | Push rejected (GH007 private email) | Low | GitHub email settings or `noreply` on **contributor** account |
-| Re-introducing council into VERA | Medium | Policy: ai-ops repo TBD; no council PRs to vera |
+| Re-introducing council into VERA | Medium | Policy: no council/planning scaffolding in vera |
 | Many stale agent branches on remote | Low | Hygiene pass later (not in this audit) |
 
 ---
@@ -174,7 +174,6 @@ Use these **in order** when docs conflict:
 | Item | Owner |
 |------|-------|
 | ~~Canonical personal GitHub username~~ | **Resolved:** `natew-dev` |
-| **ai-ops** repository org + name (not MotivMIA/ai-ops) | Human |
 | Whether `MotivMIA` org still holds non-VERA repos only | Human |
 | Branch protection on private org (403 without Pro) | Human / GitHub plan |
 | All POST_MIGRATION dashboard steps complete | Human |
@@ -203,8 +202,7 @@ Agents **cannot** complete UI-only steps.
 
 1. ~~Identity doc alignment~~ — **Done** (OPERATIONAL_IDENTITY, ACCOUNT_STRUCTURE, check-github-owner-refs footer).
 2. Fix example `GITHUB_REPO=` in `audit-github-repo-settings.sh` / `setup-github-branch-protection.sh` headers (`visualera` → `Vera-Platforms`).
-3. Optional: one line in AGENTS.md hub — “AI council / ai-ops: external repo TBD (not in this repo).”
-4. Optional: link this audit from POST_MIGRATION_CONNECTIONS.
+3. Optional: link this audit from POST_MIGRATION_CONNECTIONS.
 
 ### Medium risk (do not batch with product features)
 
@@ -216,7 +214,7 @@ Agents **cannot** complete UI-only steps.
 - Delete remote agent branches
 - Change branch protection via API without human
 - Move repo again
-- Add council/ai-ops to VERA
+- Add council/planning scaffolding to VERA
 - Modify secrets or Vercel env via automation without brief
 
 ---
@@ -228,9 +226,7 @@ Agents **cannot** complete UI-only steps.
 | **natew-dev** | Personal forks, experiments, pre-incubator work |
 | **MotivMIA** | Incubator org — templates, R&D, non-production repos |
 | **Vera-Platforms** | Customer-facing product repos (`vera`, future apps) |
-| **ai-ops** (TBD repo) | Council prompts, agent governance, cross-repo briefs — **no app code** |
-
-VERA repo stays deployable product only; ai-ops consumes **approved briefs** and never bypasses VERA’s PR/CI when touching `vera`.
+VERA repo stays deployable product only; external planning must not be committed here.
 
 ---
 
@@ -240,7 +236,7 @@ VERA repo stays deployable product only; ai-ops consumes **approved briefs** and
 
 - **Repo and workflow layer** are already aligned on **Vera-Platforms/vera** and protected PR/CI — scalable for team growth.
 - **Identity narrative layer** is **aligned** with natew-dev + sibling orgs (MotivMIA / Vera-Platforms) as of 2026-05-25.
-- **AI ops separation** is clean on `main` today; discipline required to keep council out of VERA.
+- **Product-only scope** is clean on `main` today; discipline required to keep planning scaffolding out of VERA.
 
 ---
 
