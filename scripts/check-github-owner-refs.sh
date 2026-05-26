@@ -91,7 +91,7 @@ section "Local git remote"
 if [[ -d .git ]]; then
   git remote -v 2>/dev/null || true
   echo ""
-  echo "Compare remote owner to GitHub UI (live repo: natew-dev/vera)."
+  echo "Compare remote owner to GitHub UI (canonical: Vera-Platforms/vera)."
 else
   echo "(not a git checkout)"
 fi

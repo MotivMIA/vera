@@ -2,26 +2,32 @@
 
 Complete reference of all accounts, their ownership, purpose, and security level.
 
+**Legal:** Motiv MIA is the **parent company**; Visual Era (VERA) is a **subsidiary**.  
+**Platform:** GitHub orgs **`MotivMIA`** and **`Vera-Platforms`** remain **separate** (siblings under `natew-dev`) — legal hierarchy does not require nesting Vera-Platforms inside MotivMIA on GitHub.
+
 ## Account Summary
 
 | Account | Type | Owner | Purpose | Security Level |
 |---------|------|-------|---------|-----------------|
-| `MotivMIA` | GitHub User | Personal | Contributor identity, repository access | Medium |
-| `MotivMIA` | GitHub Org | Business | Repository ownership, team management | Medium-High |
+| `natew-dev` | GitHub User | Personal | Login, SSH, PRs; creates/administers both orgs | Medium |
+| `MotivMIA` | GitHub Org | `natew-dev` | Incubator / umbrella projects (**not** `vera`) | Medium-High |
+| `Vera-Platforms` | GitHub Org | `natew-dev` | Production product repos (`vera`, etc.) | Medium-High |
 | `admin@visual-era.com` | Email Alias | Business | Administrative operations, commits | Medium |
 | `vera.platforms@gmail.com` | Gmail Account | Business | Infrastructure access, service ownership | **High** |
 | Personal Gmail | Email | Personal | Account recovery, authentication | Low (personal use) |
+
+**GitHub layout:** `MotivMIA` and `Vera-Platforms` are **sibling organizations** — separate from a platform perspective; mapped to Motiv MIA (incubator/holding engineering) vs Visual Era / VERA (production product) respectively.
 
 ---
 
 ## Detailed Account Specifications
 
-### 1. GitHub Personal Account (`MotivMIA`)
+### 1. GitHub Personal Account (`natew-dev`)
 
 **Type**: User account  
 **Primary Email**: Personal Gmail (for login/recovery)  
-**GitHub Email**: `MotivMIA@users.noreply.github.com` or `admin@visual-era.com` (verified)  
-**Purpose**: Developer identity and repository contributor  
+**GitHub Email**: `natew-dev@users.noreply.github.com` and/or `admin@visual-era.com` (verified)  
+**Purpose**: Personal developer identity; org owner for MotivMIA and Vera-Platforms  
 
 **Access**:
 - Clone repositories via SSH
@@ -43,33 +49,53 @@ Complete reference of all accounts, their ownership, purpose, and security level
 
 ---
 
-### 2. GitHub Organization (`MotivMIA`)
+### 2. GitHub Organization — MotivMIA (incubator)
 
 **Type**: Organization account  
-**Owner**: MotivMIA personal account  
-**Purpose**: Repository ownership and team coordination  
+**Owner**: `natew-dev` (personal account)  
+**Legal context**: Maps to **Motiv MIA** (parent company) — not the Visual Era subsidiary’s production codebase  
+**Purpose**: Incubator / umbrella GitHub projects — **not** the VERA production app  
 
-**Repositories**:
-- `vera` (main platform repository)
-- Future repositories for other VERA products
-- Future subsidiaries' repositories
+**Repositories** (examples):
+- R&D, templates, non-production experiments
+- **Does not** include `vera` (see Vera-Platforms below)
 
 **Team Structure**:
 ```
 MotivMIA Org
-├── Developers (Read/Write to repos)
+├── Developers (Read/Write to incubator repos)
 ├── Maintainers (Admin access to repos)
 └── Admins (Organization settings)
 ```
 
+---
+
+### 3. GitHub Organization — Vera-Platforms (production)
+
+**Type**: Organization account  
+**Owner**: `natew-dev` (personal account)  
+**Legal context**: Maps to **Visual Era** (subsidiary) and **VERA** product — separate GitHub org from MotivMIA by platform policy  
+**Purpose**: Customer-facing / production product repositories  
+
+**Repositories**:
+- **`vera`** — canonical Visual Era / VERA application ([Vera-Platforms/vera](https://github.com/Vera-Platforms/vera))
+- Future production apps under the Visual Era brand
+
+**Team Structure**:
+```
+Vera-Platforms Org
+├── Developers (Read/Write — e.g. vera)
+├── Maintainers (Admin on product repos)
+└── Admins (Organization settings)
+```
+
 **Security**:
-- Organization settings require review for additions
-- Branch protection rules enforce code review
-- Audit logs track organization changes
+- Branch protection on `main` (PR + CI required)
+- Vercel production deploys from this org's `vera` repo
 
 ---
 
-### 3. Git Commit Identity (`admin@visual-era.com`)
+### 4. Git Commit Identity (`admin@visual-era.com`)
 
 **Type**: Email alias  
 **Routing**: Cloudflare → vera.platforms@gmail.com  
@@ -79,7 +105,7 @@ MotivMIA Org
 **Commits**:
 - All VERA stack development commits use this identity
 - Shows consistently across all repositories
-- Verified on GitHub if email is added to MotivMIA account
+- Verified on GitHub if email is added to the `natew-dev` account
 
 **Example Commit**:
 ```
@@ -92,7 +118,7 @@ Date:   Mon May 25 10:30:00 2026 +0000
 
 ---
 
-### 4. Infrastructure Account (`vera.platforms@gmail.com`)
+### 5. Infrastructure Account (`vera.platforms@gmail.com`)
 
 **Type**: Gmail account  
 **Role**: Root infrastructure owner  
@@ -133,7 +159,7 @@ Date:   Mon May 25 10:30:00 2026 +0000
 ### 5. Personal Gmail Account
 
 **Type**: Email account  
-**Purpose**: Account recovery and 2FA backup for MotivMIA GitHub account  
+**Purpose**: Account recovery and 2FA backup for natew-dev GitHub account  
 **Security Level**: Low (personal use, not operational)  
 
 **Used For**:
@@ -195,7 +221,8 @@ In Cloudflare Email Routing:
 | Clerk | vera.platforms@gmail.com | Authentication | Full |
 | Supabase | vera.platforms@gmail.com | Database backend | Full |
 | Resend | vera.platforms@gmail.com | Email service | Full |
-| GitHub Org | MotivMIA user (as owner) | Repositories | Organization Owner |
+| GitHub (vera) | Vera-Platforms org | Product repo | `natew-dev` as org owner |
+| GitHub (incubator) | MotivMIA org | Other repos | `natew-dev` as org owner |
 
 ### Future Services
 
@@ -221,17 +248,19 @@ When adding new infrastructure:
 
 ### Adding New Team Members
 
-**Developers** (most common):
-1. Invite to MotivMIA GitHub organization
-2. Assign to Developers team
+**Developers** (VERA / `vera` repo):
+1. Invite to **Vera-Platforms** GitHub organization
+2. Assign to Developers team on `vera`
 3. Point to `docs/GIT_CONFIG_SETUP.md`
 4. No infrastructure access
 
-**Maintainers** (code review, deployment):
-1. Invite to MotivMIA GitHub organization
-2. Assign to Maintainers team
-3. Grant write access to specific repos
-4. No infrastructure access
+**Developers** (incubator repos only):
+1. Invite to **MotivMIA** organization as needed
+
+**Maintainers** (code review, deployment on product):
+1. Invite to **Vera-Platforms**
+2. Assign to Maintainers team; grant admin on product repos as needed
+3. No infrastructure access
 
 **Operations** (infrastructure management):
 1. Do NOT add to GitHub organization
@@ -251,7 +280,7 @@ When adding new infrastructure:
 ```
 Organizational Vault
 ├── Personal (shared with owner only)
-│   └── MotivMIA GitHub personal account
+│   └── natew-dev GitHub personal account
 │       └── Backup email credentials
 │
 ├── Operations (limited to operations team)
@@ -280,7 +309,7 @@ Organizational Vault
 
 ### Immediate (Week 1)
 - [ ] Document current account structure (this document)
-- [ ] Enable 2FA on MotivMIA GitHub account
+- [ ] Enable 2FA on natew-dev GitHub account
 - [ ] Add `admin@visual-era.com` to GitHub verified emails
 - [ ] Configure git identity globally
 
@@ -306,7 +335,7 @@ Organizational Vault
 
 ## Incident Response
 
-### If MotivMIA Account Compromised
+### If natew-dev Account Compromised
 
 1. **Immediate**:
    - Change password
@@ -369,7 +398,7 @@ Organizational Vault
 
 ### For New Developer
 
-- [ ] Invited to MotivMIA GitHub organization
+- [ ] Invited to Vera-Platforms (and/or MotivMIA) as appropriate
 - [ ] Personal 2FA setup on GitHub account
 - [ ] Git configured with `admin@visual-era.com`
 - [ ] SSH key setup and tested

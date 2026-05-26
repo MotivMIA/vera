@@ -2,7 +2,7 @@
 # Read-only GitHub repo audit (names only for secrets — never values).
 # Usage:
 #   ./scripts/audit-github-repo-settings.sh
-#   GITHUB_REPO=visualera/vera ./scripts/audit-github-repo-settings.sh
+#   GITHUB_REPO=Vera-Platforms/vera ./scripts/audit-github-repo-settings.sh
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
