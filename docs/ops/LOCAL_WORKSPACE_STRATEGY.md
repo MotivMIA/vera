@@ -44,7 +44,7 @@ Do **not** use `~/Projects` unless you explicitly create and standardize on that
 
 | Goal | How parent folder helps |
 |------|-------------------------|
-| Fewer Cursor sandbox prompts | One **trusted** parent or multi-root workspace vs many scattered paths |
+| Fewer Cursor sandbox prompts | Trust each repo once; **separate Cursor windows** per repo (see below) |
 | Easier repo switching | Predictable paths under `~/Documents/projects`; optional shell helpers |
 | Shared tooling | `shared-tools` repo on PATH or sourced helpers — not copied into each app |
 | Keep sandbox on | Per-repo isolation preserved; avoid disabling sandbox globally |
@@ -72,7 +72,7 @@ Do **not** use `~/Projects` unless you explicitly create and standardize on that
 |------|----------|-------------------|
 | Git conditional config | `docs/GIT_CONFIG_SETUP.md` — `[includeIf "gitdir:..."]` | Use **`~/Documents/projects/visual-era/`** (trailing slash) |
 | Developer docs | `docs/OPERATIONAL_IDENTITY.md` — `cd /path/to/personal-repo` | Update examples only |
-| Cursor / IDE | User settings, recent folders, MCP project config | Open `~/Documents/projects/visual-era` or multi-root workspace |
+| Cursor / IDE | User settings, recent folders, MCP project config | **VERA only:** `visual-era.code-workspace` or folder `visual-era` — **not** ai-ops in same window |
 | Shell aliases | `~/.zshrc` — `cd .../visual-era` | Point to `~/Documents/projects/visual-era` |
 
 ### Not in repo (machine-local — verify after move)
@@ -127,13 +127,19 @@ No automatic cross-repo imports in application code unless explicitly designed.
 
 ## Sandbox workflow guidance (Cursor)
 
-### Recommended approach
+### Recommended approach — **separate workspaces** (not VERA + ai-ops together)
 
-1. **Prefer multi-root workspace** (optional): e.g. `~/Documents/projects/visual-era.code-workspace`, listing repos you actively use.
-2. **Or** open one repo at a time under **`~/Documents/projects`** — still valid; multi-root may reduce sandbox prompts.
-3. **Keep sandbox enabled** — do not disable globally for convenience.
-4. **Grant network** only when scripts need `gh`, `npm`, Vercel, etc. (same as today).
-5. **One writer per repo per task** — unchanged from [AGENTS.md](../../AGENTS.md).
+| Repo | Open in Cursor |
+|------|----------------|
+| **VERA (product)** | `~/Documents/projects/visual-era.code-workspace` **or** **File → Open Folder** → `~/Documents/projects/visual-era` |
+| **ai-ops (planning)** | **Separate window:** `~/Documents/projects/ai-ops/ai-ops.code-workspace` or open folder `~/Documents/projects/ai-ops` |
+
+**Do not** add ai-ops to the VERA workspace. They are sibling folders on disk, not one product. A combined multi-root workspace blurs that boundary.
+
+1. **Keep sandbox enabled** — do not disable globally for convenience.
+2. **Grant network** when scripts need `gh`, `npm`, Vercel, etc.
+3. **Council / Grok / Claude** → work in **ai-ops** window; paste approved brief into **VERA** window for implementation.
+4. **One writer per repo per task** — unchanged from [AGENTS.md](../../AGENTS.md).
 
 ### What sandbox does *not* require
 
@@ -251,7 +257,7 @@ Optional `~/Documents/projects/README.md` or `shared-tools/manifest.json` listin
 3. **Verify** remotes unchanged:  
    `git -C ~/Documents/projects/visual-era remote -v` → `Vera-Platforms/vera`  
    `git -C ~/Documents/projects/ai-ops remote -v` → `natew-dev/ai-ops`
-4. **Cursor:** open `~/Documents/projects/visual-era` or a multi-root workspace under `~/Documents/projects`.
+4. **Cursor (VERA):** open `~/Documents/projects/visual-era.code-workspace` only — ai-ops in its own window when needed.
 5. **Git:** set `includeIf "gitdir:~/Documents/projects/visual-era/"` in `~/.gitconfig` (see [GIT_CONFIG_SETUP.md](../GIT_CONFIG_SETUP.md)).
 6. **Run** in VERA: `./scripts/agent-quick-check.sh`.
 7. **Run** `./scripts/ops/verify-git-identity.sh` if needed.
@@ -297,4 +303,4 @@ Optional `~/Documents/projects/README.md` or `shared-tools/manifest.json` listin
 
 **VERA is already compatible with `~/Documents/projects` from a scripting and CI perspective.** This strategy is **organize in place** under that parent — not a move to `~/Projects`. Risk is concentrated in **developer machine configuration** (Cursor workspace, git `includeIf`, aliases), not in repository code. Introduce `shared-tools` only when a second consumer repo needs shared scripts; keep VERA product-only.
 
-*Next step (human): add future sibling repos under `~/Documents/projects`, optional multi-root Cursor workspace, update `includeIf` paths to match.*
+*Next step (human): add future sibling repos under `~/Documents/projects`, one Cursor workspace per repo, update `includeIf` paths to match.*
