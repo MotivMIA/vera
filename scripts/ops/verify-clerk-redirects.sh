@@ -14,6 +14,9 @@ EXPECTED_PATHS=(
 
 ops_log "Checking Clerk URL env alignment (from .env.example conventions)..."
 
+ops_export_from_dotenv CLERK_SECRET_KEY "$ROOT/.env" || true
+ops_export_from_dotenv CLERK_SECRET_KEY "$ROOT/.env.local" || true
+
 for entry in "${EXPECTED_PATHS[@]}"; do
   key="${entry%%=*}"
   default="${entry#*=}"
@@ -27,6 +30,8 @@ if [[ -f "$ROOT/.env.local" ]]; then
   else
     ops_warn "NEXT_PUBLIC_SITE_URL missing or empty in .env.local"
   fi
+elif [[ -f "$ROOT/.env" ]] && grep -q '^NEXT_PUBLIC_SITE_URL=' "$ROOT/.env" 2>/dev/null; then
+  ops_ok "Local NEXT_PUBLIC_SITE_URL in .env (origin not printed)"
 else
   ops_skip "No .env.local — production must use ${OPS_APP_URL} in Vercel (and Clerk allowed origins)"
 fi

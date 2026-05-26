@@ -42,19 +42,15 @@ check_file_keys() {
 check_file_keys ".env.local" "$ROOT/.env.local"
 check_file_keys ".env" "$ROOT/.env"
 
-if ops_env_present VERCEL_TOKEN; then
-  if command -v vercel >/dev/null 2>&1; then
-    ops_log "Vercel CLI: listing env keys for linked project (names only)..."
-    if vercel env ls production 2>/dev/null | head -20; then
-      ops_ok "vercel env ls succeeded (review output above for key names)"
-    else
-      ops_warn "vercel env ls failed — link project or check VERCEL_TOKEN"
-    fi
+if command -v vercel >/dev/null 2>&1; then
+  ops_log "Vercel CLI: listing env keys for linked project (names only)..."
+  if vercel env ls production 2>/dev/null | head -20; then
+    ops_ok "vercel env ls succeeded (review output above for key names)"
   else
-    ops_skip "VERCEL_TOKEN set but vercel CLI not installed"
+    ops_warn "vercel env ls failed — link project or check vercel auth"
   fi
 else
-  ops_skip "VERCEL_TOKEN not set — local file check only"
+  ops_skip "vercel CLI not installed"
 fi
 
 ops_finish "verify-vercel-env"

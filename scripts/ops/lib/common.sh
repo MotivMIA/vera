@@ -78,6 +78,37 @@ ops_env_present() {
   [[ -n "${!name:-}" ]]
 }
 
+# Export KEY from a dotenv file if not already in the environment.
+ops_export_from_dotenv() {
+  local key="$1"
+  local file="${2:-}"
+  ops_env_present "$key" && return 0
+  [[ -n "$file" && -f "$file" ]] || return 1
+  local val
+  val="$(grep "^${key}=" "$file" 2>/dev/null | tail -1 | cut -d= -f2- | tr -d ' "'\''"')"
+  [[ -n "$val" ]] || return 1
+  export "${key}=${val}"
+}
+
+# Resolve Cloudflare zone id for OPS_DOMAIN when CLOUDFLARE_API_TOKEN is set.
+ops_resolve_cloudflare_zone_id() {
+  if ops_env_present CLOUDFLARE_ZONE_ID; then
+    return 0
+  fi
+  if ! ops_env_present CLOUDFLARE_API_TOKEN; then
+    return 1
+  fi
+  ops_require_cmd curl || return 1
+  ops_require_cmd jq || return 1
+  local zid
+  zid="$(curl -sS \
+    -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+  "https://api.cloudflare.com/client/v4/zones?name=${OPS_DOMAIN}" \
+    | jq -r '.result[0].id // empty')"
+  [[ -n "$zid" && "$zid" != "null" ]] || return 1
+  export CLOUDFLARE_ZONE_ID="$zid"
+}
+
 # Load KEY=value names from a dotenv file (names only, no export of secrets to logs).
 ops_dotenv_keys() {
   local file="$1"

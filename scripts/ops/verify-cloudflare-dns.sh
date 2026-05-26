@@ -17,24 +17,28 @@ for host in "$OPS_DOMAIN" "www.${OPS_DOMAIN}"; do
   fi
 done
 
-if ops_env_present CLOUDFLARE_API_TOKEN && ops_env_present CLOUDFLARE_ZONE_ID; then
-  ops_require_cmd curl || true
-  if command -v curl >/dev/null 2>&1; then
-    ops_log "Cloudflare API: listing DNS records (read-only)..."
-    http_code="$(curl -sS -o /tmp/cf-dns.json -w '%{http_code}' \
-      -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
-      "https://api.cloudflare.com/client/v4/zones/${CLOUDFLARE_ZONE_ID}/dns_records?per_page=50")"
-    if [[ "$http_code" == "200" ]]; then
-      count="$(grep -c '"id"' /tmp/cf-dns.json 2>/dev/null || echo 0)"
-      ops_ok "Cloudflare API returned DNS records (count≈${count})"
-      rm -f /tmp/cf-dns.json
-    else
-      ops_fail "Cloudflare API DNS list failed (HTTP ${http_code})"
-      rm -f /tmp/cf-dns.json
+if ops_env_present CLOUDFLARE_API_TOKEN; then
+  if ops_resolve_cloudflare_zone_id; then
+    ops_require_cmd curl || true
+    if command -v curl >/dev/null 2>&1; then
+      ops_log "Cloudflare API: listing DNS records (read-only)..."
+      http_code="$(curl -sS -o /tmp/cf-dns.json -w '%{http_code}' \
+        -H "Authorization: Bearer ${CLOUDFLARE_API_TOKEN}" \
+        "https://api.cloudflare.com/client/v4/zones/${CLOUDFLARE_ZONE_ID}/dns_records?per_page=50")"
+      if [[ "$http_code" == "200" ]]; then
+        count="$(grep -c '"id"' /tmp/cf-dns.json 2>/dev/null || echo 0)"
+        ops_ok "Cloudflare API returned DNS records (count≈${count})"
+        rm -f /tmp/cf-dns.json
+      else
+        ops_fail "Cloudflare API DNS list failed (HTTP ${http_code})"
+        rm -f /tmp/cf-dns.json
+      fi
     fi
+  else
+    ops_warn "CLOUDFLARE_API_TOKEN set but zone ${OPS_DOMAIN} not visible — check token scope/account"
   fi
 else
-  ops_skip "CLOUDFLARE_API_TOKEN + CLOUDFLARE_ZONE_ID not set — public dig only"
+  ops_skip "CLOUDFLARE_API_TOKEN not set — public dig only (add to .cursor/mcp.env)"
 fi
 
 ops_finish "verify-cloudflare-dns"

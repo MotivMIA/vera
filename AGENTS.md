@@ -13,7 +13,7 @@ Read this file first.
 | **GitHub + CI** | Release gate — PR, checks, auto-merge; **main** protected |
 | **Grok** | Optional innovation reviewer only — no repo access |
 
-**Hub:** [docs/CHATGPT_CURSOR_CODEX_STACK.md](docs/CHATGPT_CURSOR_CODEX_STACK.md) · [docs/AI_OPERATING_MODEL.md](docs/AI_OPERATING_MODEL.md) · Codex Cloud: [docs/CODEX_CLOUD_WORKFLOW.md](docs/CODEX_CLOUD_WORKFLOW.md)
+**Hub:** [docs/CHATGPT_CURSOR_CODEX_STACK.md](docs/CHATGPT_CURSOR_CODEX_STACK.md) · [docs/AI_OPERATING_MODEL.md](docs/AI_OPERATING_MODEL.md) · Codex Cloud: [docs/CODEX_CLOUD_WORKFLOW.md](docs/CODEX_CLOUD_WORKFLOW.md) · Local MCP/tokens: [docs/ops/LOCAL_STACK_SETUP.md](docs/ops/LOCAL_STACK_SETUP.md)
 
 ## Golden rules
 

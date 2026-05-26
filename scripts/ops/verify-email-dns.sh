@@ -32,6 +32,6 @@ for dkim_host in "resend._domainkey.${OPS_DOMAIN}" "send.${OPS_DOMAIN}"; do
   fi
 done
 
-ops_skip "Resend API domain status — run ./scripts/ops/verify-resend-domain.sh when RESEND_API_KEY is set"
+ops_log "Resend domain status: see verify-resend-domain.sh in full phase-2 run"
 
 ops_finish "verify-email-dns"

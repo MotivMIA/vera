@@ -4,6 +4,10 @@ set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/../.." && pwd)"
 cd "$ROOT"
 
+# shellcheck source=scripts/lib/load-mcp-env.sh
+source "$ROOT/scripts/lib/load-mcp-env.sh"
+load_mcp_env "$ROOT"
+
 scripts=(
   verify-github-repo-health.sh
   verify-git-identity.sh

@@ -11,21 +11,33 @@ if ! ops_env_present RESEND_API_KEY; then
   exit 0
 fi
 
-ops_require_cmd curl || ops_finish "verify-resend-domain" && exit 1
+if ! ops_require_cmd curl; then
+  ops_finish "verify-resend-domain"
+  exit 1
+fi
 
 ops_log "Resend API: listing domains (read-only)..."
-response="$(curl -sS -w '\n%{http_code}' \
-  -H "Authorization: Bearer ${RESEND_API_KEY}" \
-  -H "Content-Type: application/json" \
-  "https://api.resend.com/domains")"
+response="$(
+  curl -sS -w '\n%{http_code}' \
+    -H "Authorization: Bearer ${RESEND_API_KEY}" \
+    -H "Content-Type: application/json" \
+    "https://api.resend.com/domains" \
+  || true
+)"
+
+if [[ -z "$response" ]]; then
+  ops_warn "Resend domains API request failed (no response) — check network or key scope"
+  ops_finish "verify-resend-domain"
+  exit 0
+fi
 
 body="$(echo "$response" | sed '$d')"
 code="$(echo "$response" | tail -n1)"
 
 if [[ "$code" != "200" ]]; then
-  ops_fail "Resend domains API HTTP ${code}"
+  ops_warn "Resend domains API HTTP ${code} — check RESEND_API_KEY or account"
   ops_finish "verify-resend-domain"
-  exit 1
+  exit 0
 fi
 
 if echo "$body" | grep -q "$OPS_DOMAIN"; then

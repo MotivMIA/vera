@@ -4,23 +4,28 @@ Read-only checks for platform agents and humans. **No writes.** No secrets commi
 
 ## Run all
 
+Loads **`.cursor/mcp.env`** automatically (gitignored). Bootstrap:
+
 ```bash
+./scripts/setup-cursor-mcp.sh
 ./scripts/ops/run-phase2-verify.sh
 ```
+
+See [docs/ops/LOCAL_STACK_SETUP.md](../../docs/ops/LOCAL_STACK_SETUP.md).
 
 ## Individual scripts
 
 | Script | Agent | Needs token? |
 |--------|-------|----------------|
 | `verify-github-repo-health.sh` | GitHub | `gh auth login` |
-| `verify-cloudflare-dns.sh` | Cloudflare | Optional: `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ZONE_ID` |
+| `verify-cloudflare-dns.sh` | Cloudflare | Optional: `CLOUDFLARE_API_TOKEN` (zone id auto-resolved) |
 | `verify-email-dns.sh` | Cloudflare / Resend | Public DNS (`dig` or `host`) |
 | `verify-vercel-env.sh` | Vercel | Optional: `VERCEL_TOKEN` + Vercel CLI |
 | `verify-resend-domain.sh` | Resend | `RESEND_API_KEY` |
 | `verify-clerk-redirects.sh` | Clerk | Optional: `CLERK_SECRET_KEY` |
 | `verify-git-identity.sh` | GitHub / onboarding | `gh auth` optional |
 
-Store tokens in 1Password or local gitignored env — see [docs/ENTERPRISE_AUTOMATION_ACCESS.md](../../docs/ENTERPRISE_AUTOMATION_ACCESS.md).
+Store tokens in **`.cursor/mcp.env`** (gitignored) — see [LOCAL_STACK_SETUP.md](../../docs/ops/LOCAL_STACK_SETUP.md).
 
 ## GitHub org migration
 
