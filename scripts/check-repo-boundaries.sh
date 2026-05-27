@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Fail if product repo reintroduces council / external planning scaffolding.
+# Fail if product repo reintroduces external planning scaffolding.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"

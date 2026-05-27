@@ -3,7 +3,7 @@
 **Audit date:** 2026-05-25  
 **Auditor:** Cursor (read-only; no protections or remotes changed)  
 **Worktree:** `visual-era` (local folder name; not authoritative)  
-**Scope:** Post–org restructure consistency, workflow integrity, separation of product vs AI ops
+**Scope:** Post–org restructure consistency, workflow integrity, product-repo scope
 
 ---
 
@@ -13,11 +13,11 @@
 |---------|--------|
 | **Canonical repo** | ✅ **`Vera-Platforms/vera`** — matches `origin`, `scripts/lib/github-repo.sh`, `AGENTS.md`, CI |
 | **Workflow scripts** | ✅ Agent branch / PR / CI philosophy intact on `main` |
-| **Council / ai-ops in VERA** | ✅ **None on `main`** — abandoned branch deleted; no `council-*` or `create-council-brief.sh` |
+| **Product-only scope** | ✅ **No external planning scaffolding on `main`** — `./scripts/check-repo-boundaries.sh` in CI |
 | **Identity docs** | ✅ **Updated 2026-05-25** — `natew-dev` personal; MotivMIA + Vera-Platforms as **sibling** orgs (see OPERATIONAL_IDENTITY, ACCOUNT_STRUCTURE) |
 | **Legacy migration docs** | ⚠️ Superseded paths remain (intentional history) but easy to misread |
 | **Tooling footers** | ✅ `check-github-owner-refs.sh` updated to Vera-Platforms/vera |
-| **Scalability** | ✅ Architecture is sound **after** identity doc cleanup; product repo is separable from future ai-ops |
+| **Scalability** | ✅ Architecture is sound **after** identity doc cleanup; product repo stays deployable-only |
 
 **Recommendation:** Treat this audit as **report-only**. Ship **one low-risk docs PR** to align identity narrative with the structure below; defer dashboard work to humans.
 
@@ -87,18 +87,15 @@ Philosophy on `main` remains consistent with [AGENTS.md](../../AGENTS.md):
 
 ---
 
-## 3. Separation of concerns (VERA vs AI ops)
+## 3. Product-only scope
 
 | Check | Result |
 |-------|--------|
-| `council-*` prompts | **Absent** on `main` |
-| `MULTI_MODEL_COUNCIL.md` | **Absent** on `main` |
-| `create-council-brief.sh` | **Absent** on `main` |
-| `MotivMIA/ai-ops` references | **Absent** on `main` |
-| Abandoned branch `agent-cursor-multi-model-council-workflow` | **Deleted** locally (never merged) |
 | Product code focus | `app/`, `lib/`, platform stack — appropriate |
+| External planning docs/scripts | **Absent** on `main` — enforced by `./scripts/check-repo-boundaries.sh` |
+| Orchestration workflow | ChatGPT (or human) → brief → Cursor on `agent-cursor-*` — paste text only |
 
-**Planning/orchestration repos:** Must **not** live in `Vera-Platforms/vera`. No council or external planning scaffolding in this product repo.
+**Rule:** `Vera-Platforms/vera` is the Visual Era **product** repo only. Do not commit cross-repo planning scaffolding here.
 
 ---
 
@@ -151,7 +148,7 @@ Use these **in order** when docs conflict:
 | 5 | [scripts/lib/github-repo.sh](../../scripts/lib/github-repo.sh) | Programmatic `GITHUB_REPO` default |
 | 6 | [docs/GITHUB_REPO_MIGRATION.md](../GITHUB_REPO_MIGRATION.md) | **Historical only** — never for new work |
 
-**Deprecated for planning:** `visualera/vera`, `MotivMIA/vera` as owner, `MotivMIA/ai-ops`.
+**Deprecated repo slugs:** `visualera/vera`, `MotivMIA/vera` as owner.
 
 ---
 
@@ -164,7 +161,7 @@ Use these **in order** when docs conflict:
 | Vercel still linked to old GitHub path | High | [POST_MIGRATION_CONNECTIONS.md](./POST_MIGRATION_CONNECTIONS.md) §2 |
 | Clerk origin missing custom domain | High | Same doc §4 |
 | Push rejected (GH007 private email) | Low | GitHub email settings or `noreply` on **contributor** account |
-| Re-introducing council into VERA | Medium | Policy: no council/planning scaffolding in vera |
+| Re-introducing external planning scaffolding | Medium | `./scripts/check-repo-boundaries.sh` + CI |
 | Many stale agent branches on remote | Low | Hygiene pass later (not in this audit) |
 
 ---
@@ -214,7 +211,7 @@ Agents **cannot** complete UI-only steps.
 - Delete remote agent branches
 - Change branch protection via API without human
 - Move repo again
-- Add council/planning scaffolding to VERA
+- Add external planning scaffolding to VERA
 - Modify secrets or Vercel env via automation without brief
 
 ---
@@ -236,7 +233,7 @@ VERA repo stays deployable product only; external planning must not be committed
 
 - **Repo and workflow layer** are already aligned on **Vera-Platforms/vera** and protected PR/CI — scalable for team growth.
 - **Identity narrative layer** is **aligned** with natew-dev + sibling orgs (MotivMIA / Vera-Platforms) as of 2026-05-25.
-- **Product-only scope** is clean on `main` today; discipline required to keep planning scaffolding out of VERA.
+- **Product-only scope** is clean on `main` today; CI boundary check helps keep it that way.
 
 ---
 
@@ -247,7 +244,7 @@ git remote -v
 git symbolic-ref refs/remotes/origin/HEAD
 cat scripts/lib/github-repo.sh
 ./scripts/check-github-owner-refs.sh
-rg 'council|ai-ops|MULTI_MODEL|create-council' .
+./scripts/check-repo-boundaries.sh
 rg 'natew-dev|MotivMIA/vera|visualera/vera' docs scripts
 ```
 
