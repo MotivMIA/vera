@@ -1,6 +1,6 @@
 # Visual Era — domain agent roster
 
-**Workspace:** `~/Documents/projects/visual-era` only · **Repo:** [Vera-Platforms/vera](https://github.com/Vera-Platforms/vera)
+**Workspace:** `~/Documents/projects/visual-era` only · **Repo:** [natew-dev/vera](https://github.com/natew-dev/vera)
 
 One **domain agent** per Cursor chat. Start a **new chat** when the domain changes.
 
@@ -27,7 +27,7 @@ One **domain agent** per Cursor chat. Start a **new chat** when the domain chang
 
 ```markdown
 Agent: vera-<domain>
-Repo: Vera-Platforms/vera
+Repo: natew-dev/vera
 Branch: agent-cursor-<prefix>-<slug>
 Allowed paths: <from table>
 Forbidden: <paths outside domain>

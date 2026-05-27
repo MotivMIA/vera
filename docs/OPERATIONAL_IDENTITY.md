@@ -152,7 +152,7 @@ security@visual-era.com  → vera.platforms@gmail.com
 
 | Repo class | GitHub org | Example |
 |------------|------------|---------|
-| **VERA product (production)** | **Vera-Platforms** | https://github.com/Vera-Platforms/vera |
+| **VERA product (production)** | **natew-dev** (personal; temporary for Vercel Hobby) | https://github.com/natew-dev/vera |
 | **Incubator / other projects** | **MotivMIA** | https://github.com/MotivMIA/{repo} |
 
 **Do not** assume `vera` lives under MotivMIA on GitHub. Legal parent/subsidiary (Motiv MIA → Visual Era) does **not** mean the Vera-Platforms org is inside the MotivMIA org.

@@ -2,7 +2,7 @@
 
 After moving to **Vera-Platforms/vera** and enabling **visual-era.com**.
 
-**Repo:** https://github.com/Vera-Platforms/vera
+**Repo:** https://github.com/natew-dev/vera
 
 ---
 
@@ -32,7 +32,7 @@ See [CUSTOM_DOMAIN_SETUP.md](./CUSTOM_DOMAIN_SETUP.md):
 
 Vercel Dashboard → **visual-era** → **Settings** → **Git**:
 
-- Connect repository **`Vera-Platforms/vera`**
+- Connect repository **`natew-dev/vera`**
 - Production branch: **`main`**
 - Install Vercel GitHub App on **Vera-Platforms** org
 
@@ -62,8 +62,8 @@ Redeploy production.
 ### 7. Local machine
 
 ```bash
-git remote set-url origin https://github.com/Vera-Platforms/vera.git
-export GITHUB_REPO=Vera-Platforms/vera
+git remote set-url origin https://github.com/natew-dev/vera.git
+export GITHUB_REPO=natew-dev/vera
 ./scripts/sync-main.sh
 ```
 

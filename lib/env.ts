@@ -29,6 +29,7 @@ const serverEnvSchema = z.object({
     .enum(["0", "1", "false", "true"])
     .optional()
     .transform((value) => value === "1" || value === "true"),
+  CLERK_WEBHOOK_SIGNING_SECRET: z.string().optional(),
   JOTFORM_API_KEY: z.string().optional(),
   JOTFORM_FORM_URL: optionalUrl,
   JOTFORM_CLIENT_AGREEMENT_URL: optionalUrl,
