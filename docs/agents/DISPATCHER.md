@@ -40,4 +40,4 @@ Use this in ChatGPT or manually before opening Cursor.
 
 ## Not in this repo
 
-Planning, council, or multi-repo orchestration — use your separate tools/projects; paste **text briefs only** into vera Cursor.
+External planning or multi-repo orchestration — use separate chats/tools; paste **text briefs only** into vera Cursor.
