@@ -54,8 +54,8 @@ section() { echo ""; echo "=== $* ==="; }
 
 section "GitHub ownership reference scan"
 echo "Repo root: ${ROOT}"
-echo "Intended target org: Vera-Platforms/vera"
-echo "Canonical repo slug: Vera-Platforms/vera"
+echo "Intended canonical slug: natew-dev/vera"
+echo "Canonical repo slug: natew-dev/vera"
 echo ""
 
 total_github=0
@@ -91,7 +91,7 @@ section "Local git remote"
 if [[ -d .git ]]; then
   git remote -v 2>/dev/null || true
   echo ""
-  echo "Compare remote owner to GitHub UI (canonical: Vera-Platforms/vera)."
+  echo "Compare remote owner to GitHub UI (canonical: natew-dev/vera)."
 else
   echo "(not a git checkout)"
 fi

@@ -7,7 +7,7 @@ Quick orientation for agents and contributors. Stack: **Next.js 15 App Router**,
 | Step | Route | Purpose |
 |------|-------|---------|
 | Consent | `/onboarding/consent` | Terms, privacy, e-sign acknowledgements → `POST /api/onboarding/consent` |
-| Identity | `/verify-identity` | Embedded DIDIT → `POST /api/didit/start`, `GET /api/didit/status`, webhook |
+| Identity | `/verify-identity` | Embedded DIDIT → `POST /api/didit/start`, `GET /api/didit/status`, DIDIT webhook; Clerk → `POST /api/webhooks/clerk` |
 | Documents | `/documents` | Internal signing packet → `POST /api/documents/submit`, status API |
 | Complete | `/success` | End state after both documents signed |
 

@@ -212,7 +212,7 @@ Required on `main`: **CI checks**. Branch naming enforced on PRs.
 
 See [docs/COLLABORATION.md](docs/COLLABORATION.md) · Enterprise API access: [docs/ENTERPRISE_AUTOMATION_ACCESS.md](docs/ENTERPRISE_AUTOMATION_ACCESS.md) · Platform agents: [docs/PLATFORM_AGENT_ARCHITECTURE.md](docs/PLATFORM_AGENT_ARCHITECTURE.md).
 
-**GitHub (repo):** [`Vera-Platforms/vera`](https://github.com/Vera-Platforms/vera) · connections reset: [docs/ops/POST_MIGRATION_CONNECTIONS.md](docs/ops/POST_MIGRATION_CONNECTIONS.md) · domain: [docs/ops/CUSTOM_DOMAIN_SETUP.md](docs/ops/CUSTOM_DOMAIN_SETUP.md)
+**GitHub (repo):** [`natew-dev/vera`](https://github.com/natew-dev/vera) · connections reset: [docs/ops/POST_MIGRATION_CONNECTIONS.md](docs/ops/POST_MIGRATION_CONNECTIONS.md) · domain: [docs/ops/CUSTOM_DOMAIN_SETUP.md](docs/ops/CUSTOM_DOMAIN_SETUP.md)
 
 ## Platform agents (Cursor dispatches)
 

@@ -1,6 +1,8 @@
 # GitHub organization migration — natew-dev/vera → Vera-Platforms/vera
 
-**Status:** **Transfer completed** (2026-05). Repo lives at [**Vera-Platforms/vera**](https://github.com/Vera-Platforms/vera). Old URLs redirect.
+**Status:** **Transferred back to personal** (2026-05-27). Canonical repo: [**natew-dev/vera**](https://github.com/natew-dev/vera) (Vercel Hobby). `Vera-Platforms/vera` may redirect; do not delete redirects.
+
+**Earlier:** Org transfer to Vera-Platforms completed 2026-05; reverted temporarily for deployment billing.
 
 **Next:** [POST_MIGRATION_CONNECTIONS.md](./POST_MIGRATION_CONNECTIONS.md) · [CUSTOM_DOMAIN_SETUP.md](./CUSTOM_DOMAIN_SETUP.md)
 
