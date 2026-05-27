@@ -1,4 +1,5 @@
-import { auth, currentUser } from "@clerk/nextjs/server";
+import { currentUser } from "@clerk/nextjs/server";
+import { getAuthenticatedUserId } from "@/lib/auth/session";
 import { NextResponse } from "next/server";
 import { retrieveDiditSession } from "@/lib/didit";
 import { decryptMetadata } from "@/lib/security";
@@ -114,8 +115,7 @@ function safeDecryptMetadata(payload: string | null | undefined) {
 }
 
 export async function GET() {
-  const authState = await auth().catch(() => ({ userId: process.env.NODE_ENV === "development" ? "local-preview-user" : null }));
-  const userId = authState.userId;
+  const userId = await getAuthenticatedUserId();
   if (!userId) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   const clerk = await currentUser().catch(() => null);
   const clerkName =

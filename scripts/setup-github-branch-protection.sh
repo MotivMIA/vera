@@ -2,7 +2,7 @@
 # Enable branch protection on main (requires gh auth + admin on target repo).
 # Usage:
 #   ./scripts/setup-github-branch-protection.sh
-#   GITHUB_REPO=visualera/vera ./scripts/setup-github-branch-protection.sh
+#   GITHUB_REPO=Vera-Platforms/vera ./scripts/setup-github-branch-protection.sh
 # See docs/GITHUB_REPO_MIGRATION.md
 set -euo pipefail
 

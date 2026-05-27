@@ -13,7 +13,9 @@ Read this file first.
 | **GitHub + CI** | Release gate — PR, checks, auto-merge; **main** protected |
 | **Grok** | Optional innovation reviewer only — no repo access |
 
-**Hub:** [docs/CHATGPT_CURSOR_CODEX_STACK.md](docs/CHATGPT_CURSOR_CODEX_STACK.md) · [docs/AI_OPERATING_MODEL.md](docs/AI_OPERATING_MODEL.md) · Codex Cloud: [docs/CODEX_CLOUD_WORKFLOW.md](docs/CODEX_CLOUD_WORKFLOW.md) · Local MCP/tokens: [docs/ops/LOCAL_STACK_SETUP.md](docs/ops/LOCAL_STACK_SETUP.md)
+**Hub:** [docs/INDEX.md](docs/INDEX.md) · [docs/agents/ROSTER.md](docs/agents/ROSTER.md) · [docs/CHATGPT_CURSOR_CODEX_STACK.md](docs/CHATGPT_CURSOR_CODEX_STACK.md) · Workspace: [docs/ops/LOCAL_WORKSPACE_STRATEGY.md](docs/ops/LOCAL_WORKSPACE_STRATEGY.md)
+
+**Repo scope:** Visual Era product only (`Vera-Platforms/vera`). Open Cursor on this repo root. One domain agent per chat — [docs/agents/DISPATCHER.md](docs/agents/DISPATCHER.md).
 
 ## Golden rules
 

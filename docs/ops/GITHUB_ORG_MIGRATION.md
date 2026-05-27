@@ -266,15 +266,14 @@ Run `./scripts/check-github-owner-refs.sh --verbose` after edits.
 - `visual-era.vercel.app` URLs
 - Legal copy in `lib/legal/documents.ts` (unless explicitly GitHub URLs)
 
-### Identity note (MotivMIA vs Vera-Platforms)
+### Identity note (GitHub org layout)
 
-Historical docs reference **MotivMIA** as org/user. After migration:
+- **Personal account:** `natew-dev` — administers both orgs  
+- **Product org:** `Vera-Platforms` — owns `vera` (sibling to MotivMIA, not nested inside it)  
+- **Incubator org:** `MotivMIA` — other repos; does **not** own `vera`  
+- **Commit email:** `admin@visual-era.com` (unchanged)  
 
-- **Repo owner:** `Vera-Platforms`  
-- **Contributor account:** your personal GitHub (e.g. `natew-dev`)  
-- **Commit email:** still `admin@visual-era.com` (unchanged)  
-
-Update ownership narrative in identity docs in a **follow-up PR**, not mixed with infra transfer.
+See [OPERATIONAL_IDENTITY.md](../OPERATIONAL_IDENTITY.md) and [ACCOUNT_STRUCTURE.md](../ACCOUNT_STRUCTURE.md).
 
 ---
 

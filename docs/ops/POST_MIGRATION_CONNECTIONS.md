@@ -2,58 +2,79 @@
 
 After moving to **Vera-Platforms/vera** and enabling **visual-era.com**.
 
-**Repo:** https://github.com/Vera-Platforms/vera  
-**Local setup:** [LOCAL_STACK_SETUP.md](./LOCAL_STACK_SETUP.md)
+**Repo:** https://github.com/Vera-Platforms/vera
 
 ---
 
-## Completed (infra)
+## Automated in repo (PR)
 
 | Item | Status |
 |------|--------|
-| GitHub default repo `Vera-Platforms/vera` | Done |
-| Production URL `https://visual-era.com` | Done |
-| Cloudflare DNS → Vercel (apex + www) | Done |
-| Custom domain HTTP 200 | Done |
-| Vercel production env keys | Done |
-| Resend domain `visual-era.com` | Done |
-| Phase 2 ops scripts + `.cursor/mcp.env` loader | Done |
-| Cursor MCP config (`.cursor/mcp.json`) | Done |
+| `scripts/lib/github-repo.sh` default `Vera-Platforms/vera` | Done in PR |
+| Agent scripts use canonical repo slug | Done in PR |
+| Docs: GitHub URLs → Vera-Platforms | Done in PR |
+| Production URL docs → `https://visual-era.com` | Done in PR |
+| Vercel domains `visual-era.com` + `www` added | Done (CLI) |
+| `docs/ops/CUSTOM_DOMAIN_SETUP.md` | Done |
 
 ---
 
-## Confirm in dashboards (if not already)
+## You must complete (dashboard)
 
-### Vercel
+### 1. Cloudflare DNS → Vercel
 
-- **Git** → repository **`Vera-Platforms/vera`**, branch **`main`**
-- **Domains** → `visual-era.com` + `www` **Valid** (keep DNS on Cloudflare — ignore “update nameservers”)
-- **Env** → `NEXT_PUBLIC_SITE_URL=https://visual-era.com`
+See [CUSTOM_DOMAIN_SETUP.md](./CUSTOM_DOMAIN_SETUP.md):
 
-### Clerk
+- Apex **A** → `76.76.21.21`
+- **www** CNAME → `cname.vercel-dns.com`
 
-- Allowed origins: `https://visual-era.com` (+ `https://visual-era.vercel.app` during transition)
+### 2. Vercel Git → new org
 
-### Supabase / Cursor / Codex
+Vercel Dashboard → **visual-era** → **Settings** → **Git**:
 
-- Re-authorize GitHub for **Vera-Platforms** org where applicable
+- Connect repository **`Vera-Platforms/vera`**
+- Production branch: **`main`**
+- Install Vercel GitHub App on **Vera-Platforms** org
 
-### GitHub
+### 3. Vercel env
 
-- Optional: verify `admin@visual-era.com` in Settings → Emails
-- Branch protection on private org repo (UI or Pro) if `setup-github-branch-protection.sh` 403s
+Set **Production** (and Preview if needed):
 
----
+```text
+NEXT_PUBLIC_SITE_URL=https://visual-era.com
+```
 
-## Local machine (new checkout)
+Redeploy production.
+
+### 4. Clerk
+
+- Allowed origins: `https://visual-era.com` (+ keep `visual-era.vercel.app` during transition)
+- No change to `/__clerk` proxy in code
+
+### 5. Supabase (if GitHub linked)
+
+- Re-authorize GitHub for **Vera-Platforms** org / repo
+
+### 6. Cursor / Codex Cloud
+
+- GitHub integration → grant access to **Vera-Platforms/vera**
+
+### 7. Local machine
 
 ```bash
 git remote set-url origin https://github.com/Vera-Platforms/vera.git
 export GITHUB_REPO=Vera-Platforms/vera
-./scripts/setup-cursor-mcp.sh
-# fill .cursor/mcp.env
 ./scripts/sync-main.sh
-./scripts/ops/run-phase2-verify.sh
+```
+
+### 8. GitHub branch protection (private org repo)
+
+If `setup-github-branch-protection.sh` returns 403, use GitHub **Pro** or make repo public, or configure protection in UI:
+
+- Require PR, **CI checks**, no force push
+
+```bash
+GITHUB_REPO=Vera-Platforms/vera ./scripts/setup-github-branch-protection.sh
 ```
 
 ---

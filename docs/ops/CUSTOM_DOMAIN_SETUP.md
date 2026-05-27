@@ -27,33 +27,6 @@ vercel inspect visual-era.com
 
 Zone: **visual-era.com** (nameservers: Cloudflare — keep them).
 
-### If Cloudflare says “CNAME already exists”
-
-**Do not add a second `www` record.** Edit the existing one:
-
-1. Cloudflare → **visual-era.com** → **DNS**
-2. Find the row for **`www`** (or `www.visual-era.com`)
-3. **Edit** (pencil) — do not “Add record”
-4. Set **Target** to `cname.vercel-dns.com`
-5. **Proxy status:** DNS only (grey cloud) for first setup
-6. Save
-
-For apex **`@`**:
-
-| Type | Name | Value | Proxy |
-|------|------|-------|-------|
-| **A** | `@` | `76.76.21.21` | DNS only (grey cloud) |
-
-Remove duplicate apex **A** rows that point at Cloudflare IPs (`104.21.x` / `172.67.x`) after adding Vercel’s A record, or run the script below.
-
-### Automated (API token)
-
-```bash
-export CLOUDFLARE_API_TOKEN='…'   # Zone → DNS → Edit
-./scripts/ops/configure-cloudflare-vercel-dns.sh        # preview
-./scripts/ops/configure-cloudflare-vercel-dns.sh --apply
-```
-
 Vercel recommends for apex while staying on Cloudflare:
 
 | Type | Name | Value | Proxy |

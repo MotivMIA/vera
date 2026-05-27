@@ -34,7 +34,7 @@ Clerk after sign-in/up should point to `/onboarding/consent` (see `.env.example`
 | `lib/onboarding/constants.ts` | Step order, paths, progress % |
 | `lib/legal/documents.ts` | Static legal copy |
 | `lib/supabase/server.ts` | Admin Supabase client |
-| `middleware.ts` | Clerk auth, legacy `/__clerk` redirect |
+| `middleware.ts` | Clerk auth, same-origin `/__clerk` proxy (`frontendApiProxy`) |
 
 ## UI
 
@@ -56,5 +56,5 @@ See `SUPABASE_SCHEMA.md` for `users`, `onboarding_status`, `verification_status`
 ## Deploy
 
 - Production: Vercel (`NEXT_PUBLIC_SITE_URL` must match public origin)
-- Clerk: hosted Frontend API only (no `/__clerk` proxy)
+- Clerk: same-origin `/__clerk` proxy via `lib/clerk/hosted-only.ts` + `frontendApiProxy` in middleware
 - Required in production: Clerk keys, site URL, Supabase trio (`lib/env.ts`)

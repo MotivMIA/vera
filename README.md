@@ -104,7 +104,7 @@ Signed documents are stored in a private Supabase Storage bucket named `signed-d
 | **Repository** | [github.com/Vera-Platforms/vera](https://github.com/Vera-Platforms/vera) |
 | **Production URL** | [https://visual-era.com](https://visual-era.com) (Vercel: `visual-era.vercel.app`) |
 
-Setup: [docs/ops/LOCAL_STACK_SETUP.md](docs/ops/LOCAL_STACK_SETUP.md) · [docs/ops/POST_MIGRATION_CONNECTIONS.md](docs/ops/POST_MIGRATION_CONNECTIONS.md) · [docs/ops/CUSTOM_DOMAIN_SETUP.md](docs/ops/CUSTOM_DOMAIN_SETUP.md)
+Setup: [docs/ops/POST_MIGRATION_CONNECTIONS.md](docs/ops/POST_MIGRATION_CONNECTIONS.md) · [docs/ops/CUSTOM_DOMAIN_SETUP.md](docs/ops/CUSTOM_DOMAIN_SETUP.md)
 
 ## Deployment
 
