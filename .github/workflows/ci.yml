@@ -38,29 +38,44 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Detect change scope
-        uses: dorny/paths-filter@v3
         id: filter
-        with:
-          filters: |
-            docs_only:
-              - "docs/**"
-              - "**/*.md"
-              - "AGENTS.md"
-            config_only:
-              - ".github/**"
-              - "scripts/**"
-            code:
-              - "app/**"
-              - "components/**"
-              - "lib/**"
-              - "middleware.ts"
-              - "package.json"
-              - "package-lock.json"
-              - "next.config.*"
-              - "tsconfig.json"
-              - "postcss.config.*"
-              - "tailwind.config.*"
-              - "public/**"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Get list of changed files in the PR
+          FILES=$(gh pr view ${{ github.event.pull_request.number }} --json files -q '.files[].path')
+          
+          echo "Changed files:"
+          echo "$FILES"
+          echo ""
+          
+          # Check if only docs/markdown changed
+          DOCS_ONLY=true
+          while IFS= read -r file; do
+            if ! [[ "$file" =~ \.(md|MD)$ ]] && ! [[ "$file" =~ ^docs/ ]] && ! [[ "$file" == "AGENTS.md" ]]; then
+              DOCS_ONLY=false
+              break
+            fi
+          done <<< "$FILES"
+          echo "docs_only=$DOCS_ONLY" >> $GITHUB_OUTPUT
+          
+          # Check if any code changed
+          CODE_CHANGED=false
+          while IFS= read -r file; do
+            if [[ "$file" =~ ^(app|components|lib)/ ]] || \
+               [[ "$file" =~ middleware\.ts ]] || \
+               [[ "$file" == "package.json" ]] || \
+               [[ "$file" =~ package-lock\.json ]] || \
+               [[ "$file" =~ next\.config ]] || \
+               [[ "$file" == "tsconfig.json" ]] || \
+               [[ "$file" =~ postcss\.config ]] || \
+               [[ "$file" =~ tailwind\.config ]] || \
+               [[ "$file" =~ ^public/ ]]; then
+              CODE_CHANGED=true
+              break
+            fi
+          done <<< "$FILES"
+          echo "code=$CODE_CHANGED" >> $GITHUB_OUTPUT
 
       - name: Docs-only (skip build)
         if: steps.filter.outputs.docs_only == 'true'
