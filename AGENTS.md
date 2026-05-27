@@ -224,3 +224,29 @@ Cursor stays lead engineer. For infra checks, delegate to **platform agents** (s
 | Delegate | [docs/prompts/platform-agent-task.md](docs/prompts/platform-agent-task.md) |
 
 Safest agents first: GitHub → Vercel → Supabase → Resend → Cloudflare → Clerk (restricted). No daemons; no tokens in repo.
+
+## Cursor Cloud specific instructions
+
+### Quick reference
+
+| Action | Command |
+|--------|---------|
+| Install deps | `npm ci` |
+| Dev server | `npm run dev` (port 3001 by default) |
+| Lint | `npm run lint` |
+| Typecheck | `npm run typecheck` |
+| Test | `npm run test` |
+| Build | `npm run build` |
+
+### Environment setup
+
+1. Copy `.env.example` → `.env.local` and set `ALLOW_DEV_AUTH_BYPASS=true` for local dev without Clerk credentials.
+2. The dev server defaults to port 3001 (configured via `NEXT_PUBLIC_SITE_URL` in `.env.local`).
+3. No Docker or local databases required — all external services (Clerk, Supabase, DIDIT) are hosted SaaS.
+
+### Gotchas
+
+- **Client-side navigation requires Clerk keys.** Without `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`, the `ClerkProvider` wraps the entire app and prevents client-side hydration/routing. Server-side rendering still works. The `ALLOW_DEV_AUTH_BYPASS` only bypasses auth inside API route handlers (`getAuthenticatedUserId()`), not the client-side Clerk SDK or the middleware.
+- **Do not run `npm run build` while the dev server is running.** Build artifacts in `.next/` conflict with the dev server's hot reloading. If you run a build, delete `.next/` before restarting the dev server (`rm -rf .next && npm run dev`).
+- **Middleware blocks protected routes without Clerk.** The Clerk middleware returns 401 for protected API routes and redirects protected pages to `/sign-in` when no valid session exists, regardless of `ALLOW_DEV_AUTH_BYPASS`.
+- **Node.js v22** is the runtime version used; no `.nvmrc` or `.node-version` file exists.
