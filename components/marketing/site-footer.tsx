@@ -85,10 +85,6 @@ export function SiteFooter() {
 
           <section className="flex flex-col gap-4 border-t border-white/10 pt-10 md:border-l md:border-t-0 md:pl-10 md:pt-0 lg:pl-14">
             <h2 className={headingClassName}>Start onboarding</h2>
-            <p className="max-w-xs text-sm leading-6 text-muted-foreground">
-              Create your account to begin identity verification and access creator management
-              tools.
-            </p>
             <Button asChild variant="accent" size="sm" className="w-fit">
               <Link href="/sign-up">Get started</Link>
             </Button>
@@ -111,24 +107,12 @@ export function SiteFooter() {
           </nav>
         </div>
 
-        <div className="flex flex-col gap-3 border-t border-white/10 py-4 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between sm:gap-6">
-          <p>© {currentYear} Visual Era. All rights reserved.</p>
-          <div className="flex flex-col gap-2 sm:items-end">
-            <p className="max-w-md text-pretty leading-5">
-              Information on this site is for general purposes only and is not legal or financial
-              advice.
-            </p>
-            <nav aria-label="Footer legal links" className="flex items-center gap-3">
-              {footerLegalLinks.map((doc, index) => (
-                <span key={doc.slug} className="inline-flex items-center gap-3">
-                  {index > 0 ? <span aria-hidden className="text-white/20">|</span> : null}
-                  <Link href={`/legal/${doc.slug}`} className={linkClassName}>
-                    {doc.label}
-                  </Link>
-                </span>
-              ))}
-            </nav>
-          </div>
+        <div className="flex flex-col gap-2 border-t border-white/10 py-5 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between sm:gap-6">
+          <p>© {currentYear} All rights reserved.</p>
+          <p className="max-w-md text-pretty leading-5 sm:text-right">
+            Information on this site is for general purposes only and is not legal or financial
+            advice.
+          </p>
         </div>
       </div>
     </footer>
