@@ -14,7 +14,7 @@ export function SignUpView() {
         >
           ← Visual Era
         </Link>
-        <AuthCard initialMode="sign-up" signInPresentation="embed" />
+        <AuthCard initialMode="sign-up" />
       </div>
     </main>
   );
