@@ -45,7 +45,7 @@ function SocialIcon({ label }: { label: string }) {
 export function SiteFooter() {
   return (
     <footer className="border-t border-white/10 px-5 py-10 md:px-8">
-      <div className="mx-auto flex max-w-6xl flex-col gap-6 md:flex-row md:items-start md:justify-between">
+      <div className="mx-auto flex max-w-6xl flex-col gap-6 md:flex-row md:items-end md:justify-between">
         <div className="space-y-4">
           <BrandLogo href="/" size="sm" showWordmark />
           <p className="max-w-sm text-sm text-muted-foreground">
@@ -66,7 +66,7 @@ export function SiteFooter() {
             ))}
           </div>
         </div>
-        <nav className="grid gap-2 sm:grid-cols-2">
+        <nav className="flex flex-col gap-2 md:items-end">
           <Link href="/legal" className="text-sm text-muted-foreground hover:text-foreground">
             Legal hub
           </Link>
