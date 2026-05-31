@@ -2,14 +2,10 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ClerkLoaded, ClerkLoading, SignIn, SignUp, UserButton, useAuth } from "@clerk/nextjs";
+import { ClerkLoaded, ClerkLoading, UserButton, useAuth } from "@clerk/nextjs";
 import { ArrowRight, LoaderCircle, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  clerkSignInComponentProps,
-  clerkSignUpComponentProps,
-} from "@/lib/clerk/auth-component-props";
-import { clerkAppearance } from "@/lib/clerk/appearance";
+import { SiteAuthPanel } from "@/components/auth/site-auth-panel";
 import { ONBOARDING_ENTRY_PATH } from "@/lib/onboarding/constants";
 
 type AuthMode = "sign-up" | "sign-in";
@@ -61,25 +57,6 @@ function AuthLoadingShell() {
   );
 }
 
-function ClerkAuthPanel({ mode }: { mode: AuthMode }) {
-  const shellClass =
-    "auth-clerk-embed overflow-hidden rounded-2xl border border-white/10 bg-white/[0.04] px-5 py-6";
-
-  if (mode === "sign-up") {
-    return (
-      <div className={shellClass}>
-        <SignUp key="sign-up" {...clerkSignUpComponentProps} appearance={clerkAppearance} routing="hash" />
-      </div>
-    );
-  }
-
-  return (
-    <div className={shellClass}>
-      <SignIn key="sign-in" {...clerkSignInComponentProps} appearance={clerkAppearance} routing="hash" />
-    </div>
-  );
-}
-
 function AuthCardContent({ initialMode }: { initialMode: AuthMode }) {
   const [mode, setMode] = useState<AuthMode>(initialMode);
   const { isSignedIn } = useAuth();
@@ -115,7 +92,7 @@ function AuthCardContent({ initialMode }: { initialMode: AuthMode }) {
   return (
     <>
       <AuthTabs mode={mode} onModeChange={setMode} />
-      <ClerkAuthPanel mode={mode} />
+      <SiteAuthPanel mode={mode} />
       <p className="mt-4 text-center text-xs text-[#6b7280]">
         {mode === "sign-up" ? (
           <>
