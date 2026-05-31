@@ -14,7 +14,7 @@ if echo "$html" | grep -q 'clerk\.visual-era\.vercel\.app'; then
   exit 1
 fi
 
-if ! echo "$html" | grep -qE 'src="/__clerk/npm/@clerk/clerk-js'; then
+if ! echo "$html" | grep -qE 'src="(/__clerk|https://visual-era\.com/__clerk)/npm/@clerk/clerk-js'; then
   echo "FAIL: expected same-origin /__clerk/npm/@clerk/clerk-js script src."
   exit 1
 fi
