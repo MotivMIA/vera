@@ -64,3 +64,10 @@ site="${NEXT_PUBLIC_SITE_URL:-}"
 if [[ "$site" != "http://localhost:3001" && "$site" != "http://127.0.0.1:3001" ]]; then
   echo "note: NEXT_PUBLIC_SITE_URL=${site} — default dev server is http://localhost:3001"
 fi
+
+pk="${NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY:-}"
+proxy="${NEXT_PUBLIC_CLERK_PROXY_URL:-}"
+if [[ "$pk" == pk_test_* && -n "$proxy" && "${NEXT_PUBLIC_CLERK_FORCE_PROXY:-}" != "true" ]]; then
+  echo "warn: pk_test_ with NEXT_PUBLIC_CLERK_PROXY_URL set — dev instances do not support proxy." >&2
+  echo "      Remove NEXT_PUBLIC_CLERK_PROXY_URL from .env (see docs/ops/CLERK_PROXY_SETUP.md)." >&2
+fi

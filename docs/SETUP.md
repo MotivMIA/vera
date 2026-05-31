@@ -81,7 +81,7 @@ Details: [VERCEL_DEPLOYMENT.md](./VERCEL_DEPLOYMENT.md)
 
 | Service | Action |
 |---------|--------|
-| **Clerk** | Allowed origins: localhost:3001 + visual-era.com; webhook → `/api/webhooks/clerk` |
+| **Clerk** | Allowed origins: localhost:3001 + visual-era.com; webhook → `/api/webhooks/clerk`; X OAuth → [ops/CLERK_SOCIAL_X.md](./ops/CLERK_SOCIAL_X.md) |
 | **Didit** | Webhook URL → production API route (see [CODEBASE_MAP.md](./CODEBASE_MAP.md)) |
 | **Supabase** | Run migrations from `supabase/migrations/` (human apply to remote when ready) |
 
