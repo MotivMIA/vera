@@ -11,10 +11,14 @@ fi
 REPO="${GITHUB_REPOSITORY:-natew-dev/vera}"
 REMOTE="${GIT_REMOTE:-origin}"
 BASE="${BASE_BRANCH:-main}"
+CURRENT_BRANCH="$(git branch --show-current 2>/dev/null || true)"
 
 git fetch -p "$REMOTE" "$BASE"
 
-mapfile -t BRANCHES < <(
+BRANCHES=()
+while IFS= read -r branch; do
+  BRANCHES+=("$branch")
+done < <(
   git branch -r --merged "$REMOTE/$BASE" |
     sed -n 's|^[[:space:]]*'"$REMOTE"'/||p' |
     grep -E '^agent-(cursor|codex)-' ||
@@ -37,6 +41,10 @@ if $DRY_RUN; then
 fi
 
 for branch in "${BRANCHES[@]}"; do
+  if [[ -n "$CURRENT_BRANCH" && "$branch" == "$CURRENT_BRANCH" ]]; then
+    echo "Skipping current branch: $branch"
+    continue
+  fi
   echo "Deleting $REMOTE/$branch ..."
   gh api -X DELETE "repos/${REPO}/git/refs/heads/${branch}" >/dev/null
 done
