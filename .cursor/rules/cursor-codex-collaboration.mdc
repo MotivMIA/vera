@@ -1,0 +1,29 @@
+---
+description: Cursor + Codex collaboration — Cursor orchestrates; Codex implements when useful
+alwaysApply: true
+---
+
+Read AGENTS.md first. Full playbook: docs/CURSOR_CODEX_COLLABORATION.md.
+
+## Core
+
+- **Cursor** is the in-repo orchestrator (plan, review, PR, merge path).
+- **Codex** (IDE panel or `agent-codex-*` cloud) is a code specialist — not architecture or release authority.
+- **ChatGPT Desktop** remains stack-level planner for briefs/classification; do not conflict with AGENTS.md hierarchy.
+
+## Per task
+
+1. Classify: architecture / code / debug / refactor / UI / docs / mixed.
+2. Pick mode: Cursor-led | Codex-assisted | Codex-led | **Collaborative** (default for serious work).
+3. Branch: `agent-cursor-*` or `agent-codex-*` — one writer per branch; never `main`.
+4. Codex only on scoped briefs; no Cursor-owned paths (`middleware.ts`, `app/api/*`, `lib/env.ts`, `lib/didit.ts`) without Cursor review.
+
+## Prohibited
+
+Blind delegation; Codex on trivial edits; Codex architecture alone; unrelated file churn; auto-deploy; secret/env changes; skip verification; push to `main`.
+
+## End of task — report
+
+- Working mode used
+- Files changed · what was implemented · why Codex was/wasn't used
+- Verification performed · remaining risks · recommended next step

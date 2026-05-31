@@ -29,7 +29,6 @@ data = json.load(sys.stdin).get('data', [])
 if not data:
     sys.exit(1)
 target = '${target_host}'
-# Match proxy host to domain name (e.g. visual-era.com → visual-era.com record)
 for d in data:
     if d.get('name') == target:
         print(d['id'])
@@ -44,7 +43,6 @@ print(data[0]['id'])
   exit 1
 }
 
-# Ensure a domain record exists for the proxy host (required when production URL is visual-era.com).
 if [[ -n "$target_host" ]] && ! echo "$domains_json" | python3 -c "
 import json, sys
 target = '${target_host}'
@@ -67,7 +65,7 @@ for d in json.load(sys.stdin).get('data', []):
 ")"
 fi
 
-if [[ -x "$(dirname "$0")/verify-clerk-proxy.sh" ]] || [[ -f "$(dirname "$0")/verify-clerk-proxy.sh" ]]; then
+if [[ -f "$(dirname "$0")/verify-clerk-proxy.sh" ]]; then
   echo "Tip: run ./scripts/ops/verify-clerk-proxy.sh first if Dashboard blocked save."
 fi
 
