@@ -56,8 +56,9 @@ add_if_missing() {
   done
 }
 
-# Production site URL override (never use localhost on Vercel)
+# Production URLs (never use localhost on Vercel)
 prod_site_url="https://visual-era.com"
+prod_proxy_url="https://visual-era.com/__clerk"
 
 for key in \
   NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY \
@@ -80,15 +81,15 @@ for key in \
   add_if_missing "$key" "$val" production preview
 done
 
-# SITE_URL: always set canonical production domain (empty value breaks Clerk client init)
-echo "set  NEXT_PUBLIC_SITE_URL → production ($prod_site_url)"
-vercel env add NEXT_PUBLIC_SITE_URL production --value "$prod_site_url" --yes --force --non-interactive 2>/dev/null || \
-  printf '%s' "$prod_site_url" | vercel env add NEXT_PUBLIC_SITE_URL production --yes --force --non-interactive
-
-if vercel env ls 2>/dev/null | grep -q 'NEXT_PUBLIC_SITE_URL.*Preview'; then
-  echo "set  NEXT_PUBLIC_SITE_URL → preview ($prod_site_url)"
-  vercel env add NEXT_PUBLIC_SITE_URL preview --value "$prod_site_url" --yes --force --non-interactive 2>/dev/null || true
-fi
+# SITE_URL + proxy URL: required for production Clerk (empty SITE_URL breaks client init)
+for key_val in \
+  "NEXT_PUBLIC_SITE_URL:$prod_site_url" \
+  "NEXT_PUBLIC_CLERK_PROXY_URL:$prod_proxy_url"; do
+  key="${key_val%%:*}"
+  val="${key_val#*:}"
+  echo "set  $key → production ($val)"
+  vercel env add "$key" production --value "$val" --yes --force --non-interactive 2>/dev/null || true
+done
 
 # Dev-only — never add to production/preview
 if [[ -n "${ALLOW_DEV_AUTH_BYPASS:-}" ]]; then
