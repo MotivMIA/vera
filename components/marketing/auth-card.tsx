@@ -18,6 +18,11 @@ import {
   clerkSignUpComponentProps,
 } from "@/lib/clerk/auth-component-props";
 import { clerkAppearance } from "@/lib/clerk/appearance";
+import {
+  isClerkProductionKeyClient,
+  isLocalDevHost,
+  shouldUseClerkProxyClient,
+} from "@/lib/clerk/client-env";
 import { ONBOARDING_ENTRY_PATH } from "@/lib/onboarding/constants";
 
 type AuthMode = "sign-up" | "sign-in";
@@ -38,10 +43,22 @@ function useClerkEmbedRouting(): ClerkEmbedRouting {
 }
 
 function useClerkProxyBlocked(): boolean {
-  const [blocked, setBlocked] = useState(false);
+  const shouldProbe = shouldUseClerkProxyClient();
+  const [blocked, setBlocked] = useState<boolean | null>(null);
 
   useEffect(() => {
+    if (!shouldProbe) {
+      setBlocked(false);
+      return;
+    }
+
     let cancelled = false;
+    const localWithLiveKey =
+      isLocalDevHost(window.location.hostname) && isClerkProductionKeyClient();
+
+    if (localWithLiveKey) {
+      setBlocked(true);
+    }
 
     async function probe() {
       try {
@@ -49,11 +66,14 @@ function useClerkProxyBlocked(): boolean {
           headers: { Origin: window.location.origin },
         });
         const data = (await res.json()) as { errors?: Array<{ code?: string }> };
-        if (!cancelled && data.errors?.some((e) => e.code === "host_invalid")) {
-          setBlocked(true);
-        }
+        if (cancelled) return;
+
+        const hostInvalid = data.errors?.some((e) => e.code === "host_invalid") ?? false;
+        setBlocked(hostInvalid);
       } catch {
-        // Ignore — ClerkFailed / loading states cover other failures.
+        if (!cancelled && !localWithLiveKey) {
+          setBlocked(false);
+        }
       }
     }
 
@@ -61,9 +81,10 @@ function useClerkProxyBlocked(): boolean {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [shouldProbe]);
 
-  return blocked;
+  if (!shouldProbe) return false;
+  return blocked ?? false;
 }
 
 function AuthTabs({
@@ -114,26 +135,51 @@ function AuthLoadingShell() {
 }
 
 function ClerkProxyBlockedNotice() {
+  const isLocal =
+    typeof window !== "undefined" && isLocalDevHost(window.location.hostname);
+  const usingLiveKey = isClerkProductionKeyClient();
+
   return (
     <div
       className="rounded-2xl border border-accent/25 bg-accent/10 px-5 py-6 text-sm leading-6 text-[#d7dbe2]"
       role="alert"
     >
       <p className="font-medium text-foreground">Sign-in cannot load on this host</p>
-      <p className="mt-2 text-muted-foreground">
-        Production Clerk keys require a registered proxy for this origin. Use a{" "}
-        <code className="text-xs text-accent">pk_test_</code> key for local dev, or open{" "}
-        <a
-          href="https://visual-era.com/sign-in"
-          className="text-accent underline-offset-2 hover:text-[var(--brand-magenta-bright)] hover:underline"
-        >
-          visual-era.com
-        </a>
-        .
-      </p>
-      <p className="mt-2 text-xs text-muted-foreground">
-        See <code className="text-accent/90">docs/ops/CLERK_PROXY_SETUP.md</code>.
-      </p>
+      {isLocal && usingLiveKey ? (
+        <>
+          <p className="mt-2 text-muted-foreground">
+            Local dev needs Clerk <strong className="font-medium text-foreground">development</strong>{" "}
+            keys (<code className="text-xs text-accent">pk_test_</code> /{" "}
+            <code className="text-xs text-accent">sk_test_</code>). Your{" "}
+            <code className="text-xs text-accent">.env</code> uses production{" "}
+            <code className="text-xs text-accent">pk_live_</code>, which only works on{" "}
+            <a
+              href="https://visual-era.com/sign-in"
+              className="text-accent underline-offset-2 hover:text-[var(--brand-magenta-bright)] hover:underline"
+            >
+              visual-era.com
+            </a>{" "}
+            via the registered <code className="text-xs text-accent">/__clerk</code> proxy.
+          </p>
+          <p className="mt-3 text-muted-foreground">
+            In <code className="text-xs text-accent">.env</code>: set{" "}
+            <code className="text-xs text-accent">NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY</code> and{" "}
+            <code className="text-xs text-accent">CLERK_SECRET_KEY</code> to your{" "}
+            <code className="text-xs text-accent">pk_test_</code> /{" "}
+            <code className="text-xs text-accent">sk_test_</code> pair, omit{" "}
+            <code className="text-xs text-accent">NEXT_PUBLIC_CLERK_PROXY_URL</code>, then restart{" "}
+            <code className="text-xs text-accent">npm run dev</code>.
+          </p>
+        </>
+      ) : (
+        <p className="mt-2 text-muted-foreground">
+          The Clerk Frontend API proxy for this origin returned{" "}
+          <code className="text-xs text-accent">host_invalid</code>. Production keys require a
+          registered proxy at <code className="text-xs text-accent">/__clerk</code> — see{" "}
+          <code className="text-accent/90">docs/ops/CLERK_PROXY_SETUP.md</code> or run{" "}
+          <code className="text-xs text-accent">npm run smoke:clerk-proxy</code>.
+        </p>
+      )}
     </div>
   );
 }
