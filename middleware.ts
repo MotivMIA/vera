@@ -111,8 +111,9 @@ const runClerkMiddleware = clerkMiddleware(
   },
   {
     authorizedParties: collectAuthorizedParties(),
-    // Same-origin /__clerk — required because FAPI host clerk.visual-era.vercel.app is not on Vercel DNS.
-    frontendApiProxy: { enabled: true },
+    // Same-origin /__clerk — required in production because FAPI host clerk.visual-era.vercel.app is not on Vercel DNS.
+    // In development, the FAPI (*.clerk.accounts.dev) is publicly reachable so proxy is not needed.
+    frontendApiProxy: { enabled: process.env.NODE_ENV === "production" },
   },
 );
 
