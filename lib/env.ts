@@ -57,6 +57,13 @@ export function validateProductionEnv() {
     throw new Error(`Missing required production environment variables: ${missing.join(", ")}`);
   }
 
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim() ?? "";
+  if (siteUrl && !siteUrl.startsWith("https://")) {
+    throw new Error(
+      "NEXT_PUBLIC_SITE_URL must be an https URL in production (e.g. https://visual-era.com). Empty or http values break Clerk on the custom domain.",
+    );
+  }
+
   getServerEnv();
 }
 
