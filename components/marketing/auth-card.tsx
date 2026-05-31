@@ -2,21 +2,24 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { SignIn, SignUp, UserButton, useAuth } from "@clerk/nextjs";
+import { ClerkLoaded, ClerkLoading, SignIn, SignUp, UserButton, useAuth } from "@clerk/nextjs";
 import { ArrowRight, LoaderCircle, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
   clerkSignInComponentProps,
   clerkSignUpComponentProps,
 } from "@/lib/clerk/auth-component-props";
+import { clerkAppearance } from "@/lib/clerk/appearance";
 import { ONBOARDING_ENTRY_PATH } from "@/lib/onboarding/constants";
+
+type AuthMode = "sign-up" | "sign-in";
 
 function AuthTabs({
   mode,
   onModeChange,
 }: {
-  mode: "sign-up" | "sign-in";
-  onModeChange: (mode: "sign-up" | "sign-in") => void;
+  mode: AuthMode;
+  onModeChange: (mode: AuthMode) => void;
 }) {
   return (
     <div className="mb-4 grid grid-cols-2 gap-2 rounded-2xl border border-white/10 bg-black/20 p-1">
@@ -42,127 +45,91 @@ function AuthTabs({
   );
 }
 
-function SignInPanel({ presentation }: { presentation: "link" | "embed" }) {
-  if (presentation === "embed") {
-    return <SignIn key="sign-in" {...clerkSignInComponentProps} routing="hash" />;
-  }
-
+function AuthLoadingShell() {
   return (
-    <div className="flex min-h-72 flex-col items-center justify-center gap-4 rounded-2xl border border-white/10 bg-white/[0.04] px-6 py-10 text-center text-[#f6f4ef]">
-      <p className="text-sm leading-6 text-[#9da3af]">
-        Sign in on the secure auth page for the most reliable experience.
-      </p>
-      <Button asChild className="w-full">
-        <Link href="/sign-in">Continue to sign in</Link>
-      </Button>
+    <div className="space-y-4">
+      <div className="grid grid-cols-2 gap-2 rounded-2xl border border-white/10 bg-black/20 p-1">
+        <div className="rounded-[0.9rem] bg-white py-2.5 text-center text-sm font-medium text-[#090a0d]">
+          Create account
+        </div>
+        <div className="rounded-[0.9rem] py-2.5 text-center text-sm font-medium text-[#9da3af]">Sign in</div>
+      </div>
+      <div className="flex min-h-72 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.04]">
+        <LoaderCircle className="size-5 animate-spin text-[#d8b56d]" />
+      </div>
     </div>
   );
 }
 
-export type AuthCardProps = {
-  /** Which tab is active when the card mounts. */
-  initialMode?: "sign-up" | "sign-in";
-  /**
-   * Homepage: sign-in tab links to `/sign-in`.
-   * Dedicated auth routes: embed Clerk sign-in in the card.
-   */
-  signInPresentation?: "link" | "embed";
-};
+function ClerkAuthPanel({ mode }: { mode: AuthMode }) {
+  const shellClass =
+    "rounded-2xl border border-white/10 bg-white/[0.04] px-5 py-6 [&_.cl-card]:border-0 [&_.cl-card]:bg-transparent [&_.cl-card]:shadow-none";
 
-export function AuthCard({
-  initialMode = "sign-up",
-  signInPresentation = "link",
-}: AuthCardProps) {
-  const [mode, setMode] = useState<"sign-up" | "sign-in">(initialMode);
-  const [timedOut, setTimedOut] = useState(false);
-  const { isLoaded, isSignedIn } = useAuth();
+  if (mode === "sign-up") {
+    return (
+      <div className={shellClass}>
+        <SignUp
+          key="sign-up"
+          {...clerkSignUpComponentProps}
+          appearance={clerkAppearance}
+          routing="hash"
+        />
+      </div>
+    );
+  }
+
+  return (
+    <div className={shellClass}>
+      <SignIn
+        key="sign-in"
+        {...clerkSignInComponentProps}
+        appearance={clerkAppearance}
+        routing="hash"
+      />
+    </div>
+  );
+}
+
+function AuthCardContent({ initialMode }: { initialMode: AuthMode }) {
+  const [mode, setMode] = useState<AuthMode>(initialMode);
+  const { isSignedIn } = useAuth();
 
   useEffect(() => {
     setMode(initialMode);
   }, [initialMode]);
 
-  useEffect(() => {
-    if (isLoaded) {
-      setTimedOut(false);
-      return;
-    }
-    const timer = window.setTimeout(() => setTimedOut(true), 12_000);
-    return () => window.clearTimeout(timer);
-  }, [isLoaded]);
-
-  if (!isLoaded) {
-    return (
-      <div className="w-full max-w-md space-y-4">
-        <AuthTabs mode={mode} onModeChange={setMode} />
-        <div className="flex min-h-72 flex-col items-center justify-center gap-4 rounded-2xl border border-white/10 bg-white/[0.04] px-6 text-center">
-          <LoaderCircle className="size-5 animate-spin text-[#d8b56d]" />
-          {timedOut ? (
-            <>
-              <p className="text-sm leading-6 text-[#9da3af]">
-                Auth is taking longer than expected. You can continue on the dedicated sign-in page.
-              </p>
-              <Button asChild variant="secondary" className="w-full">
-                <Link href="/sign-in">Open sign in</Link>
-              </Button>
-              <Button asChild variant="outline" className="w-full border-white/15 bg-transparent">
-                <Link href="/sign-up">Open sign up</Link>
-              </Button>
-            </>
-          ) : null}
-        </div>
-      </div>
-    );
-  }
-
   if (isSignedIn) {
     return (
-      <div className="w-full max-w-md">
-        <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-7 text-[#f6f4ef]">
-          <div className="mb-6 flex items-center justify-between">
-            <div>
-              <p className="text-sm uppercase tracking-[0.22em] text-[#9da3af]">Authenticated</p>
-              <h3 className="mt-2 text-2xl font-semibold">Continue onboarding</h3>
-            </div>
-            <UserButton />
+      <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-7 text-[#f6f4ef]">
+        <div className="mb-6 flex items-center justify-between">
+          <div>
+            <p className="text-sm uppercase tracking-[0.22em] text-[#9da3af]">Authenticated</p>
+            <h3 className="mt-2 text-2xl font-semibold">Continue onboarding</h3>
           </div>
-          <div className="rounded-2xl border border-[#d8b56d]/20 bg-[#d8b56d]/10 p-4 text-sm leading-6 text-[#d7dbe2]">
-            <ShieldCheck className="mb-3 size-5 text-[#d8b56d]" />
-            Your account is active and ready to continue.
-          </div>
-          <Button asChild className="mt-6 w-full">
-            <Link href={ONBOARDING_ENTRY_PATH}>
-              Continue onboarding
-              <ArrowRight className="ml-auto size-4" />
-            </Link>
-          </Button>
+          <UserButton />
         </div>
+        <div className="rounded-2xl border border-[#d8b56d]/20 bg-[#d8b56d]/10 p-4 text-sm leading-6 text-[#d7dbe2]">
+          <ShieldCheck className="mb-3 size-5 text-[#d8b56d]" />
+          Your account is active and ready to continue.
+        </div>
+        <Button asChild className="mt-6 w-full">
+          <Link href={ONBOARDING_ENTRY_PATH}>
+            Continue onboarding
+            <ArrowRight className="ml-auto size-4" />
+          </Link>
+        </Button>
       </div>
     );
   }
 
   return (
-    <div className="w-full max-w-md">
+    <>
       <AuthTabs mode={mode} onModeChange={setMode} />
-      {mode === "sign-up" ? (
-        <SignUp key="sign-up" {...clerkSignUpComponentProps} routing="hash" />
-      ) : (
-        <SignInPanel presentation={signInPresentation} />
-      )}
-      {mode === "sign-in" && signInPresentation === "link" ? (
-        <p className="mt-4 text-center text-xs text-[#6b7280]">
-          New here?{" "}
-          <button
-            type="button"
-            className="text-[#d8b56d] underline-offset-2 hover:underline"
-            onClick={() => setMode("sign-up")}
-          >
-            Create an account
-          </button>
-        </p>
-      ) : mode === "sign-up" ? (
-        <p className="mt-4 text-center text-xs text-[#6b7280]">
-          Already have an account?{" "}
-          {signInPresentation === "embed" ? (
+      <ClerkAuthPanel mode={mode} />
+      <p className="mt-4 text-center text-xs text-[#6b7280]">
+        {mode === "sign-up" ? (
+          <>
+            Already have an account?{" "}
             <button
               type="button"
               className="text-[#d8b56d] underline-offset-2 hover:underline"
@@ -170,13 +137,37 @@ export function AuthCard({
             >
               Sign in
             </button>
-          ) : (
-            <Link href="/sign-in" className="text-[#d8b56d] underline-offset-2 hover:underline">
-              Sign in
-            </Link>
-          )}
-        </p>
-      ) : null}
+          </>
+        ) : (
+          <>
+            New here?{" "}
+            <button
+              type="button"
+              className="text-[#d8b56d] underline-offset-2 hover:underline"
+              onClick={() => setMode("sign-up")}
+            >
+              Create an account
+            </button>
+          </>
+        )}
+      </p>
+    </>
+  );
+}
+
+export type AuthCardProps = {
+  initialMode?: AuthMode;
+};
+
+export function AuthCard({ initialMode = "sign-up" }: AuthCardProps) {
+  return (
+    <div className="w-full max-w-md">
+      <ClerkLoading>
+        <AuthLoadingShell />
+      </ClerkLoading>
+      <ClerkLoaded>
+        <AuthCardContent initialMode={initialMode} />
+      </ClerkLoaded>
     </div>
   );
 }
