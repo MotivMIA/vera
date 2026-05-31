@@ -2,7 +2,15 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ClerkLoaded, ClerkLoading, SignIn, SignUp, UserButton, useAuth } from "@clerk/nextjs";
+import { usePathname } from "next/navigation";
+import {
+  ClerkDegraded,
+  ClerkFailed,
+  SignIn,
+  SignUp,
+  UserButton,
+  useAuth,
+} from "@clerk/nextjs";
 import { ArrowRight, LoaderCircle, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,6 +21,50 @@ import { clerkAppearance } from "@/lib/clerk/appearance";
 import { ONBOARDING_ENTRY_PATH } from "@/lib/onboarding/constants";
 
 type AuthMode = "sign-up" | "sign-in";
+
+type ClerkEmbedRouting = { routing: "hash" } | { routing: "path"; path: string };
+
+function useClerkEmbedRouting(): ClerkEmbedRouting {
+  const pathname = usePathname() ?? "/";
+
+  if (pathname === "/sign-up" || pathname.startsWith("/sign-up/")) {
+    return { routing: "path", path: "/sign-up" };
+  }
+  if (pathname === "/sign-in" || pathname.startsWith("/sign-in/")) {
+    return { routing: "path", path: "/sign-in" };
+  }
+
+  return { routing: "hash" };
+}
+
+function useClerkProxyBlocked(): boolean {
+  const [blocked, setBlocked] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function probe() {
+      try {
+        const res = await fetch("/__clerk/v1/environment", {
+          headers: { Origin: window.location.origin },
+        });
+        const data = (await res.json()) as { errors?: Array<{ code?: string }> };
+        if (!cancelled && data.errors?.some((e) => e.code === "host_invalid")) {
+          setBlocked(true);
+        }
+      } catch {
+        // Ignore — ClerkFailed / loading states cover other failures.
+      }
+    }
+
+    void probe();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  return blocked;
+}
 
 function AuthTabs({
   mode,
@@ -61,21 +113,69 @@ function AuthLoadingShell() {
   );
 }
 
+function ClerkProxyBlockedNotice() {
+  return (
+    <div
+      className="rounded-2xl border border-accent/25 bg-accent/10 px-5 py-6 text-sm leading-6 text-[#d7dbe2]"
+      role="alert"
+    >
+      <p className="font-medium text-foreground">Sign-in cannot load on this host</p>
+      <p className="mt-2 text-muted-foreground">
+        Production Clerk keys require a registered proxy for this origin. Use a{" "}
+        <code className="text-xs text-accent">pk_test_</code> key for local dev, or open{" "}
+        <a
+          href="https://visual-era.com/sign-in"
+          className="text-accent underline-offset-2 hover:text-[var(--brand-magenta-bright)] hover:underline"
+        >
+          visual-era.com
+        </a>
+        .
+      </p>
+      <p className="mt-2 text-xs text-muted-foreground">
+        See <code className="text-accent/90">docs/ops/CLERK_PROXY_SETUP.md</code>.
+      </p>
+    </div>
+  );
+}
+
+function AuthUnavailableNotice() {
+  return (
+    <div
+      className="rounded-2xl border border-white/10 bg-white/[0.04] px-5 py-6 text-sm leading-6 text-muted-foreground"
+      role="alert"
+    >
+      <p className="font-medium text-foreground">Authentication is temporarily unavailable</p>
+      <p className="mt-2">Refresh the page. If the problem continues, try again in a few minutes.</p>
+    </div>
+  );
+}
+
 function ClerkAuthPanel({ mode }: { mode: AuthMode }) {
+  const routingProps = useClerkEmbedRouting();
   const shellClass =
     "auth-clerk-embed overflow-hidden rounded-2xl border border-white/10 bg-white/[0.04] px-5 py-6";
 
   if (mode === "sign-up") {
     return (
       <div className={shellClass}>
-        <SignUp key="sign-up" {...clerkSignUpComponentProps} appearance={clerkAppearance} routing="hash" />
+        <SignUp
+          key="sign-up"
+          {...clerkSignUpComponentProps}
+          {...routingProps}
+          appearance={clerkAppearance}
+        />
       </div>
     );
   }
 
   return (
     <div className={shellClass}>
-      <SignIn key="sign-in" {...clerkSignInComponentProps} appearance={clerkAppearance} routing="hash" />
+      <SignIn
+        key="sign-in"
+        {...clerkSignInComponentProps}
+        {...routingProps}
+        appearance={clerkAppearance}
+      />
     </div>
   );
 }
@@ -150,14 +250,27 @@ export type AuthCardProps = {
 };
 
 export function AuthCard({ initialMode = "sign-up" }: AuthCardProps) {
+  const { isLoaded } = useAuth();
+  const proxyBlocked = useClerkProxyBlocked();
+
+  if (proxyBlocked) {
+    return (
+      <div className="w-full max-w-md">
+        <ClerkProxyBlockedNotice />
+      </div>
+    );
+  }
+
   return (
     <div className="w-full max-w-md">
-      <ClerkLoading>
-        <AuthLoadingShell />
-      </ClerkLoading>
-      <ClerkLoaded>
-        <AuthCardContent initialMode={initialMode} />
-      </ClerkLoaded>
+      {!isLoaded ? <AuthLoadingShell /> : null}
+      <ClerkFailed>
+        <AuthUnavailableNotice />
+      </ClerkFailed>
+      <ClerkDegraded>
+        <AuthUnavailableNotice />
+      </ClerkDegraded>
+      {isLoaded ? <AuthCardContent initialMode={initialMode} /> : null}
     </div>
   );
 }

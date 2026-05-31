@@ -1,6 +1,6 @@
 /**
- * Visual Era brand — sampled from public/brand/logo.png (VE magenta → purple gradient).
- * CSS tokens in app/globals.css mirror these values.
+ * Visual Era brand palette for JS/TS (Clerk theme, inline styles, etc.).
+ * CSS source of truth: lib/brand/tokens.css — keep hex values in sync.
  */
 export const brand = {
   magenta: "#E41A76",
