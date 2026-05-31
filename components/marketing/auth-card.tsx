@@ -63,29 +63,19 @@ function AuthLoadingShell() {
 
 function ClerkAuthPanel({ mode }: { mode: AuthMode }) {
   const shellClass =
-    "rounded-2xl border border-white/10 bg-white/[0.04] px-5 py-6 [&_.cl-card]:border-0 [&_.cl-card]:bg-transparent [&_.cl-card]:shadow-none";
+    "auth-clerk-embed overflow-hidden rounded-2xl border border-white/10 bg-white/[0.04] px-5 py-6";
 
   if (mode === "sign-up") {
     return (
       <div className={shellClass}>
-        <SignUp
-          key="sign-up"
-          {...clerkSignUpComponentProps}
-          appearance={clerkAppearance}
-          routing="hash"
-        />
+        <SignUp key="sign-up" {...clerkSignUpComponentProps} appearance={clerkAppearance} routing="hash" />
       </div>
     );
   }
 
   return (
     <div className={shellClass}>
-      <SignIn
-        key="sign-in"
-        {...clerkSignInComponentProps}
-        appearance={clerkAppearance}
-        routing="hash"
-      />
+      <SignIn key="sign-in" {...clerkSignInComponentProps} appearance={clerkAppearance} routing="hash" />
     </div>
   );
 }

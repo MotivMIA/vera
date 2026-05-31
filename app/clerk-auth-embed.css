@@ -1,0 +1,94 @@
+/**
+ * Force embedded Clerk SignIn/SignUp to sit flush inside `.auth-clerk-embed`
+ * (no second floating white card on top of the marketing panel).
+ */
+.auth-clerk-embed {
+  isolation: isolate;
+}
+
+.auth-clerk-embed .cl-rootBox,
+.auth-clerk-embed .cl-cardBox,
+.auth-clerk-embed .cl-card,
+.auth-clerk-embed .cl-main,
+.auth-clerk-embed .cl-scrollBox,
+.auth-clerk-embed .cl-page {
+  width: 100% !important;
+  max-width: none !important;
+  min-width: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  background: transparent !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+  border: none !important;
+  border-radius: 0 !important;
+}
+
+.auth-clerk-embed .cl-header,
+.auth-clerk-embed .cl-headerTitle,
+.auth-clerk-embed .cl-headerSubtitle,
+.auth-clerk-embed .cl-logoBox,
+.auth-clerk-embed .cl-footer,
+.auth-clerk-embed .cl-footerAction,
+.auth-clerk-embed .cl-internal-b3fm6y {
+  display: none !important;
+}
+
+.auth-clerk-embed .cl-socialButtons {
+  gap: 0.5rem;
+}
+
+.auth-clerk-embed .cl-socialButtonsBlockButton {
+  height: 2.75rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.04) !important;
+  color: #f6f4ef !important;
+  box-shadow: none !important;
+}
+
+.auth-clerk-embed .cl-socialButtonsBlockButton:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+}
+
+.auth-clerk-embed .cl-dividerLine {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.auth-clerk-embed .cl-dividerText {
+  color: #6b7280;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.auth-clerk-embed .cl-formFieldLabel {
+  color: #9da3af !important;
+}
+
+.auth-clerk-embed .cl-formFieldInput {
+  border: 1px solid rgba(255, 255, 255, 0.1) !important;
+  background: rgba(0, 0, 0, 0.35) !important;
+  color: #f6f4ef !important;
+  box-shadow: none !important;
+}
+
+.auth-clerk-embed .cl-formButtonPrimary {
+  height: 2.75rem;
+  background: #f7f3ea !important;
+  color: #090a0d !important;
+  box-shadow: none !important;
+}
+
+.auth-clerk-embed .cl-formButtonPrimary:hover {
+  background: #ffffff !important;
+}
+
+.auth-clerk-embed .cl-formFieldAction,
+.auth-clerk-embed .cl-identityPreviewText {
+  color: #d8b56d !important;
+}
+
+.auth-clerk-embed .cl-alternativeMethodsBlockButton,
+.auth-clerk-embed .cl-backLink {
+  color: #9da3af !important;
+}
