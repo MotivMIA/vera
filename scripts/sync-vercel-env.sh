@@ -80,12 +80,14 @@ for key in \
   add_if_missing "$key" "$val" production preview
 done
 
-# SITE_URL: ensure production/preview use canonical domain (not localhost)
-if echo "$existing" | grep -qx "NEXT_PUBLIC_SITE_URL"; then
-  echo "ok   NEXT_PUBLIC_SITE_URL (already on Vercel — update in dashboard if prod should be https://visual-era.com)"
-else
-  echo "add  NEXT_PUBLIC_SITE_URL → production preview"
-  printf '%s' "$prod_site_url" | vercel env add NEXT_PUBLIC_SITE_URL production preview
+# SITE_URL: always set canonical production domain (empty value breaks Clerk client init)
+echo "set  NEXT_PUBLIC_SITE_URL → production ($prod_site_url)"
+vercel env add NEXT_PUBLIC_SITE_URL production --value "$prod_site_url" --yes --force --non-interactive 2>/dev/null || \
+  printf '%s' "$prod_site_url" | vercel env add NEXT_PUBLIC_SITE_URL production --yes --force --non-interactive
+
+if vercel env ls 2>/dev/null | grep -q 'NEXT_PUBLIC_SITE_URL.*Preview'; then
+  echo "set  NEXT_PUBLIC_SITE_URL → preview ($prod_site_url)"
+  vercel env add NEXT_PUBLIC_SITE_URL preview --value "$prod_site_url" --yes --force --non-interactive 2>/dev/null || true
 fi
 
 # Dev-only — never add to production/preview
