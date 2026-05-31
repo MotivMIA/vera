@@ -24,6 +24,10 @@ npm run dev
 
 Default dev URL: **http://localhost:3001** (`NEXT_PUBLIC_SITE_URL` must match).
 
+### Clerk (development instance)
+
+Use **`pk_test_` / `sk_test_`** (e.g. **immense-sawfish-81**). Do **not** set `NEXT_PUBLIC_CLERK_PROXY_URL` — development instances use hosted `*.clerk.accounts.dev`, not `/__clerk` proxy (see [CLERK_PROXY_SETUP.md](./CLERK_PROXY_SETUP.md)).
+
 ## Sync with Vercel
 
 **Download** (Vercel → local):

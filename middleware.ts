@@ -1,5 +1,6 @@
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
 import { collectClerkOrigins } from "@/lib/clerk/origins";
+import { shouldUseClerkFrontendApiProxy } from "@/lib/clerk/proxy-url";
 import { NextResponse } from "next/server";
 import type { NextFetchEvent, NextRequest } from "next/server";
 
@@ -78,8 +79,14 @@ const runClerkMiddleware = clerkMiddleware(
   },
   {
     authorizedParties: collectClerkOrigins(),
-    // Same-origin /__clerk — required because FAPI host clerk.visual-era.vercel.app is not on Vercel DNS.
-    frontendApiProxy: { enabled: true },
+    // pk_live_ only — dev instances use hosted FAPI (*.clerk.accounts.dev).
+    ...(shouldUseClerkFrontendApiProxy()
+      ? {
+          frontendApiProxy: {
+            enabled: true,
+          },
+        }
+      : {}),
   },
 );
 

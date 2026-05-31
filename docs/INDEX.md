@@ -28,6 +28,7 @@
 | [VERCEL_DEPLOYMENT.md](./VERCEL_DEPLOYMENT.md) | Production URL, Clerk proxy, deploy |
 | [OPERATIONAL_IDENTITY.md](./OPERATIONAL_IDENTITY.md) | Orgs, commit email, accounts |
 | [ops/CLERK_PROXY_SETUP.md](./ops/CLERK_PROXY_SETUP.md) | Production Clerk `/__clerk` proxy (required for live site) |
+| [ops/CLERK_SOCIAL_X.md](./ops/CLERK_SOCIAL_X.md) | Enable X (Twitter) sign-in / sign-up in Clerk |
 | [ops/LOCAL_ENV.md](./ops/LOCAL_ENV.md) | `.env` + Vercel import |
 | [ops/AGENT_FULL_ACCESS_SETUP.md](./ops/AGENT_FULL_ACCESS_SETUP.md) | Cursor MCP + CLI access |
 | [ops/LOCAL_WORKSPACE_STRATEGY.md](./ops/LOCAL_WORKSPACE_STRATEGY.md) | Clone path, verification |

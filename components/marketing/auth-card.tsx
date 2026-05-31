@@ -2,17 +2,14 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { SignUp, UserButton, useAuth } from "@clerk/nextjs";
+import { SignIn, SignUp, UserButton, useAuth } from "@clerk/nextjs";
 import { ArrowRight, LoaderCircle, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import {
+  clerkSignInComponentProps,
+  clerkSignUpComponentProps,
+} from "@/lib/clerk/auth-component-props";
 import { ONBOARDING_ENTRY_PATH } from "@/lib/onboarding/constants";
-
-const clerkSignUpProps = {
-  fallbackRedirectUrl: ONBOARDING_ENTRY_PATH,
-  forceRedirectUrl: ONBOARDING_ENTRY_PATH,
-  oauthFlow: "auto" as const,
-  signInUrl: "/sign-in",
-};
 
 function AuthTabs({
   mode,
@@ -45,10 +42,44 @@ function AuthTabs({
   );
 }
 
-export function AuthCard() {
-  const [mode, setMode] = useState<"sign-up" | "sign-in">("sign-up");
+function SignInPanel({ presentation }: { presentation: "link" | "embed" }) {
+  if (presentation === "embed") {
+    return <SignIn key="sign-in" {...clerkSignInComponentProps} routing="hash" />;
+  }
+
+  return (
+    <div className="flex min-h-72 flex-col items-center justify-center gap-4 rounded-2xl border border-white/10 bg-white/[0.04] px-6 py-10 text-center text-[#f6f4ef]">
+      <p className="text-sm leading-6 text-[#9da3af]">
+        Sign in on the secure auth page for the most reliable experience.
+      </p>
+      <Button asChild className="w-full">
+        <Link href="/sign-in">Continue to sign in</Link>
+      </Button>
+    </div>
+  );
+}
+
+export type AuthCardProps = {
+  /** Which tab is active when the card mounts. */
+  initialMode?: "sign-up" | "sign-in";
+  /**
+   * Homepage: sign-in tab links to `/sign-in`.
+   * Dedicated auth routes: embed Clerk sign-in in the card.
+   */
+  signInPresentation?: "link" | "embed";
+};
+
+export function AuthCard({
+  initialMode = "sign-up",
+  signInPresentation = "link",
+}: AuthCardProps) {
+  const [mode, setMode] = useState<"sign-up" | "sign-in">(initialMode);
   const [timedOut, setTimedOut] = useState(false);
   const { isLoaded, isSignedIn } = useAuth();
+
+  useEffect(() => {
+    setMode(initialMode);
+  }, [initialMode]);
 
   useEffect(() => {
     if (isLoaded) {
@@ -113,23 +144,39 @@ export function AuthCard() {
     <div className="w-full max-w-md">
       <AuthTabs mode={mode} onModeChange={setMode} />
       {mode === "sign-up" ? (
-        <SignUp key="sign-up" {...clerkSignUpProps} routing="hash" />
+        <SignUp key="sign-up" {...clerkSignUpComponentProps} routing="hash" />
       ) : (
-        <div className="flex min-h-72 flex-col items-center justify-center gap-4 rounded-2xl border border-white/10 bg-white/[0.04] px-6 py-10 text-center text-[#f6f4ef]">
-          <p className="text-sm leading-6 text-[#9da3af]">
-            Sign in on the secure auth page for the most reliable experience.
-          </p>
-          <Button asChild className="w-full">
-            <Link href="/sign-in">Continue to sign in</Link>
-          </Button>
-          <p className="text-xs text-[#6b7280]">
-            New here?{" "}
-            <button type="button" className="text-[#d8b56d] underline-offset-2 hover:underline" onClick={() => setMode("sign-up")}>
-              Create an account
-            </button>
-          </p>
-        </div>
+        <SignInPanel presentation={signInPresentation} />
       )}
+      {mode === "sign-in" && signInPresentation === "link" ? (
+        <p className="mt-4 text-center text-xs text-[#6b7280]">
+          New here?{" "}
+          <button
+            type="button"
+            className="text-[#d8b56d] underline-offset-2 hover:underline"
+            onClick={() => setMode("sign-up")}
+          >
+            Create an account
+          </button>
+        </p>
+      ) : mode === "sign-up" ? (
+        <p className="mt-4 text-center text-xs text-[#6b7280]">
+          Already have an account?{" "}
+          {signInPresentation === "embed" ? (
+            <button
+              type="button"
+              className="text-[#d8b56d] underline-offset-2 hover:underline"
+              onClick={() => setMode("sign-in")}
+            >
+              Sign in
+            </button>
+          ) : (
+            <Link href="/sign-in" className="text-[#d8b56d] underline-offset-2 hover:underline">
+              Sign in
+            </Link>
+          )}
+        </p>
+      ) : null}
     </div>
   );
 }

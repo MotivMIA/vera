@@ -1,31 +1,20 @@
 "use client";
 
-import { ClerkLoaded, ClerkLoading, SignIn } from "@clerk/nextjs";
 import Link from "next/link";
-import { LoaderCircle } from "lucide-react";
-import { ONBOARDING_ENTRY_PATH } from "@/lib/onboarding/constants";
+import { AuthCard } from "@/components/marketing/auth-card";
 
 export function SignInView() {
   return (
-    <main className="flex min-h-screen items-center justify-center px-5 py-10">
-      <div className="w-full max-w-md space-y-6">
-        <Link href="/" className="block text-center text-sm font-medium text-muted-foreground hover:text-foreground">
-          Visual Era
+    <main className="relative min-h-screen overflow-hidden">
+      <div className="absolute inset-0 bg-[linear-gradient(120deg,rgba(255,255,255,0.08)_0,transparent_36%,rgba(216,181,109,0.08)_100%)]" />
+      <div className="relative flex min-h-screen flex-col items-center justify-center px-5 py-10">
+        <Link
+          href="/"
+          className="mb-8 text-sm font-medium text-muted-foreground transition hover:text-foreground"
+        >
+          ← Visual Era
         </Link>
-        <ClerkLoading>
-          <div className="flex min-h-[520px] items-center justify-center">
-            <LoaderCircle className="size-8 animate-spin text-accent" />
-          </div>
-        </ClerkLoading>
-        <ClerkLoaded>
-          <SignIn
-            routing="path"
-            path="/sign-in"
-            signUpUrl="/sign-up"
-            fallbackRedirectUrl={ONBOARDING_ENTRY_PATH}
-            forceRedirectUrl={ONBOARDING_ENTRY_PATH}
-          />
-        </ClerkLoaded>
+        <AuthCard initialMode="sign-in" signInPresentation="embed" />
       </div>
     </main>
   );

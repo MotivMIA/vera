@@ -34,6 +34,8 @@ Optional for full onboarding slice: Didit keys (`DIDIT_*`), `CLERK_WEBHOOK_SIGNI
 
 Without Clerk publishable key, the marketing auth card stays on a loading spinner.
 
+Use **`pk_test_` / `sk_test_`** for cloud dev — do **not** set `NEXT_PUBLIC_CLERK_PROXY_URL` in Cloud secrets (dev instances do not support FAPI proxy).
+
 ---
 
 ## Phase 0b — Cursor desktop (5 minutes)

@@ -26,15 +26,21 @@ echo "Listing domains…"
 domains_json="$(curl -fsSL "https://api.clerk.com/v1/domains" \
   -H "Authorization: Bearer ${CLERK_SECRET_KEY}")"
 
+target_host="$(python3 -c "from urllib.parse import urlparse; print(urlparse('${PROXY_URL}').hostname or '')")"
+
 domain_id="$(echo "$domains_json" | python3 -c "
 import json, sys
 data = json.load(sys.stdin).get('data', [])
+target = '${target_host}'
+for d in data:
+    if d.get('name') == target:
+        print(d['id'])
+        sys.exit(0)
 for d in data:
     if 'visual-era' in (d.get('frontend_api_url') or ''):
         print(d['id'])
-        break
-else:
-    print(data[0]['id'] if data else '')
+        sys.exit(0)
+print(data[0]['id'] if data else '')
 ")"
 
 if [[ -z "$domain_id" ]]; then
