@@ -58,23 +58,16 @@ export function SiteFooter() {
       <div className="mx-auto flex max-w-6xl flex-col gap-6">
         <BrandLogo href="/" size="sm" showWordmark />
 
-        <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3">
-          <p className="max-w-sm text-sm text-muted-foreground">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-sm leading-5 text-muted-foreground sm:max-w-sm">
             Creator onboarding, identity verification, and management tools.
           </p>
 
-          <nav aria-label="Legal" className="flex flex-wrap items-center gap-y-2">
-            {footerLegalLinks.map((doc, index) => (
-              <span key={doc.slug} className="inline-flex items-center">
-                {index > 0 ? (
-                  <span className="px-2 text-muted-foreground/40" aria-hidden>
-                    |
-                  </span>
-                ) : null}
-                <Link href={`/legal/${doc.slug}`} className={linkClassName}>
-                  {doc.label}
-                </Link>
-              </span>
+          <nav aria-label="Legal" className="flex shrink-0 items-center gap-4">
+            {footerLegalLinks.map((doc) => (
+              <Link key={doc.slug} href={`/legal/${doc.slug}`} className={linkClassName}>
+                {doc.label}
+              </Link>
             ))}
           </nav>
         </div>
