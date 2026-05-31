@@ -1,12 +1,10 @@
 import type { AppStoreLink } from "@/lib/brand/app";
 
 const badgeClassName =
-  "inline-flex min-w-[8.5rem] items-center gap-2.5 rounded-md border border-white/15 bg-white/[0.04] px-3 py-2 text-left transition";
+  "inline-flex min-h-[2.75rem] min-w-[8.25rem] flex-1 items-center gap-2 rounded-lg bg-black px-3 py-2 text-left text-white ring-1 ring-white/10";
 
 const badgeInteractiveClassName =
-  "hover:border-[var(--brand-magenta)]/40 hover:bg-white/[0.07] hover:text-[var(--brand-magenta-bright)]";
-
-const badgeDisabledClassName = "cursor-default opacity-70";
+  "transition hover:bg-neutral-900 hover:ring-white/20";
 
 function AppleIcon({ className }: { className?: string }) {
   return (
@@ -26,19 +24,21 @@ function GooglePlayIcon({ className }: { className?: string }) {
   return (
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 24 24"
-      fill="currentColor"
+      viewBox="0 0 512 512"
       className={className}
       aria-hidden
     >
-      <path d="M3.609 1.814 13.792 12 3.61 22.186a1.004 1.004 0 0 1-.601.186 1 1 0 0 1-1-1V2.628a1 1 0 0 1 1.601-.814zM14.5 12.707 20.95 19.15a1 1 0 0 0 1.601-.814V5.664a1 1 0 0 0-1.601-.814L14.5 11.293v1.414zM13.792 12 5.5 3.708V20.292L13.792 12z" />
+      <path fill="#EA4335" d="M325.3 234.3 104.6 13.6C99.8 8.8 92.8 6 85.5 6 74.6 6 65.3 15.3 65.3 26.2v459.6c0 10.9 9.3 20.2 20.2 20.2 7.3 0 14.3-2.8 19.1-7.6L325.3 277.7c8.1-8.1 8.1-21.2 0-29.3z" />
+      <path fill="#FBBC04" d="M325.3 256 104.6 476.7c-4.8 4.8-11.8 7.6-19.1 7.6-10.9 0-20.2-9.3-20.2-20.2V26.2C65.3 15.3 74.6 6 85.5 6c7.3 0 14.3 2.8 19.1 7.6L325.3 234.3c8.1 8.1 8.1 21.2 0 29.3z" />
+      <path fill="#4285F4" d="M471.6 244.7 325.3 98.4c-8.1-8.1-21.2-8.1-29.3 0L104.6 289.8l220.7 220.7c8.1 8.1 21.2 8.1 29.3 0l146.3-146.3c8.1-8.1 8.1-21.2 0-29.3z" />
+      <path fill="#34A853" d="M471.6 267.3 325.3 413.6c-8.1 8.1-21.2 8.1-29.3 0L104.6 256l191.4-191.4c8.1-8.1 21.2-8.1 29.3 0l146.3 146.3c8.1 8.1 8.1 21.2 0 29.3z" />
     </svg>
   );
 }
 
 function StoreIcon({ platform }: { platform: AppStoreLink["platform"] }) {
   if (platform === "apple") {
-    return <AppleIcon className="size-6 shrink-0" />;
+    return <AppleIcon className="size-7 shrink-0" />;
   }
   return <GooglePlayIcon className="size-6 shrink-0" />;
 }
@@ -47,9 +47,9 @@ function BadgeContent({ link }: { link: AppStoreLink }) {
   return (
     <>
       <StoreIcon platform={link.platform} />
-      <span className="flex flex-col leading-tight">
-        <span className="text-[10px] uppercase tracking-wide text-muted-foreground">{link.topLine}</span>
-        <span className="text-sm font-semibold text-foreground">{link.storeName}</span>
+      <span className="flex flex-col leading-none">
+        <span className="text-[10px] font-normal tracking-wide">{link.topLine}</span>
+        <span className="mt-0.5 text-sm font-semibold tracking-tight">{link.storeName}</span>
       </span>
     </>
   );
@@ -61,7 +61,7 @@ type AppStoreBadgesProps = {
 
 export function AppStoreBadges({ links }: AppStoreBadgesProps) {
   return (
-    <div className="flex flex-col gap-2.5">
+    <div className="flex flex-row flex-wrap gap-2.5">
       {links.map((link) => {
         if (link.href === null) {
           return (
@@ -69,7 +69,7 @@ export function AppStoreBadges({ links }: AppStoreBadgesProps) {
               key={link.platform}
               aria-disabled="true"
               title="Coming soon"
-              className={`${badgeClassName} ${badgeDisabledClassName}`}
+              className={`${badgeClassName} cursor-default`}
             >
               <BadgeContent link={link} />
             </span>

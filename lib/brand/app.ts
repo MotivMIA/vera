@@ -6,14 +6,15 @@ export type AppStorePlatform = "apple" | "google";
 
 export type AppStoreLink = {
   platform: AppStorePlatform;
-  /** null = coming soon (footer shows disabled badge) */
+  /** null = coming soon (badge renders without link) */
   href: string | null;
   topLine: string;
   storeName: string;
 };
 
 /** Short copy shown under the footer app heading. */
-export const APP_FOOTER_TAGLINE = "Creator tools on the go — coming soon";
+export const APP_FOOTER_TAGLINE =
+  "Manage your creator profile, verification, and content from anywhere.";
 
 export const APP_STORE_LINKS: readonly AppStoreLink[] = [
   {
@@ -27,7 +28,7 @@ export const APP_STORE_LINKS: readonly AppStoreLink[] = [
     platform: "google",
     // TODO: replace with live Google Play URL when the Android app ships
     href: null,
-    topLine: "Get it on",
+    topLine: "GET IT ON",
     storeName: "Google Play",
   },
 ] as const;
