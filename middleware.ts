@@ -1,4 +1,5 @@
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
+import { collectClerkOrigins } from "@/lib/clerk/origins";
 import { NextResponse } from "next/server";
 import type { NextFetchEvent, NextRequest } from "next/server";
 
@@ -17,40 +18,6 @@ const isProtectedRoute = createRouteMatcher([
 ]);
 
 const STALE_CLERK_COOKIE_NAMES = ["__session", "__client_uat", "__clerk_db_jwt", "__refresh"] as const;
-
-function collectAuthorizedParties(): string[] {
-  const origins = new Set<string>();
-
-  origins.add("http://localhost:3000");
-  origins.add("http://localhost:3001");
-  origins.add("http://127.0.0.1:3000");
-  origins.add("http://127.0.0.1:3001");
-
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL;
-  if (siteUrl) {
-    try {
-      origins.add(new URL(siteUrl).origin);
-    } catch {
-      // ignore malformed values
-    }
-  }
-
-  const vercelUrl = process.env.VERCEL_URL;
-  if (vercelUrl) {
-    origins.add(`https://${vercelUrl}`);
-  }
-
-  const branchUrl = process.env.VERCEL_BRANCH_URL;
-  if (branchUrl) {
-    try {
-      origins.add(new URL(branchUrl.startsWith("http") ? branchUrl : `https://${branchUrl}`).origin);
-    } catch {
-      origins.add(`https://${branchUrl}`);
-    }
-  }
-
-  return Array.from(origins);
-}
 
 function clearStaleClerkCookies(response: NextResponse) {
   for (const name of STALE_CLERK_COOKIE_NAMES) {
@@ -110,7 +77,7 @@ const runClerkMiddleware = clerkMiddleware(
     return authState.redirectToSignIn({ returnBackUrl: req.url });
   },
   {
-    authorizedParties: collectAuthorizedParties(),
+    authorizedParties: collectClerkOrigins(),
     // Same-origin /__clerk — required because FAPI host clerk.visual-era.vercel.app is not on Vercel DNS.
     frontendApiProxy: { enabled: true },
   },

@@ -1,22 +1,37 @@
 # Documentation index — Visual Era
 
-**Product repo only.** Tier 1 = read first for agents and humans.
+**Start here:** [SETUP.md](./SETUP.md) · [STRATEGIC_PLAN.md](./STRATEGIC_PLAN.md)
 
 ---
 
-## Tier 1 — active
+## Tier 1 — product & build
 
 | Doc | Purpose |
 |-----|---------|
-| [AGENTS.md](../AGENTS.md) | Agent workflow, branch rules, ship scripts |
-| [docs/agents/ROSTER.md](./agents/ROSTER.md) | Domain agents (one chat per domain) |
-| [docs/agents/DISPATCHER.md](./agents/DISPATCHER.md) | Symptom → agent routing |
-| [CODEBASE_MAP.md](./CODEBASE_MAP.md) | Routes, APIs, libs, onboarding flow |
+| [STRATEGIC_PLAN.md](./STRATEGIC_PLAN.md) | What we build now vs later |
+| [LAUNCH_ROADMAP.md](./LAUNCH_ROADMAP.md) | Phases, milestones, current work |
+| [DECISIONS.md](./DECISIONS.md) | Current constraints & rejected approaches |
+| [ARCHITECTURE.md](./ARCHITECTURE.md) | System design, auth, DIDIT, Supabase |
+| [CODEBASE_MAP.md](./CODEBASE_MAP.md) | Routes, APIs, file map |
+| [SETUP.md](./SETUP.md) | Local dev, Vercel, platform setup |
+| [.env.example](../.env.example) | Environment variable template |
+| [AGENTS.md](../AGENTS.md) | Branch rules, ship scripts |
+| [docs/agents/prompts/vera-website.md](./agents/prompts/vera-website.md) | Implementation agent prompt |
 | [CI_CD.md](./CI_CD.md) | Branch protection, CI |
+
+---
+
+## Tier 1 — production & ops
+
+| Doc | Purpose |
+|-----|---------|
+| [VERCEL_DEPLOYMENT.md](./VERCEL_DEPLOYMENT.md) | Production URL, Clerk proxy, deploy |
 | [OPERATIONAL_IDENTITY.md](./OPERATIONAL_IDENTITY.md) | Orgs, commit email, accounts |
-| [VERCEL_DEPLOYMENT.md](./VERCEL_DEPLOYMENT.md) | Production URL, env, deploy |
-| [docs/ops/POST_MIGRATION_CONNECTIONS.md](./ops/POST_MIGRATION_CONNECTIONS.md) | Dashboard reconnect checklist |
-| [docs/ops/OPEN_OPS_ISSUES.md](./ops/OPEN_OPS_ISSUES.md) | Human-only security ops tracker |
+| [ops/LOCAL_ENV.md](./ops/LOCAL_ENV.md) | `.env` + Vercel import |
+| [ops/AGENT_FULL_ACCESS_SETUP.md](./ops/AGENT_FULL_ACCESS_SETUP.md) | Cursor MCP + CLI access |
+| [ops/LOCAL_WORKSPACE_STRATEGY.md](./ops/LOCAL_WORKSPACE_STRATEGY.md) | Clone path, verification |
+| [ops/POST_MIGRATION_CONNECTIONS.md](./ops/POST_MIGRATION_CONNECTIONS.md) | Dashboard reconnect checklist |
+| [ops/OPEN_OPS_ISSUES.md](./ops/OPEN_OPS_ISSUES.md) | Human-only ops tracker |
 
 ---
 
@@ -26,20 +41,18 @@
 |-----|---------|
 | [CHATGPT_CURSOR_CODEX_STACK.md](./CHATGPT_CURSOR_CODEX_STACK.md) | Tool stack |
 | [AI_OPERATING_MODEL.md](./AI_OPERATING_MODEL.md) | Governance |
+| [AI_AGENT_WORKFLOW.md](./AI_AGENT_WORKFLOW.md) | Full agent playbook |
 | [prompts/cursor-implementation-intake.md](./prompts/cursor-implementation-intake.md) | Paste brief → implement |
-| [PLATFORM_AGENT_ARCHITECTURE.md](./PLATFORM_AGENT_ARCHITECTURE.md) | Read-only platform verify roles |
 
 ---
 
-## Tier 3 — historical / ops detail
+## Tier 3 — historical
 
 | Doc | Purpose |
 |-----|---------|
-| [ops/REPO_RESTRUCTURE_AUDIT.md](./ops/REPO_RESTRUCTURE_AUDIT.md) | 2026 org migration audit |
+| [GITHUB_REPO_MIGRATION.md](./GITHUB_REPO_MIGRATION.md) | **Do not follow** |
 | [ops/GITHUB_ORG_MIGRATION.md](./ops/GITHUB_ORG_MIGRATION.md) | Completed transfer record |
-| [GITHUB_REPO_MIGRATION.md](./GITHUB_REPO_MIGRATION.md) | **Historical** — do not follow |
-| [ops/LOCAL_WORKSPACE_STRATEGY.md](./ops/LOCAL_WORKSPACE_STRATEGY.md) | Local clone path |
-| [ops/CURSOR_SANDBOX_SETUP.md](./ops/CURSOR_SANDBOX_SETUP.md) | Cursor sandbox for this repo |
+| [ops/REPO_RESTRUCTURE_AUDIT.md](./ops/REPO_RESTRUCTURE_AUDIT.md) | 2026 audit |
 
 ---
 
@@ -48,4 +61,4 @@
 | Doc | Purpose |
 |-----|---------|
 | [SUPABASE_SCHEMA.md](../SUPABASE_SCHEMA.md) | Schema reference |
-| `supabase/migrations/` | Versioned migrations (source of truth when present) |
+| `supabase/migrations/` | Versioned migrations |

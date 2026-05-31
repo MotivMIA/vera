@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
 import { Toaster } from "@/components/ui/sonner";
 import { CLERK_PROVIDER_PROXY_PROPS } from "@/lib/clerk/hosted-only";
+import { collectClerkOrigins } from "@/lib/clerk/origins";
 import { getSiteUrl } from "@/lib/env";
 import "./globals.css";
 
@@ -17,32 +18,7 @@ export const viewport: Viewport = {
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
-  const allowedRedirectOrigins = Array.from(
-    new Set(
-      [
-        "http://localhost:3000",
-        "http://localhost:3001",
-        "http://127.0.0.1:3000",
-        "http://127.0.0.1:3001",
-        getSiteUrl(),
-        process.env.NEXT_PUBLIC_SITE_URL,
-        process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null,
-        process.env.VERCEL_BRANCH_URL
-          ? process.env.VERCEL_BRANCH_URL.startsWith("http")
-            ? process.env.VERCEL_BRANCH_URL
-            : `https://${process.env.VERCEL_BRANCH_URL}`
-          : null,
-      ]
-        .filter(Boolean)
-        .map((value) => {
-          try {
-            return new URL(value as string).origin;
-          } catch {
-            return value as string;
-          }
-        }),
-    ),
-  );
+  const allowedRedirectOrigins = collectClerkOrigins();
 
   return (
     <ClerkProvider

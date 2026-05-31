@@ -24,28 +24,30 @@ npm install
 2. Copy environment variables:
 
 ```bash
-cp .env.example .env.local
+cp .env.example .env
+# Fill values, then:
+npm run env:check
 ```
 
-3. Add Clerk, Supabase, and DIDIT credentials.
-   - Keep `.env.local` set to local values, especially:
-     - `NEXT_PUBLIC_SITE_URL=http://localhost:3001`
-   - In Vercel production, set `NEXT_PUBLIC_SITE_URL=https://visual-era.com`.
-   - Do not copy production URLs back into `.env.local`.
+3. Local vs production URLs:
+   - **Local:** `NEXT_PUBLIC_SITE_URL=http://localhost:3001` (default `npm run dev` port)
+   - **Vercel Production:** `NEXT_PUBLIC_SITE_URL=https://visual-era.com`
+   - See [docs/SETUP.md](docs/SETUP.md) and [docs/ops/LOCAL_ENV.md](docs/ops/LOCAL_ENV.md)
 
 4. Run the app:
 
 ```bash
 npm run dev
+# http://localhost:3001
+npm run dev:smoke   # route smoke (server must be running)
 ```
 
 ## Local + Production without code changes
 
-- Local callbacks and packet URLs now use the active request origin automatically.
-- Production callbacks and packet URLs use your deployed Vercel origin.
+- Local callbacks and packet URLs use the active request origin automatically.
+- Production uses your deployed Vercel origin.
 - In Clerk, allow both local and production origins/redirect URLs:
   - `http://localhost:3001`
-  - `http://localhost:3000` (optional if you use this port)
   - `https://visual-era.com`
 
 ## Required Routes
@@ -89,9 +91,20 @@ Run `SUPABASE_SCHEMA.md` in the Supabase SQL editor. The schema includes:
 Server-side writes use `SUPABASE_SERVICE_ROLE_KEY`. Keep RLS enabled and avoid exposing sensitive metadata to browser clients.  
 Signed documents are stored in a private Supabase Storage bucket named `signed-documents`; file paths are stored in `signed_documents.provider_document_id`.
 
+## Documentation
+
+| Doc | Purpose |
+|-----|---------|
+| [docs/SETUP.md](docs/SETUP.md) | Full setup guide |
+| [docs/STRATEGIC_PLAN.md](docs/STRATEGIC_PLAN.md) | Product scope |
+| [docs/LAUNCH_ROADMAP.md](docs/LAUNCH_ROADMAP.md) | Phases & milestones |
+| [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Technical architecture |
+| [docs/DECISIONS.md](docs/DECISIONS.md) | Current constraints |
+| [docs/INDEX.md](docs/INDEX.md) | All docs |
+
 ## AI agents & CI/CD
 
-- Read **[AGENTS.md](AGENTS.md)** — [CHATGPT + Cursor + Codex stack](docs/CHATGPT_CURSOR_CODEX_STACK.md)
+- Read **[AGENTS.md](AGENTS.md)** — implementation agent: **vera-website**
 - **`main`** protected: PR only, **CI checks** required
 - Start: `./scripts/start-agent-task.sh cursor <feature>`
 - Iterate: `./scripts/agent-quick-check.sh`

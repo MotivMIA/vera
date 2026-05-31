@@ -13,9 +13,9 @@ Read this file first.
 | **GitHub + CI** | Release gate — PR, checks, auto-merge; **main** protected |
 | **Grok** | Optional innovation reviewer only — no repo access |
 
-**Hub:** [docs/INDEX.md](docs/INDEX.md) · [docs/agents/ROSTER.md](docs/agents/ROSTER.md) · [docs/CHATGPT_CURSOR_CODEX_STACK.md](docs/CHATGPT_CURSOR_CODEX_STACK.md) · Workspace: [docs/ops/LOCAL_WORKSPACE_STRATEGY.md](docs/ops/LOCAL_WORKSPACE_STRATEGY.md)
+**Hub:** [docs/INDEX.md](docs/INDEX.md) · [docs/STRATEGIC_PLAN.md](docs/STRATEGIC_PLAN.md) · [docs/LAUNCH_ROADMAP.md](docs/LAUNCH_ROADMAP.md) · [docs/DECISIONS.md](docs/DECISIONS.md) · [docs/SETUP.md](docs/SETUP.md) · [docs/agents/ROSTER.md](docs/agents/ROSTER.md) · Workspace: [docs/ops/LOCAL_WORKSPACE_STRATEGY.md](docs/ops/LOCAL_WORKSPACE_STRATEGY.md)
 
-**Repo scope:** Visual Era product only (`Vera-Platforms/vera`). Open Cursor on this repo root. One domain agent per chat — [docs/agents/DISPATCHER.md](docs/agents/DISPATCHER.md).
+**Repo scope:** Visual Era product only ([`natew-dev/vera`](https://github.com/natew-dev/vera)). Open Cursor on this repo root. One domain agent per chat — [docs/agents/DISPATCHER.md](docs/agents/DISPATCHER.md).
 
 ## Golden rules
 
@@ -224,3 +224,33 @@ Cursor stays lead engineer. For infra checks, delegate to **platform agents** (s
 | Delegate | [docs/prompts/platform-agent-task.md](docs/prompts/platform-agent-task.md) |
 
 Safest agents first: GitHub → Vercel → Supabase → Resend → Cloudflare → Clerk (restricted). No daemons; no tokens in repo.
+
+## Cursor Cloud specific instructions
+
+### Quick reference
+
+| Action | Command |
+|--------|---------|
+| Install deps | `npm ci` |
+| Dev server | `npm run dev` (port **3001**) |
+| Env check | `npm run env:check` |
+| Lint | `npm run lint` |
+| Typecheck | `npm run typecheck` |
+| Test | `npm run test` |
+| Build | `npm run build` |
+
+### Environment setup
+
+1. Copy `.env.example` → **`.env`** (gitignored). Set `ALLOW_DEV_AUTH_BYPASS=true` only for local dev without full Clerk keys.
+2. Set `NEXT_PUBLIC_SITE_URL=http://localhost:3001` to match `npm run dev`.
+3. No Docker or local databases — Clerk, Supabase, and Didit are hosted SaaS.
+
+**Cursor Cloud secrets (minimum for full flow testing):** `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`, `CLERK_SECRET_KEY`, `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`. See [docs/ops/AGENT_FULL_ACCESS_SETUP.md](docs/ops/AGENT_FULL_ACCESS_SETUP.md).
+
+### Gotchas
+
+- **Client-side auth requires Clerk publishable key.** Without `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`, `ClerkProvider` blocks client hydration and the homepage auth card spins forever. `ALLOW_DEV_AUTH_BYPASS` only affects server API helpers, not the Clerk SDK or middleware.
+- **Production custom domain:** `authorizedParties` must include `https://visual-era.com` — see `lib/clerk/origins.ts`.
+- **Do not run `npm run build` while `npm run dev` is running.** If you build, remove `.next/` before restarting dev (`rm -rf .next && npm run dev`).
+- **Middleware protects onboarding routes** without valid Clerk session regardless of `ALLOW_DEV_AUTH_BYPASS`.
+- **Branch naming:** PR branches must match `agent-cursor-*` or `agent-codex-*` (CI enforces).
