@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Delete remote agent branches already merged into origin/main.
+# Delete remote agent branches whose PRs are merged (squash-merge safe).
 # Usage: ./scripts/cleanup-merged-agent-branches.sh [--dry-run]
 set -euo pipefail
 
@@ -9,29 +9,46 @@ if [[ "${1:-}" == "--dry-run" ]]; then
 fi
 
 REPO="${GITHUB_REPOSITORY:-natew-dev/vera}"
-REMOTE="${GIT_REMOTE:-origin}"
-BASE="${BASE_BRANCH:-main}"
 CURRENT_BRANCH="$(git branch --show-current 2>/dev/null || true)"
 
-git fetch -p "$REMOTE" "$BASE"
+OPEN_BRANCHES="$(gh pr list --repo "$REPO" --state open --json headRefName -q '.[].headRefName' | sort -u || true)"
 
 BRANCHES=()
 while IFS= read -r branch; do
+  [[ -z "$branch" ]] && continue
   BRANCHES+=("$branch")
 done < <(
-  git branch -r --merged "$REMOTE/$BASE" |
-    sed -n 's|^[[:space:]]*'"$REMOTE"'/||p' |
-    grep -E '^agent-(cursor|codex)-' ||
+  gh pr list --repo "$REPO" --state merged --limit 500 --json headRefName -q '.[].headRefName' |
+    grep -E '^agent-(cursor|codex)-' |
+    sort -u ||
     true
 )
 
 if [[ ${#BRANCHES[@]} -eq 0 ]]; then
-  echo "No merged agent branches to delete."
+  echo "No merged agent PR branches found."
   exit 0
 fi
 
-echo "Merged agent branches on $REMOTE ($(( ${#BRANCHES[@]} ))):"
+TO_DELETE=()
 for branch in "${BRANCHES[@]}"; do
+  if [[ -n "$CURRENT_BRANCH" && "$branch" == "$CURRENT_BRANCH" ]]; then
+    continue
+  fi
+  if echo "$OPEN_BRANCHES" | grep -qx "$branch"; then
+    continue
+  fi
+  if gh api "repos/${REPO}/git/ref/heads/${branch}" &>/dev/null; then
+    TO_DELETE+=("$branch")
+  fi
+done
+
+if [[ ${#TO_DELETE[@]} -eq 0 ]]; then
+  echo "No remote agent branches left to delete."
+  exit 0
+fi
+
+echo "Remote agent branches to delete (${#TO_DELETE[@]}):"
+for branch in "${TO_DELETE[@]}"; do
   echo "  - $branch"
 done
 
@@ -40,12 +57,8 @@ if $DRY_RUN; then
   exit 0
 fi
 
-for branch in "${BRANCHES[@]}"; do
-  if [[ -n "$CURRENT_BRANCH" && "$branch" == "$CURRENT_BRANCH" ]]; then
-    echo "Skipping current branch: $branch"
-    continue
-  fi
-  echo "Deleting $REMOTE/$branch ..."
+for branch in "${TO_DELETE[@]}"; do
+  echo "Deleting origin/$branch ..."
   gh api -X DELETE "repos/${REPO}/git/refs/heads/${branch}" >/dev/null
 done
 
