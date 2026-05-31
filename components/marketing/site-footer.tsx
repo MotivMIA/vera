@@ -58,11 +58,11 @@ export function SiteFooter() {
       <div className="mx-auto flex max-w-6xl flex-col gap-6">
         <BrandLogo href="/" size="sm" showWordmark />
 
-        <p className="max-w-sm text-sm text-muted-foreground">
-          Creator onboarding, identity verification, and management tools.
-        </p>
+        <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3">
+          <p className="max-w-sm text-sm text-muted-foreground">
+            Creator onboarding, identity verification, and management tools.
+          </p>
 
-        <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
           <nav aria-label="Legal" className="flex flex-wrap items-center gap-y-2">
             {footerLegalLinks.map((doc, index) => (
               <span key={doc.slug} className="inline-flex items-center">
@@ -77,21 +77,21 @@ export function SiteFooter() {
               </span>
             ))}
           </nav>
+        </div>
 
-          <div className="flex items-center gap-3">
-            {SOCIAL_LINKS.map((social) => (
-              <a
-                key={social.href}
-                href={social.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                aria-label={social.label}
-                className="inline-flex size-9 items-center justify-center rounded-full border border-white/10 text-muted-foreground transition hover:border-white/20 hover:text-[var(--brand-magenta-bright)]"
-              >
-                <SocialIcon label={social.label} />
-              </a>
-            ))}
-          </div>
+        <div className="flex items-center gap-3">
+          {SOCIAL_LINKS.map((social) => (
+            <a
+              key={social.href}
+              href={social.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={social.label}
+              className="inline-flex size-9 items-center justify-center rounded-full border border-white/10 text-muted-foreground transition hover:border-white/20 hover:text-[var(--brand-magenta-bright)]"
+            >
+              <SocialIcon label={social.label} />
+            </a>
+          ))}
         </div>
 
         <div className="space-y-1 text-xs text-muted-foreground/80">
