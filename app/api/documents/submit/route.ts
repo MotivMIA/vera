@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAuthenticatedUserId } from "@/lib/auth/session";
 import { z } from "zod";
-import { buildSignedDocumentPdf } from "@/lib/onboarding/pdf";
+import { buildSignedDocumentPdf } from "@/lib/pdf/build-signed-document";
 import { recordAuditLog } from "@/lib/onboarding/audit";
 import { getClientIp } from "@/lib/security";
 import { getSupabaseAdminOrThrow } from "@/lib/supabase/server";

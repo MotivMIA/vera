@@ -74,18 +74,26 @@
 
 .auth-clerk-embed .cl-formButtonPrimary {
   height: 2.75rem;
-  background: #f7f3ea !important;
-  color: #090a0d !important;
+  background: var(--brand-magenta) !important;
+  color: #ffffff !important;
   box-shadow: none !important;
 }
 
 .auth-clerk-embed .cl-formButtonPrimary:hover {
-  background: #ffffff !important;
+  background: var(--brand-magenta-bright) !important;
+}
+
+.auth-clerk-embed .cl-formFieldInput:focus {
+  border-color: color-mix(in srgb, var(--brand-magenta) 50%, transparent) !important;
 }
 
 .auth-clerk-embed .cl-formFieldAction,
 .auth-clerk-embed .cl-identityPreviewText {
-  color: #d8b56d !important;
+  color: var(--brand-magenta) !important;
+}
+
+.auth-clerk-embed .cl-formFieldAction:hover {
+  color: var(--brand-magenta-bright) !important;
 }
 
 .auth-clerk-embed .cl-alternativeMethodsBlockButton,

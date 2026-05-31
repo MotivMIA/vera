@@ -1,3 +1,5 @@
+import { brand } from "@/lib/brand/colors";
+
 /** Shared Clerk UI theme — blends SignIn/SignUp into the Visual Era auth card. */
 export const clerkAppearance = {
   variables: {
@@ -6,7 +8,7 @@ export const clerkAppearance = {
     colorInputText: "#f6f4ef",
     colorText: "#f6f4ef",
     colorTextSecondary: "#9da3af",
-    colorPrimary: "#d8b56d",
+    colorPrimary: brand.magenta,
     colorDanger: "#f87171",
     borderRadius: "0.75rem",
   },
@@ -28,14 +30,12 @@ export const clerkAppearance = {
     dividerLine: "bg-white/10",
     dividerText: "text-xs uppercase tracking-wider text-[#6b7280]",
     formFieldLabel: "text-sm text-[#9da3af]",
-    formFieldInput:
-      "border-white/10 bg-black/30 text-[#f6f4ef] placeholder:text-[#6b7280] focus:border-[#d8b56d]/50",
-    formButtonPrimary:
-      "h-11 bg-[#f7f3ea] text-[#090a0d] font-medium hover:bg-white shadow-none",
+    formFieldInput: `border-white/10 bg-black/30 text-[#f6f4ef] placeholder:text-[#6b7280] focus:border-[${brand.magenta}]/50`,
+    formButtonPrimary: `h-11 bg-[${brand.magenta}] text-white font-medium hover:bg-[${brand.magentaBright}] shadow-none`,
     footer: "hidden",
     footerAction: "hidden",
     identityPreview: "border-white/10 bg-white/[0.04]",
-    formFieldAction: "text-[#d8b56d] hover:text-[#f6f4ef]",
+    formFieldAction: `text-[${brand.magenta}] hover:text-[${brand.magentaBright}]`,
     otpCodeFieldInput: "border-white/10 bg-black/30 text-[#f6f4ef]",
   },
   options: {

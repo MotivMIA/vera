@@ -2,6 +2,18 @@
 
 Quick orientation for agents and contributors. Stack: **Next.js 15 App Router**, **Clerk** auth, **Supabase** (service role on server), **DIDIT** identity verification, Tailwind + shadcn UI.
 
+Modular layout: see [MODULAR_ARCHITECTURE.md](./MODULAR_ARCHITECTURE.md).
+
+## App modules (route groups — URLs unchanged)
+
+| Group | Routes | Folder |
+|-------|--------|--------|
+| Marketing | `/`, `/legal/*` | `app/(marketing)/` |
+| Auth | `/sign-in`, `/sign-up` | `app/(auth)/` |
+| Onboarding | `/onboarding/*`, `/verify-identity`, `/documents`, `/success` | `app/(onboarding)/` |
+| Dashboard | `/creator` (placeholder) | `app/(dashboard)/` |
+| API | `/api/*` | `app/api/` |
+
 ## Onboarding flow
 
 | Step | Route | Purpose |
@@ -28,17 +40,24 @@ Clerk after sign-in/up should point to `/onboarding/consent` (see `.env.example`
 
 | Path | Role |
 |------|------|
+| `lib/brand/colors.ts` | Logo-aligned brand tokens (CSS mirrors in `globals.css`) |
+| `lib/contracts/` | Contract signing constants and types |
+| `lib/pdf/` | Signed document PDF generation |
+| `lib/dashboard/constants.ts` | Dashboard route placeholders |
 | `lib/didit.ts` | DIDIT API client |
 | `lib/env.ts` | Env parsing, site URL, production validation |
 | `lib/onboarding/audit.ts` | Encrypted audit log writes |
 | `lib/onboarding/constants.ts` | Step order, paths, progress % |
+| `lib/onboarding/pdf.ts` | Re-export shim → `lib/pdf/` |
 | `lib/legal/documents.ts` | Static legal copy |
 | `lib/supabase/server.ts` | Admin Supabase client |
 | `middleware.ts` | Clerk auth, same-origin `/__clerk` proxy (`frontendApiProxy`) |
 
 ## UI
 
-- `components/onboarding/*` — consent form, DIDIT embed, documents, shell
+- `components/brand/*` — logo, brand shell
+- `components/contracts/*` — internal signing packet
+- `components/onboarding/*` — consent form, DIDIT embed, documents shell
 - `components/marketing/*` — home hero, auth card, site footer
 - `components/legal/legal-document.tsx` — legal page renderer
 - `app/legal/[slug]` — public policy pages

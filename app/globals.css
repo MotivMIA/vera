@@ -30,24 +30,35 @@
 }
 
 :root {
+  /* Sampled from public/brand/logo.png — hot magenta (V) → deep purple (E) */
+  --brand-magenta: #e41a76;
+  --brand-magenta-bright: #ff2d8a;
+  --brand-magenta-mid: #c91c72;
+  --brand-magenta-deep: #830c60;
+  --brand-purple-deep: #6b026b;
+  --brand-gradient: linear-gradient(135deg, var(--brand-magenta) 0%, var(--brand-purple-deep) 100%);
+  --brand-glow: rgba(228, 26, 118, 0.16);
+  --brand-glow-purple: rgba(107, 2, 107, 0.14);
+  --brand-selection: rgba(228, 26, 118, 0.35);
+
   --background: #07080a;
   --foreground: #f6f4ef;
   --card: #0d0f13;
   --card-foreground: #f6f4ef;
   --popover: #0d0f13;
   --popover-foreground: #f6f4ef;
-  --primary: #f7f3ea;
-  --primary-foreground: #090a0d;
+  --primary: var(--brand-magenta);
+  --primary-foreground: #ffffff;
   --secondary: #171b22;
   --secondary-foreground: #ece7da;
   --muted: #151820;
   --muted-foreground: #9da3af;
-  --accent: #d8b56d;
-  --accent-foreground: #11100d;
+  --accent: var(--brand-magenta);
+  --accent-foreground: #ffffff;
   --destructive: #ff6257;
   --border: rgba(255, 255, 255, 0.1);
   --input: rgba(255, 255, 255, 0.12);
-  --ring: #d8b56d;
+  --ring: var(--brand-magenta);
   --radius: 0.75rem;
 }
 
@@ -64,8 +75,8 @@ body {
   font-family:
     Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   background:
-    radial-gradient(circle at 20% 0%, rgba(216, 181, 109, 0.14), transparent 32rem),
-    radial-gradient(circle at 90% 20%, rgba(107, 124, 148, 0.18), transparent 26rem),
+    radial-gradient(circle at 20% 0%, var(--brand-glow), transparent 32rem),
+    radial-gradient(circle at 90% 20%, var(--brand-glow-purple), transparent 26rem),
     var(--background);
   color: var(--foreground);
   font-feature-settings: "ss01", "ss02", "cv01", "cv03";
@@ -74,7 +85,24 @@ body {
 }
 
 ::selection {
-  background: rgba(216, 181, 109, 0.35);
+  background: var(--brand-selection);
+}
+
+.brand-page-glow {
+  background: linear-gradient(
+    120deg,
+    rgba(255, 255, 255, 0.08) 0%,
+    transparent 36%,
+    rgba(228, 26, 118, 0.1) 72%,
+    rgba(107, 2, 107, 0.08) 100%
+  );
+}
+
+.brand-gradient-text {
+  background: var(--brand-gradient);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
 .glass-panel {

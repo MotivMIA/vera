@@ -12,6 +12,7 @@
 | [LAUNCH_ROADMAP.md](./LAUNCH_ROADMAP.md) | Phases, milestones, current work |
 | [DECISIONS.md](./DECISIONS.md) | Current constraints & rejected approaches |
 | [ARCHITECTURE.md](./ARCHITECTURE.md) | System design, auth, DIDIT, Supabase |
+| [MODULAR_ARCHITECTURE.md](./MODULAR_ARCHITECTURE.md) | Module boundaries, phased refactor plan |
 | [CODEBASE_MAP.md](./CODEBASE_MAP.md) | Routes, APIs, file map |
 | [SETUP.md](./SETUP.md) | Local dev, Vercel, platform setup |
 | [.env.example](../.env.example) | Environment variable template |
