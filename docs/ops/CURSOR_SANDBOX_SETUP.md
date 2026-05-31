@@ -28,15 +28,26 @@ Replace the path if your clone lives elsewhere. See [Cursor sandbox.json referen
 
 **Cursor Settings → Agents → Auto-Run:** prefer **Allowlist (with Sandbox)**.
 
-## 4. Verify
+## 4. Auto-run (recommended)
+
+**Cursor Settings → Agents → Auto-Run:** **Allowlist (with Sandbox)** so the agent can run:
+
+- `npm run env:check`
+- `npm run dev:smoke`
+- `./scripts/agent-quick-check.sh`
+- `./scripts/start-agent-task.sh`
+
+## 5. Verify
 
 From Agent chat with `visual-era` open:
 
 ```bash
+npm run env:check
 ./scripts/agent-quick-check.sh
 ```
 
 ## Related
 
+- [LOCAL_ENV.md](./LOCAL_ENV.md)
 - [LOCAL_WORKSPACE_STRATEGY.md](./LOCAL_WORKSPACE_STRATEGY.md)
 - [AGENTS.md](../../AGENTS.md)

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { resolveOnboardingRedirect } from "@/lib/onboarding/status";
+import { resolveNextOnboardingPath, resolveOnboardingRedirect } from "@/lib/onboarding/status";
 import type { OnboardingSnapshot } from "@/lib/onboarding/status";
 
 function snapshot(overrides: Partial<OnboardingSnapshot>): OnboardingSnapshot {
@@ -11,6 +11,30 @@ function snapshot(overrides: Partial<OnboardingSnapshot>): OnboardingSnapshot {
     ...overrides,
   };
 }
+
+describe("resolveNextOnboardingPath", () => {
+  it("returns the earliest incomplete step", () => {
+    expect(resolveNextOnboardingPath(snapshot({ consentComplete: false }))).toBe("/onboarding/consent");
+    expect(
+      resolveNextOnboardingPath(snapshot({ consentComplete: true, identityVerified: false })),
+    ).toBe("/verify-identity");
+    expect(
+      resolveNextOnboardingPath(
+        snapshot({ consentComplete: true, identityVerified: true, documentsComplete: false }),
+      ),
+    ).toBe("/documents");
+    expect(
+      resolveNextOnboardingPath(
+        snapshot({
+          consentComplete: true,
+          identityVerified: true,
+          documentsComplete: true,
+          currentStep: "complete",
+        }),
+      ),
+    ).toBe("/success");
+  });
+});
 
 describe("resolveOnboardingRedirect", () => {
   it("returns null outside onboarding paths", () => {
@@ -47,6 +71,16 @@ describe("resolveOnboardingRedirect", () => {
   });
 
   it("forces documents when not complete", () => {
+    const s = snapshot({
+      consentComplete: true,
+      identityVerified: true,
+      documentsComplete: false,
+      currentStep: "documents",
+    });
+    expect(resolveOnboardingRedirect(s, "/success")).toBe("/documents");
+  });
+
+  it("sends incomplete success visits to the next required step", () => {
     const s = snapshot({
       consentComplete: true,
       identityVerified: true,

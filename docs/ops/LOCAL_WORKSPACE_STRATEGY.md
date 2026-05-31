@@ -1,6 +1,6 @@
 # Local workspace — Visual Era (`visual-era`)
 
-**Scope:** This repository only — [Vera-Platforms/vera](https://github.com/Vera-Platforms/vera).
+**Scope:** This repository only — [natew-dev/vera](https://github.com/natew-dev/vera).
 
 ---
 
@@ -9,7 +9,7 @@
 | Item | Value |
 |------|--------|
 | **Local folder** | `~/Documents/projects/visual-era` (name is arbitrary; remote is authoritative) |
-| **GitHub** | `Vera-Platforms/vera` |
+| **GitHub** | `natew-dev/vera` |
 | **Production** | https://visual-era.com |
 | **Cursor workspace** | Open **this folder** — not a parent directory |
 
@@ -26,8 +26,8 @@ VERA shell scripts resolve the repo root from their own path (`AGENT_GIT_ROOT`, 
 | Item | Action |
 |------|--------|
 | Git `includeIf` | `docs/GIT_CONFIG_SETUP.md` — point `gitdir` at your `visual-era/` path |
-| `.env.local` | Stays inside this repo |
-| `.cursor/mcp.env` | Local MCP secrets — gitignored |
+| `.env` | App secrets — gitignored; see [LOCAL_ENV.md](./LOCAL_ENV.md) |
+| `.cursor/mcp.env` | MCP tokens only — copy from `.cursor/mcp.env.example` |
 | `node_modules/` | Run `npm ci` after clone or move |
 
 ---
@@ -36,8 +36,9 @@ VERA shell scripts resolve the repo root from their own path (`AGENT_GIT_ROOT`, 
 
 1. **Open** `~/Documents/projects/visual-era` in Cursor.
 2. **Sandbox** — keep enabled; see [CURSOR_SANDBOX_SETUP.md](./CURSOR_SANDBOX_SETUP.md).
-3. **Agents** — read [AGENTS.md](../../AGENTS.md) and [docs/agents/ROSTER.md](../agents/ROSTER.md); use `agent-cursor-*` branches only.
-4. **Domain discipline** — one domain per chat (`vera-clerk`, `vera-onboarding`, etc.); new chat when switching domains.
+3. **Auto-Run** — Settings → Agents → Allowlist (with Sandbox) so scripts run without constant approval.
+4. **Agent** — single implementation chat: **vera-website**; prompt: `docs/agents/prompts/vera-onboarding.md`.
+5. **Env** — `npm run env:check` before dev; [LOCAL_ENV.md](./LOCAL_ENV.md).
 
 ---
 
@@ -56,8 +57,10 @@ Scripts in this repo use `AGENT_GIT_ROOT`, not `$vera` — so clones work withou
 
 | Check | Command |
 |-------|---------|
-| Remote | `git remote -v` → `Vera-Platforms/vera` |
-| Dev server | `npm ci && npm run dev` |
+| Remote | `git remote -v` → `natew-dev/vera` |
+| Env keys | `npm run env:check` |
+| Dev server | `npm run dev` → http://localhost:3001 |
+| Route smoke | `npm run dev:smoke` (with dev server running) |
 | Agent scripts | `./scripts/agent-status.sh` |
 | Ops verify | `./scripts/ops/run-phase2-verify.sh` |
 | Repo boundaries | `./scripts/check-repo-boundaries.sh` |
@@ -66,6 +69,6 @@ Scripts in this repo use `AGENT_GIT_ROOT`, not `$vera` — so clones work withou
 
 ## Related docs
 
+- [LOCAL_ENV.md](./LOCAL_ENV.md)
 - [POST_MIGRATION_CONNECTIONS.md](./POST_MIGRATION_CONNECTIONS.md)
-- [REPO_RESTRUCTURE_AUDIT.md](./REPO_RESTRUCTURE_AUDIT.md)
 - [VERCEL_DEPLOYMENT.md](../VERCEL_DEPLOYMENT.md)

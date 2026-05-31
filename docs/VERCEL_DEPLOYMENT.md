@@ -78,7 +78,7 @@ This fails if Clerk JS loads from `clerk.visual-era.vercel.app` (CORS/SSL) inste
 **Required on Vercel (Production + Preview):**
 
 ```text
-NEXT_PUBLIC_SITE_URL=https://visual-era.vercel.app
+NEXT_PUBLIC_SITE_URL=https://visual-era.com
 NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_...
 CLERK_SECRET_KEY=sk_...
 ```

@@ -1,43 +1,28 @@
 # Task dispatcher — which agent?
 
-Use this in ChatGPT or manually before opening Cursor.
-
----
-
-## Symptom → agent
+All onboarding website work → **vera-website**.
 
 | You need to… | Agent |
 |--------------|-------|
-| Fix consent flow, redirects, PDF signing, document APIs | **vera-onboarding** |
-| Fix DIDIT session, webhook, verification status | **vera-identity** |
-| Fix sign-in, handshake, `/__clerk` proxy, middleware | **vera-clerk** |
-| Migrations, RLS, schema drift, `types/database.ts` | **vera-supabase** |
-| Deploy failed, env vars, domain, Vercel project | **vera-vercel** |
-| CI, branch protection, agent scripts, workflows | **vera-github** |
-| Run verify scripts, DNS/email/Clerk drift report | **vera-platform-verify** |
-| Docs only, AGENTS.md, INDEX, ops writeups | **vera-docs** |
+| Onboarding UX, DIDIT, documents, sign-in flow, public pages | **vera-website** |
+| Dashboard / product app (later) | **vera-product** (not started) |
+
+**Prompt:** [prompts/vera-website.md](./prompts/vera-website.md) · **Decisions:** [DECISIONS.md](../DECISIONS.md)
 
 ---
 
-## Risk
+## Workflow
 
-| Path / topic | Extra gate |
-|--------------|------------|
-| `middleware.ts`, webhooks, `lib/env.ts`, `lib/security.ts` | Human skim PR; label `risk:high` |
-| Remote Supabase apply | **Human-only** after migration PR merges |
-| Clerk Dashboard webhook URL | **Human-only** |
-
----
-
-## Paste into Cursor
-
-1. Pick agent from [ROSTER.md](./ROSTER.md)
-2. Copy matching file from [prompts/](prompts/)
-3. Fill [cursor-implementation-intake.md](../prompts/cursor-implementation-intake.md)
-4. `./scripts/start-agent-task.sh cursor <slug>`
+1. `./scripts/start-agent-task.sh cursor <slug>`
+2. Implement on `agent-cursor-web-*`
+3. `./scripts/agent-quick-check.sh`
+4. `./scripts/agent-finish.sh "[cursor] …"` when ready
 
 ---
 
-## Not in this repo
+## High-risk paths
 
-External planning or multi-repo orchestration — use separate chats/tools; paste **text briefs only** into vera Cursor.
+| Path | Gate |
+|------|------|
+| `middleware.ts`, webhooks, `lib/env.ts` | Explicit human request + PR skim |
+| Remote Supabase apply | Human-only |

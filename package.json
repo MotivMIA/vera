@@ -4,14 +4,19 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev -p 3001",
+    "dev:smoke": "bash ./scripts/dev-smoke-routes.sh",
+    "env:check": "bash ./scripts/check-local-env.sh",
+    "vercel:sync-env": "bash ./scripts/sync-vercel-env.sh",
     "build": "next build",
     "start": "next start",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
     "test": "vitest run",
     "test:watch": "vitest",
-    "smoke:clerk-proxy": "bash ./scripts/production-clerk-proxy-smoke.sh"
+    "smoke:clerk-proxy": "bash ./scripts/production-clerk-proxy-smoke.sh",
+    "branches:cleanup": "bash ./scripts/cleanup-merged-agent-branches.sh",
+    "branches:cleanup:dry-run": "bash ./scripts/cleanup-merged-agent-branches.sh --dry-run"
   },
   "dependencies": {
     "@clerk/nextjs": "^7.3.5",

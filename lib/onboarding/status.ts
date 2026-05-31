@@ -127,6 +127,14 @@ export async function hasConsentAccepted(clerkUserId: string) {
   return snapshot.consentComplete;
 }
 
+/** Canonical path for the user's current onboarding step (post-auth redirects). */
+export function resolveNextOnboardingPath(snapshot: OnboardingSnapshot): string {
+  if (!snapshot.consentComplete) return ONBOARDING_STEP_PATH.consent;
+  if (!snapshot.identityVerified) return ONBOARDING_STEP_PATH.identity;
+  if (!snapshot.documentsComplete) return ONBOARDING_STEP_PATH.documents;
+  return ONBOARDING_STEP_PATH.complete;
+}
+
 export function resolveOnboardingRedirect(snapshot: OnboardingSnapshot, pathname: string): string | null {
   const onboardingPaths = ["/onboarding/consent", "/verify-identity", "/documents", "/success"];
   if (!onboardingPaths.some((path) => pathname === path || pathname.startsWith(`${path}/`))) {
@@ -158,7 +166,7 @@ export function resolveOnboardingRedirect(snapshot: OnboardingSnapshot, pathname
   }
 
   if (pathname.startsWith("/success")) {
-    return snapshot.currentStep === "complete" ? null : ONBOARDING_STEP_PATH[snapshot.currentStep];
+    return snapshot.currentStep === "complete" ? null : resolveNextOnboardingPath(snapshot);
   }
 
   return null;
