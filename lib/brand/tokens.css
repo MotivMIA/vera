@@ -1,0 +1,16 @@
+/**
+ * Visual Era brand palette — single source of truth for CSS.
+ * JS consumers: lib/brand/colors.ts (keep hex values in sync).
+ * Logo gradient in UI reads these vars via .brand-logo-mark (see globals.css).
+ */
+:root {
+  --brand-magenta: #e41a76;
+  --brand-magenta-bright: #ff2d8a;
+  --brand-magenta-mid: #c91c72;
+  --brand-magenta-deep: #830c60;
+  --brand-purple-deep: #6b026b;
+  --brand-gradient: linear-gradient(135deg, var(--brand-magenta) 0%, var(--brand-purple-deep) 100%);
+  --brand-glow: rgba(228, 26, 118, 0.16);
+  --brand-glow-purple: rgba(107, 2, 107, 0.14);
+  --brand-selection: rgba(228, 26, 118, 0.35);
+}

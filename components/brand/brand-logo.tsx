@@ -14,6 +14,11 @@ export type BrandLogoProps = {
   showWordmark?: boolean;
   className?: string;
   priority?: boolean;
+  /**
+   * `mask` — PNG alpha silhouette filled with `--brand-gradient` (default; palette-driven).
+   * `png` — baked raster colors from public/brand/logo.png (OG/email parity, legacy).
+   */
+  variant?: "mask" | "png";
 };
 
 export function BrandLogo({
@@ -22,19 +27,32 @@ export function BrandLogo({
   showWordmark = false,
   className,
   priority = false,
+  variant = "mask",
 }: BrandLogoProps) {
   const dimensions = sizeMap[size];
 
-  const content = (
-    <span className={cn("inline-flex items-center gap-3", className)}>
+  const mark =
+    variant === "png" ? (
       <Image
         src="/brand/logo.png"
-        alt="Visual Era"
+        alt=""
         width={dimensions.width}
         height={dimensions.height}
         className={cn(dimensions.className, "shrink-0 object-contain")}
         priority={priority}
+        aria-hidden
       />
+    ) : (
+      <span
+        role="img"
+        aria-label="Visual Era"
+        className={cn(dimensions.className, "brand-logo-mark inline-block shrink-0")}
+      />
+    );
+
+  const content = (
+    <span className={cn("inline-flex items-center gap-3", className)}>
+      {mark}
       {showWordmark ? (
         <span className="text-sm font-semibold tracking-wide text-foreground">Visual Era</span>
       ) : null}

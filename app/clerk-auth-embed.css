@@ -29,8 +29,7 @@
 .auth-clerk-embed .cl-headerSubtitle,
 .auth-clerk-embed .cl-logoBox,
 .auth-clerk-embed .cl-footer,
-.auth-clerk-embed .cl-footerAction,
-.auth-clerk-embed .cl-internal-b3fm6y {
+.auth-clerk-embed .cl-footerAction {
   display: none !important;
 }
 
