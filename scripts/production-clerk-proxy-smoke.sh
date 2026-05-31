@@ -25,7 +25,7 @@ if [ "$clerk_js_code" != "200" ]; then
   exit 1
 fi
 
-env_body="$(curl -fsSL --max-time 30 -H "Origin: ${BASE_URL}" "${BASE_URL}/__clerk/v1/environment" 2>/dev/null || true)"
+env_body="$(curl -sS --max-time 30 -H "Origin: ${BASE_URL}" "${BASE_URL}/__clerk/v1/environment" 2>/dev/null || true)"
 if echo "$env_body" | grep -q 'host_invalid'; then
   echo "FAIL: /__clerk/v1/environment returned host_invalid."
   echo "      Enable proxy in Clerk Dashboard → Domains → proxy URL: ${BASE_URL}/__clerk"

@@ -1,64 +1,92 @@
 # Clerk Frontend API proxy — production (required)
 
-Production uses Clerk instance **`clerk.visual-era.vercel.app`** (`pk_live_...`). That host is **not** on public DNS, so auth **must** use a same-origin proxy at **`https://visual-era.com/__clerk`**.
+Production uses **`pk_live_...`** with Frontend API host **`clerk.visual-era.vercel.app`**. That hostname is **not on public DNS**, so auth must use a same-origin proxy at:
 
-If the proxy is missing, the homepage and `/sign-in` spin forever and `/__clerk/v1/environment` returns **`host_invalid`**.
+```text
+https://visual-era.com/__clerk
+```
 
-Cloud agents using **`pk_test_...`** (dev instance) will work **without** this step — that is not the same as production.
+(not `https://app.visual-era.com/__clerk` unless that subdomain exists on Vercel)
+
+Until Clerk accepts this proxy, `/__clerk/v1/environment` returns **`host_invalid`** and the sign-in UI spins forever.
+
+**Cloud / local dev** uses **`pk_test_...`** (`*.clerk.accounts.dev`) — that works **without** Dashboard proxy setup. That is a different Clerk instance than production.
 
 ---
 
-## 1. Enable proxy in Clerk Dashboard (production instance)
+## If the Dashboard “won’t let you” save the proxy URL
 
-1. Open [Clerk Dashboard](https://dashboard.clerk.com) → switch to **Production** (not Development).
-2. **Configure** → **Domains** (or **Frontend API**).
-3. **Set proxy configuration** → `https://visual-era.com/__clerk`
-4. Save and wait for validation to pass.
+Clerk runs a **validation check** before it enables proxying. If the check fails, the UI blocks save. Common causes:
 
-Or with the **production** secret key (`sk_live_...`):
+| Mistake | Fix |
+|---------|-----|
+| Wrong Clerk instance (Development) | Switch Dashboard to **Production** (keys start with `pk_live_` / `sk_live_`) |
+| Wrong URL (`app.visual-era.com`) | Use **`https://visual-era.com/__clerk`** |
+| Using `sk_test_` in scripts | Copy **`sk_live_`** from Vercel Production env (never paste secrets in chat) |
+| Proxy not deployed yet | Merge latest `main`, redeploy Vercel Production, then retry |
+
+### Option 1 — API (bypasses the Dashboard form)
+
+On your machine:
 
 ```bash
-export CLERK_SECRET_KEY=sk_live_...   # production only — never commit
+# Copy sk_live_ from Vercel → visual-era → Settings → Environment Variables → Production
+export CLERK_SECRET_KEY=sk_live_...
+
+./scripts/ops/verify-clerk-proxy.sh
 ./scripts/ops/configure-clerk-proxy.sh
 ```
 
+Then redeploy production on Vercel.
+
+### Option 2 — Clerk Support
+
+If `verify-clerk-proxy.sh` fails, email **support@clerk.com** with:
+
+- Instance Frontend API: `clerk.visual-era.vercel.app`
+- Desired proxy URL: `https://visual-era.com/__clerk`
+- Error: `host_invalid` on `GET /__clerk/v1/environment`
+
+Ask them to enable **`proxy_url`** on your production domain or advise CNAME setup for `visual-era.com`.
+
+### Option 3 — Temporary unblock (dev keys on Production only)
+
+Only for internal testing: set Vercel **Production** Clerk vars to your **development** `pk_test_` / `sk_test_` (same as local `.env`). Auth will work without proxy, but this is **not** a real production auth instance — switch back to `pk_live_` before launch.
+
 ---
 
-## 2. Vercel environment (Production)
+## Vercel Production env
 
 | Variable | Value |
 |----------|--------|
 | `NEXT_PUBLIC_SITE_URL` | `https://visual-era.com` |
 | `NEXT_PUBLIC_CLERK_PROXY_URL` | `https://visual-era.com/__clerk` |
-| `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | `pk_live_...` (production instance) |
-| `CLERK_SECRET_KEY` | `sk_live_...` (production instance) |
-
-Do **not** use `pk_test_` / `sk_test_` on Production.
+| `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` | `pk_live_...` |
+| `CLERK_SECRET_KEY` | `sk_live_...` |
 
 ```bash
-vercel env add NEXT_PUBLIC_SITE_URL production --value "https://visual-era.com" --yes --force
-vercel env add NEXT_PUBLIC_CLERK_PROXY_URL production --value "https://visual-era.com/__clerk" --yes --force
+./scripts/sync-vercel-env.sh
+vercel --prod
 ```
-
-Redeploy production after changing env vars.
 
 ---
 
-## 3. Verify
+## Local `.env`
+
+```text
+NEXT_PUBLIC_SITE_URL=http://localhost:3001
+NEXT_PUBLIC_CLERK_PROXY_URL=http://localhost:3001/__clerk
+```
+
+Do **not** duplicate the variable name on one line (`NEXT_PUBLIC_CLERK_PROXY_URL=NEXT_PUBLIC_...`).
+
+---
+
+## Verify
 
 ```bash
 npm run smoke:clerk-proxy
+curl -sS -H "Origin: https://visual-era.com" "https://visual-era.com/__clerk/v1/environment" | head -c 200
 ```
 
-Must pass **without** `host_invalid`. Then hard-refresh https://visual-era.com (clear site data if you had a handshake loop).
-
----
-
-## Local dev
-
-| Variable | Value |
-|----------|--------|
-| `NEXT_PUBLIC_SITE_URL` | `http://localhost:3001` |
-| `NEXT_PUBLIC_CLERK_PROXY_URL` | `http://localhost:3001/__clerk` |
-
-Dev instance (`pk_test_...`) does not need Dashboard proxy for local-only testing.
+Success = JSON **without** `"code":"host_invalid"`. Then hard-refresh https://visual-era.com.

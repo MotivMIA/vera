@@ -39,6 +39,10 @@ else:
   exit 1
 }
 
+if [[ -x "$(dirname "$0")/verify-clerk-proxy.sh" ]] || [[ -f "$(dirname "$0")/verify-clerk-proxy.sh" ]]; then
+  echo "Tip: run ./scripts/ops/verify-clerk-proxy.sh first if Dashboard blocked save."
+fi
+
 echo "Setting proxy_url=${PROXY_URL} on domain ${domain_id}…"
 curl -fsSL -X PATCH "https://api.clerk.com/v1/domains/${domain_id}" \
   -H "Authorization: Bearer ${CLERK_SECRET_KEY}" \

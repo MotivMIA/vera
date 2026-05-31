@@ -5,10 +5,23 @@
 const LOCAL_PROXY_URL = "http://localhost:3001/__clerk";
 const PRODUCTION_PROXY_URL = "https://visual-era.com/__clerk";
 
+function normalizeProxyUrl(value: string): string | null {
+  const trimmed = value.trim().replace(/\/$/, "");
+  if (!trimmed.startsWith("http://") && !trimmed.startsWith("https://")) {
+    return null;
+  }
+  // Reject copy-paste mistakes like NEXT_PUBLIC_CLERK_PROXY_URL=https://...
+  if (trimmed.includes("NEXT_PUBLIC_") || trimmed.includes("=")) {
+    return null;
+  }
+  return trimmed;
+}
+
 export function getClerkProxyUrl(): string {
   const explicit = process.env.NEXT_PUBLIC_CLERK_PROXY_URL?.trim();
-  if (explicit) {
-    return explicit.replace(/\/$/, "");
+  const normalizedExplicit = explicit ? normalizeProxyUrl(explicit) : null;
+  if (normalizedExplicit) {
+    return normalizedExplicit;
   }
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim();
