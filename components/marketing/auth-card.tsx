@@ -2,10 +2,14 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ClerkLoaded, ClerkLoading, UserButton, useAuth } from "@clerk/nextjs";
+import { ClerkLoaded, ClerkLoading, SignIn, SignUp, UserButton, useAuth } from "@clerk/nextjs";
 import { ArrowRight, LoaderCircle, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { SiteAuthPanel } from "@/components/auth/site-auth-panel";
+import {
+  clerkSignInComponentProps,
+  clerkSignUpComponentProps,
+} from "@/lib/clerk/auth-component-props";
+import { clerkAppearance } from "@/lib/clerk/appearance";
 import { ONBOARDING_ENTRY_PATH } from "@/lib/onboarding/constants";
 
 type AuthMode = "sign-up" | "sign-in";
@@ -51,8 +55,27 @@ function AuthLoadingShell() {
         <div className="rounded-[0.9rem] py-2.5 text-center text-sm font-medium text-[#9da3af]">Sign in</div>
       </div>
       <div className="flex min-h-72 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.04]">
-        <LoaderCircle className="size-5 animate-spin text-[#d8b56d]" />
+        <LoaderCircle className="size-5 animate-spin text-accent" />
       </div>
+    </div>
+  );
+}
+
+function ClerkAuthPanel({ mode }: { mode: AuthMode }) {
+  const shellClass =
+    "auth-clerk-embed overflow-hidden rounded-2xl border border-white/10 bg-white/[0.04] px-5 py-6";
+
+  if (mode === "sign-up") {
+    return (
+      <div className={shellClass}>
+        <SignUp key="sign-up" {...clerkSignUpComponentProps} appearance={clerkAppearance} routing="hash" />
+      </div>
+    );
+  }
+
+  return (
+    <div className={shellClass}>
+      <SignIn key="sign-in" {...clerkSignInComponentProps} appearance={clerkAppearance} routing="hash" />
     </div>
   );
 }
@@ -75,8 +98,8 @@ function AuthCardContent({ initialMode }: { initialMode: AuthMode }) {
           </div>
           <UserButton />
         </div>
-        <div className="rounded-2xl border border-[#d8b56d]/20 bg-[#d8b56d]/10 p-4 text-sm leading-6 text-[#d7dbe2]">
-          <ShieldCheck className="mb-3 size-5 text-[#d8b56d]" />
+        <div className="rounded-2xl border border-accent/25 bg-accent/10 p-4 text-sm leading-6 text-[#d7dbe2]">
+          <ShieldCheck className="mb-3 size-5 text-accent" />
           Your account is active and ready to continue.
         </div>
         <Button asChild className="mt-6 w-full">
@@ -92,14 +115,14 @@ function AuthCardContent({ initialMode }: { initialMode: AuthMode }) {
   return (
     <>
       <AuthTabs mode={mode} onModeChange={setMode} />
-      <SiteAuthPanel mode={mode} />
+      <ClerkAuthPanel mode={mode} />
       <p className="mt-4 text-center text-xs text-[#6b7280]">
         {mode === "sign-up" ? (
           <>
             Already have an account?{" "}
             <button
               type="button"
-              className="text-[#d8b56d] underline-offset-2 hover:underline"
+              className="text-accent underline-offset-2 hover:text-[var(--brand-magenta-bright)] hover:underline"
               onClick={() => setMode("sign-in")}
             >
               Sign in
@@ -110,7 +133,7 @@ function AuthCardContent({ initialMode }: { initialMode: AuthMode }) {
             New here?{" "}
             <button
               type="button"
-              className="text-[#d8b56d] underline-offset-2 hover:underline"
+              className="text-accent underline-offset-2 hover:text-[var(--brand-magenta-bright)] hover:underline"
               onClick={() => setMode("sign-up")}
             >
               Create an account

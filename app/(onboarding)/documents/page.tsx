@@ -1,5 +1,5 @@
 import { DocumentsStepIndicators } from "@/components/onboarding/documents-step-indicators";
-import { InternalSigningPacket } from "@/components/onboarding/internal-signing-packet";
+import { InternalSigningPacket } from "@/components/contracts/internal-signing-packet";
 import { OnboardingShell } from "@/components/onboarding/onboarding-shell";
 import { ONBOARDING_STEP_PROGRESS, stepLabel } from "@/lib/onboarding/constants";
 import { enforceOnboardingPath } from "@/lib/onboarding/guards";

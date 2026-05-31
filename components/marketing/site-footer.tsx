@@ -1,12 +1,13 @@
 import Link from "next/link";
+import { BrandLogo } from "@/components/brand/brand-logo";
 import { LEGAL_DOCUMENTS } from "@/lib/legal/documents";
 
 export function SiteFooter() {
   return (
     <footer className="border-t border-white/10 px-5 py-10 md:px-8">
       <div className="mx-auto flex max-w-6xl flex-col gap-6 md:flex-row md:items-start md:justify-between">
-        <div className="space-y-2">
-          <p className="text-sm font-semibold text-foreground">Visual Era</p>
+        <div className="space-y-3">
+          <BrandLogo href="/" size="sm" showWordmark />
           <p className="max-w-sm text-sm text-muted-foreground">
             Creator onboarding, identity verification, and management tools.
           </p>
