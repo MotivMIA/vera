@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { X } from "lucide-react";
+import { AppStoreBadges } from "@/components/marketing/app-store-badges";
 import { BrandLogo } from "@/components/brand/brand-logo";
 import { Button } from "@/components/ui/button";
+import { APP_FOOTER_TAGLINE, APP_STORE_LINKS } from "@/lib/brand/app";
 import { FOOTER_LEGAL_SLUGS, SOCIAL_LINKS } from "@/lib/brand/social";
 import { LEGAL_DOCUMENTS } from "@/lib/legal/documents";
 
@@ -60,8 +62,8 @@ export function SiteFooter() {
   return (
     <footer className="border-t border-white/10">
       <div className="mx-auto max-w-6xl px-5 md:px-8">
-        <div className="grid grid-cols-1 gap-10 py-12 md:grid-cols-3 md:gap-0 md:py-14">
-          <section className="flex flex-col gap-5 md:pr-10 lg:pr-14">
+        <div className="grid grid-cols-1 gap-10 py-12 md:grid-cols-2 md:gap-0 md:py-14 lg:grid-cols-4">
+          <section className="flex flex-col gap-5 md:pr-8 lg:pr-10">
             <BrandLogo href="/" size="sm" showWordmark />
             <p className="max-w-xs text-sm leading-6 text-muted-foreground">
               Creator onboarding, identity verification, and management tools for professional
@@ -83,16 +85,27 @@ export function SiteFooter() {
             </div>
           </section>
 
-          <section className="flex flex-col gap-4 border-t border-white/10 pt-10 md:border-l md:border-t-0 md:pl-10 md:pt-0 lg:pl-14">
+          <section className="flex flex-col gap-4 border-t border-white/10 pt-10 md:border-l md:border-t-0 md:pl-8 md:pt-0 lg:pl-10">
             <h2 className={headingClassName}>Start onboarding</h2>
             <Button asChild variant="accent" size="sm" className="w-fit">
               <Link href="/sign-up">Get started</Link>
             </Button>
           </section>
 
+          <section
+            aria-labelledby="footer-app-heading"
+            className="flex flex-col gap-4 border-t border-white/10 pt-10 md:pt-10 lg:border-l lg:border-t-0 lg:pl-10 lg:pt-0"
+          >
+            <h2 id="footer-app-heading" className={headingClassName}>
+              Get the app
+            </h2>
+            <p className="text-sm leading-6 text-muted-foreground">{APP_FOOTER_TAGLINE}</p>
+            <AppStoreBadges links={APP_STORE_LINKS} />
+          </section>
+
           <nav
             aria-label="Legal"
-            className="flex flex-col gap-4 border-t border-white/10 pt-10 md:border-l md:border-t-0 md:pl-10 md:pt-0 lg:pl-14"
+            className="flex flex-col gap-4 border-t border-white/10 pt-10 md:border-l md:border-t md:pl-8 md:pt-10 lg:pl-10 lg:border-t-0 lg:pt-0"
           >
             <h2 className={headingClassName}>Legal</h2>
             <ul className="flex flex-col gap-3">
