@@ -162,11 +162,11 @@ function ClerkProxyBlockedNotice() {
             via the registered <code className="text-xs text-accent">/__clerk</code> proxy.
           </p>
           <p className="mt-3 text-muted-foreground">
-            In <code className="text-xs text-accent">.env</code>: set{" "}
-            <code className="text-xs text-accent">NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY</code> and{" "}
-            <code className="text-xs text-accent">CLERK_SECRET_KEY</code> to your{" "}
-            <code className="text-xs text-accent">pk_test_</code> /{" "}
-            <code className="text-xs text-accent">sk_test_</code> pair, omit{" "}
+            Copy <code className="text-xs text-accent">pk_test_</code> /{" "}
+            <code className="text-xs text-accent">sk_test_</code> from Clerk Dashboard → Development
+            (instance <code className="text-xs text-accent">immense-sawfish-81</code>) → API Keys into{" "}
+            <code className="text-xs text-accent">.env</code>, comment out the production{" "}
+            <code className="text-xs text-accent">pk_live_</code> pair, omit{" "}
             <code className="text-xs text-accent">NEXT_PUBLIC_CLERK_PROXY_URL</code>, then restart{" "}
             <code className="text-xs text-accent">npm run dev</code>.
           </p>
