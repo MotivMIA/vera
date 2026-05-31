@@ -19,9 +19,17 @@ if ! echo "$html" | grep -qE 'src="/__clerk/npm/@clerk/clerk-js'; then
   exit 1
 fi
 
-clerk_js_code="$(curl -fsSL --max-time 30 -o /dev/null -w "%{http_code}" "${BASE_URL}/__clerk/npm/@clerk/clerk-js@6/dist/clerk.browser.js")"
+clerk_js_code="$(curl -fsSL --max-time 30 -o /dev/null -w "%{http_code}" -L "${BASE_URL}/__clerk/npm/@clerk/clerk-js@6/dist/clerk.browser.js")"
 if [ "$clerk_js_code" != "200" ]; then
   echo "FAIL: /__clerk/npm clerk.browser.js returned HTTP ${clerk_js_code} (expected 200)."
+  exit 1
+fi
+
+env_body="$(curl -fsSL --max-time 30 -H "Origin: ${BASE_URL}" "${BASE_URL}/__clerk/v1/environment" 2>/dev/null || true)"
+if echo "$env_body" | grep -q 'host_invalid'; then
+  echo "FAIL: /__clerk/v1/environment returned host_invalid."
+  echo "      Enable proxy in Clerk Dashboard → Domains → proxy URL: ${BASE_URL}/__clerk"
+  echo "      See scripts/ops/configure-clerk-proxy.sh and docs/ops/CLERK_PROXY_SETUP.md"
   exit 1
 fi
 
