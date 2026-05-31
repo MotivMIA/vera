@@ -97,9 +97,9 @@ export function SiteFooter() {
             className="flex flex-col gap-4 border-t border-white/10 pt-10 md:pt-10 lg:border-l lg:border-t-0 lg:pl-10 lg:pt-0"
           >
             <h2 id="footer-app-heading" className={headingClassName}>
-              Get the app
+              Download our free app
             </h2>
-            <p className="text-sm leading-6 text-muted-foreground">{APP_FOOTER_TAGLINE}</p>
+            <p className="font-serif text-sm leading-6 text-muted-foreground">{APP_FOOTER_TAGLINE}</p>
             <AppStoreBadges links={APP_STORE_LINKS} />
           </section>
 
@@ -120,9 +120,9 @@ export function SiteFooter() {
           </nav>
         </div>
 
-        <div className="flex flex-col gap-2 border-t border-white/10 py-5 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between sm:gap-6">
+        <div className="flex flex-col items-center gap-1 border-t border-white/10 py-5 text-center text-xs text-muted-foreground">
           <p>© {currentYear} All rights reserved.</p>
-          <p className="max-w-md text-pretty leading-5 sm:text-right">
+          <p className="max-w-md text-pretty leading-5">
             Information on this site is for general purposes only and is not legal or financial
             advice.
           </p>
