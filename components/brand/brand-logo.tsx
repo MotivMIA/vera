@@ -3,7 +3,10 @@ import Link from "next/link";
 import { brandWordmarkClass } from "@/lib/brand/theme-classes";
 import { cn } from "@/lib/utils";
 
-/** Mark-only sizes (no wordmark). Lockup mark/wordmark scale via globals.css + fluid-metrics. */
+/**
+ * Mark-only sizes (no wordmark). Lockups: globals sets --lockup-wordmark-size;
+ * mark = wordmark × --lockup-mark-ratio (fluid-metrics.css).
+ */
 const sizeMap = {
   sm: {
     width: 28,

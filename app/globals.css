@@ -193,25 +193,28 @@ h1.brand-motto--compact {
   --lockup-wordmark-offset: 0px;
 }
 
-/** Full HomeBranding hero — fluid lockup (same viewport curve as motto/h1). */
-.brand-logo-lockup.brand-logo-lockup--hero {
-  --lockup-wordmark-offset: var(--lockup-offset);
-  gap: var(--space-lockup-gap);
-}
-
-.brand-logo-lockup.brand-logo-lockup--hero .brand-logo-mark,
-.brand-logo-lockup.brand-logo-lockup--hero .brand-logo-mark-png {
-  width: var(--size-lockup-mark);
-  height: var(--size-lockup-mark);
-}
-
-.brand-logo-lockup.brand-logo-lockup--hero .brand-wordmark {
-  font-size: var(--font-size-lockup-wordmark);
+/**
+ * Lockup scale: --lockup-wordmark-size (per data-size / --hero) drives wordmark
+ * and mark; mark box = wordmark × --lockup-mark-ratio (fluid-metrics.css).
+ */
+.brand-logo-lockup .brand-wordmark {
+  font-size: var(--lockup-wordmark-size);
+  line-height: 1;
+  transform: translateY(var(--lockup-wordmark-offset));
 }
 
 .brand-logo-lockup .brand-logo-mark,
 .brand-logo-lockup .brand-logo-mark-png {
   display: block;
+  width: calc(var(--lockup-wordmark-size) * var(--lockup-mark-ratio));
+  height: calc(var(--lockup-wordmark-size) * var(--lockup-mark-ratio));
+}
+
+/** Full HomeBranding hero — fluid lockup (same viewport curve as motto/h1). */
+.brand-logo-lockup.brand-logo-lockup--hero {
+  --lockup-wordmark-size: var(--font-size-lockup-wordmark);
+  --lockup-wordmark-offset: var(--lockup-offset);
+  gap: var(--space-lockup-gap);
 }
 
 .brand-logo-lockup .brand-logo-mark {
@@ -223,53 +226,32 @@ h1.brand-motto--compact {
   object-position: bottom;
 }
 
-.brand-logo-lockup .brand-wordmark {
-  line-height: 1;
-  transform: translateY(var(--lockup-wordmark-offset));
-}
-
 .brand-logo-lockup[data-size="sm"] {
+  --lockup-wordmark-size: var(--font-size-wordmark-sm);
   --lockup-wordmark-offset: 0.0625rem;
   gap: var(--space-gap-sm);
-}
-
-.brand-logo-lockup[data-size="sm"] .brand-logo-mark,
-.brand-logo-lockup[data-size="sm"] .brand-logo-mark-png {
-  width: var(--size-lockup-mark-sm);
-  height: var(--size-lockup-mark-sm);
 }
 
 .brand-logo-lockup[data-size="md"] {
+  --lockup-wordmark-size: var(--font-size-wordmark-md);
   --lockup-wordmark-offset: 0.0625rem;
   gap: var(--space-gap-sm);
 }
 
-.brand-logo-lockup[data-size="md"] .brand-logo-mark,
-.brand-logo-lockup[data-size="md"] .brand-logo-mark-png {
-  width: var(--size-lockup-mark-md);
-  height: var(--size-lockup-mark-md);
+.brand-logo-lockup[data-size="lg"] {
+  --lockup-wordmark-size: var(--font-size-lockup-wordmark);
 }
 
 .brand-logo-lockup[data-size="xl"] {
+  --lockup-wordmark-size: var(--font-size-lockup-wordmark-compact);
   --lockup-wordmark-offset: var(--lockup-offset-compact);
   gap: var(--space-lockup-gap-compact);
 }
 
-.brand-logo-lockup[data-size="xl"] .brand-logo-mark,
-.brand-logo-lockup[data-size="xl"] .brand-logo-mark-png {
-  width: var(--size-lockup-mark-compact);
-  height: var(--size-lockup-mark-compact);
-}
-
 .brand-logo-lockup[data-size="2xl"] {
+  --lockup-wordmark-size: var(--font-size-lockup-wordmark);
   --lockup-wordmark-offset: var(--lockup-offset);
   gap: var(--space-lockup-gap);
-}
-
-.brand-logo-lockup[data-size="2xl"] .brand-logo-mark,
-.brand-logo-lockup[data-size="2xl"] .brand-logo-mark-png {
-  width: var(--size-lockup-mark);
-  height: var(--size-lockup-mark);
 }
 
 /** “Visual Era” wordmark — Syne display; Visual + Era split clips (lockup; mark uses .brand-logo-mark) */

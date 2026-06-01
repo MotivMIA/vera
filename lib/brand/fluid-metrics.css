@@ -52,11 +52,15 @@
     calc(1.5rem + (2.875rem - 1.5rem) * ((100vw - var(--fluid-vw-min)) / var(--fluid-vw-range))),
     2.875rem
   );
-  /* Compact auth/mobile motto — 320px→768px; caps before 3-line wrap in ~280px columns */
+  /* Compact auth/mobile motto — steep 320→430, then 430→768; ≤2 lines in ~280px columns */
   --font-size-motto-compact: clamp(
     1.375rem,
-    calc(1.375rem + (2rem - 1.375rem) * ((100vw - var(--fluid-vw-min)) / (48rem - var(--fluid-vw-min)))),
-    2rem
+    calc(1.375rem + (1.875rem - 1.375rem) * ((100vw - var(--fluid-vw-min)) / (26.875rem - var(--fluid-vw-min)))),
+    clamp(
+      1.875rem,
+      calc(1.875rem + (2rem - 1.875rem) * ((100vw - 26.875rem) / (48rem - 26.875rem))),
+      2rem
+    )
   );
   --line-height-motto: 1.2;
   --line-height-motto-compact: 1.22;
