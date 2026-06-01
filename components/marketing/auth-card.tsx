@@ -151,7 +151,7 @@ function ClerkProxyBlockedNotice() {
             Local dev needs Clerk <strong className="font-medium text-foreground">development</strong>{" "}
             keys (<code className="text-xs text-accent">pk_test_</code> /{" "}
             <code className="text-xs text-accent">sk_test_</code>). Your{" "}
-            <code className="text-xs text-accent">.env</code> uses production{" "}
+            <code className="text-xs text-accent">.env.local</code> uses production{" "}
             <code className="text-xs text-accent">pk_live_</code>, which only works on{" "}
             <a
               href="https://visual-era.com/sign-in"
@@ -165,7 +165,7 @@ function ClerkProxyBlockedNotice() {
             Add development keys to{" "}
             <code className="text-xs text-accent">NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY_DEV</code> /{" "}
             <code className="text-xs text-accent">CLERK_SECRET_KEY_DEV</code> in{" "}
-            <code className="text-xs text-accent">.env</code> (keep production keys in{" "}
+            <code className="text-xs text-accent">.env.local</code> (keep production keys in{" "}
             <code className="text-xs text-accent">*_PROD</code> — no manual swapping). Omit{" "}
             <code className="text-xs text-accent">NEXT_PUBLIC_CLERK_PROXY_URL</code> for{" "}
             <code className="text-xs text-accent">pk_test_</code>, then restart{" "}

@@ -12,6 +12,7 @@
     "env:split": "bash ./scripts/setup-env-files.sh",
     "env:refresh": "bash ./scripts/setup-env-files.sh --force",
     "env:migrate": "bash ./scripts/migrate-env-to-local.sh",
+    "env:ensure-dev": "bash ./scripts/ensure-clerk-dev-env.sh",
     "vercel:sync-env": "bash ./scripts/sync-vercel-env.sh",
     "build": "next build",
     "start": "next start",
