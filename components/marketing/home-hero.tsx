@@ -16,7 +16,7 @@ export function HomeHero() {
           <BrandLogo size="md" priority />
         </div>
         <section className="flex min-h-[56vh] flex-col justify-center pt-16 lg:min-h-0 lg:pt-0">
-          <motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="space-y-8">
+          <motion.div initial={false} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="space-y-8">
             <Badge className="w-fit gap-2 border-accent/30 bg-accent/10 text-accent">
               <Sparkles className="size-3" />
               Creator onboarding, elevated
@@ -33,7 +33,7 @@ export function HomeHero() {
         </section>
 
         <section className="relative flex items-center justify-center pb-8 lg:pb-0">
-          <motion.div initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.55 }}>
+          <motion.div initial={false} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.55 }}>
             <AuthCard />
           </motion.div>
         </section>
