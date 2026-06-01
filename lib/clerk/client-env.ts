@@ -1,8 +1,13 @@
 /** Client-safe Clerk env helpers (NEXT_PUBLIC_* only). */
 
+import { isClerkProductionPublishableKey } from "@/lib/clerk/keys";
+
+export function getClerkPublishableKeyClient(): string {
+  return process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY?.trim() ?? "";
+}
+
 export function isClerkProductionKeyClient(): boolean {
-  const key = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY?.trim() ?? "";
-  return key.startsWith("pk_live_");
+  return isClerkProductionPublishableKey(getClerkPublishableKeyClient());
 }
 
 export function isClerkProxyForcedClient(): boolean {

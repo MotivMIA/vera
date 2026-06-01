@@ -3,6 +3,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { Toaster } from "@/components/ui/sonner";
 import { clerkAppearance } from "@/lib/clerk/appearance";
 import { getClerkProviderProxyProps } from "@/lib/clerk/hosted-only";
+import { getClerkPublishableKey } from "@/lib/clerk/keys";
 import { collectClerkOrigins } from "@/lib/clerk/origins";
 import { getSiteUrl } from "@/lib/env";
 import "./globals.css";
@@ -23,6 +24,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
 
   return (
     <ClerkProvider
+      publishableKey={getClerkPublishableKey()}
       {...getClerkProviderProxyProps()}
       appearance={clerkAppearance}
       allowedRedirectOrigins={allowedRedirectOrigins}

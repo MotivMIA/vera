@@ -112,7 +112,11 @@ Redeploy production after changing env vars.
 | Variable | Value |
 |----------|--------|
 | `NEXT_PUBLIC_SITE_URL` | `http://localhost:3001` |
+| `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY_DEV` / `CLERK_SECRET_KEY_DEV` | `pk_test_` / `sk_test_` (auto-selected by `npm run dev`) |
+| `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY_PROD` / `CLERK_SECRET_KEY_PROD` | `pk_live_` / `sk_live_` (used for production builds) |
 | `NEXT_PUBLIC_CLERK_PROXY_URL` | **omit** when using `pk_test_` (app skips proxy) |
+
+Keep both key pairs in one `.env` — no manual swapping. See [LOCAL_ENV.md](./LOCAL_ENV.md).
 
 ---
 

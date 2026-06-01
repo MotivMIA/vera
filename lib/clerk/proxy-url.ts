@@ -20,10 +20,11 @@ function normalizeProxyUrl(value: string): string | null {
   return trimmed;
 }
 
+import { getClerkPublishableKey, isClerkProductionPublishableKey } from "@/lib/clerk/keys";
+
 /** Production Clerk keys require same-origin /__clerk when FAPI is not on public DNS. */
 export function isClerkProductionKey(): boolean {
-  const key = process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY?.trim() ?? "";
-  return key.startsWith("pk_live_");
+  return isClerkProductionPublishableKey(getClerkPublishableKey());
 }
 
 /** Opt-in: test proxy against a dev instance (usually fails — Clerk blocks dev proxy). */
