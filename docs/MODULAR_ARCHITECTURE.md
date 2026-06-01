@@ -24,6 +24,7 @@
 - **Platform libs** already split: `lib/clerk`, `lib/didit`, `lib/supabase`, `lib/onboarding`.
 - **UI primitives** (`components/ui/*`) separate from feature components.
 - **Brand module** started: `lib/brand/colors.ts`, `components/brand/brand-logo.tsx`, CSS tokens in `app/globals.css`.
+- **Design tokens:** role-based semantic layer in `lib/brand/tokens.css` — see [design/COLOR_TOKENS.md](./design/COLOR_TOKENS.md).
 
 ### Gaps vs target modular model
 
@@ -81,7 +82,7 @@ app/
 
 ```text
 lib/
-  brand/           # colors, gradients, shared brand helpers  ✅ started
+  brand/           # colors, tokens.css, theme-classes, gradients  ✅ started
   clerk/           # proxy, appearance, webhooks, sync       ✅ keep
   didit/           # split from lib/didit.ts when it grows     🔜 optional
   supabase/        # server client                           ✅ keep

@@ -1,6 +1,7 @@
 @import "tailwindcss";
 @plugin "tailwindcss-animate";
 @import "../lib/brand/tokens.css";
+@import "../lib/brand/fluid-metrics.css";
 @import "./clerk-auth-embed.css";
 
 @custom-variant dark (&:is(.dark *));
@@ -24,29 +25,68 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
+  /* Semantic brand roles (lib/brand/tokens.css) */
+  --color-border-default: var(--color-border-default);
+  --color-border-accent: var(--color-border-accent);
+  --color-border-accent-strong: var(--color-border-accent-strong);
+  --color-border-accent-hover: var(--color-border-accent-hover);
+  --color-surface-panel: var(--color-surface-panel);
+  --color-surface-panel-hover: var(--color-surface-panel-hover);
+  --color-surface-panel-emphasis: var(--color-surface-panel-emphasis);
+  --color-surface-accent-muted: var(--color-surface-accent-muted);
+  --color-surface-tab-rail: var(--color-surface-tab-rail);
+  --color-link: var(--color-text-link);
+  --color-link-hover: var(--color-text-link-hover);
+  --color-focus-ring: var(--color-focus-ring);
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
   --radius-xl: calc(var(--radius) + 4px);
+
+  /* Fluid metrics (lib/brand/fluid-metrics.css) */
+  --text-fluid-display: var(--font-size-display);
+  --text-fluid-h1: var(--font-size-h1);
+  --text-fluid-motto: var(--font-size-motto);
+  --text-fluid-motto-compact: var(--font-size-motto-compact);
+  --text-fluid-h2: var(--font-size-h2);
+  --text-fluid-body: var(--font-size-body);
+  --text-fluid-small: var(--font-size-small);
+  --text-fluid-caption: var(--font-size-caption);
+  --leading-fluid-h1: var(--line-height-h1);
+  --leading-fluid-motto: var(--line-height-motto);
+  --leading-fluid-motto-compact: var(--line-height-motto-compact);
+  --leading-fluid-body: var(--line-height-body);
+
+  --spacing-section: var(--space-section-y);
+  --spacing-section-lg: var(--space-section-y-lg);
+  --spacing-fluid-block: var(--space-block);
+  --spacing-fluid-inline: var(--space-inline);
+  --spacing-fluid-gap-lg: var(--space-gap-lg);
+  --spacing-fluid-gap-md: var(--space-gap-md);
+  --spacing-fluid-gap-sm: var(--space-gap-sm);
+  --spacing-fluid-card-y: var(--space-card-y);
+
+  --max-width-content: var(--content-max-width);
+  --max-width-auth-card: var(--auth-card-max-width);
 }
 
 :root {
-  --background: #07080a;
+  --background: #060708;
   --foreground: #f6f4ef;
-  --card: #0d0f13;
+  --card: #0b0d11;
   --card-foreground: #f6f4ef;
-  --popover: #0d0f13;
+  --popover: #0b0d11;
   --popover-foreground: #f6f4ef;
   --primary: var(--brand-magenta);
   --primary-foreground: #ffffff;
-  --secondary: #171b22;
+  --secondary: #15181f;
   --secondary-foreground: #ece7da;
-  --muted: #151820;
+  --muted: #13161c;
   --muted-foreground: #9da3af;
   --accent: var(--brand-magenta);
   --accent-foreground: #ffffff;
   --destructive: #ff6257;
-  --border: rgba(255, 255, 255, 0.1);
+  --border: var(--color-border-default);
   --input: rgba(255, 255, 255, 0.12);
   --ring: var(--brand-magenta);
   --radius: 0.75rem;
@@ -64,9 +104,11 @@ body {
   min-height: 100vh;
   font-family:
     Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: var(--font-size-body);
+  line-height: var(--line-height-body);
   background:
-    radial-gradient(circle at 20% 0%, var(--brand-glow), transparent 32rem),
-    radial-gradient(circle at 90% 20%, var(--brand-glow-purple), transparent 26rem),
+    radial-gradient(circle at 20% 0%, var(--brand-glow), transparent 28rem),
+    radial-gradient(circle at 90% 20%, var(--brand-glow-purple), transparent 22rem),
     var(--background);
   color: var(--foreground);
   font-feature-settings: "ss01", "ss02", "cv01", "cv03";
@@ -74,17 +116,64 @@ body {
   text-rendering: geometricPrecision;
 }
 
+h1,
+.h1 {
+  font-size: var(--font-size-h1);
+  line-height: var(--line-height-h1);
+}
+
+h2,
+.h2 {
+  font-size: var(--font-size-h2);
+}
+
 ::selection {
   background: var(--brand-selection);
+}
+
+/* HomeBranding motto — container-aware sizing; overrides generic h1 scale */
+.motto-wrap {
+  container-type: inline-size;
+  container-name: motto;
+}
+
+h1.brand-motto {
+  font-size: var(--font-size-motto);
+  line-height: var(--line-height-motto);
+  text-wrap: pretty;
+}
+
+h1.brand-motto--compact {
+  font-size: var(--font-size-motto-compact);
+  line-height: var(--line-height-motto-compact);
+  text-wrap: pretty;
+}
+
+@container motto (inline-size <= 42rem) {
+  h1.brand-motto {
+    font-size: min(
+      var(--font-size-motto),
+      clamp(1.375rem, calc(0.625rem + 6.75cqi), 2.875rem)
+    );
+  }
+}
+
+@container motto (inline-size <= 28rem) {
+  h1.brand-motto--compact {
+    font-size: min(
+      var(--font-size-motto-compact),
+      clamp(1.3125rem, calc(0.6875rem + 4.75cqi), 2rem)
+    );
+  }
 }
 
 .brand-page-glow {
   background: linear-gradient(
     120deg,
-    rgba(255, 255, 255, 0.08) 0%,
+    rgba(255, 255, 255, 0.07) 0%,
     transparent 36%,
-    rgba(228, 26, 118, 0.1) 72%,
-    rgba(107, 2, 107, 0.08) 100%
+    rgba(228, 26, 118, 0.065) 72%,
+    rgba(107, 2, 107, 0.05) 100%
   );
 }
 
@@ -93,6 +182,137 @@ body {
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
+}
+
+/**
+ * Logo mark + wordmark — bottom shelf (flex-end).
+ * logo.png has ~14% transparent padding below artwork; lockup marks anchor to
+ * the box bottom so the wordmark shares the icon’s visual baseline.
+ */
+.brand-logo-lockup {
+  --lockup-wordmark-offset: 0px;
+}
+
+/** Full HomeBranding hero — fluid lockup (same viewport curve as motto/h1). */
+.brand-logo-lockup.brand-logo-lockup--hero {
+  --lockup-wordmark-offset: var(--lockup-offset);
+  gap: var(--space-lockup-gap);
+}
+
+.brand-logo-lockup.brand-logo-lockup--hero .brand-logo-mark,
+.brand-logo-lockup.brand-logo-lockup--hero .brand-logo-mark-png {
+  width: var(--size-lockup-mark);
+  height: var(--size-lockup-mark);
+}
+
+.brand-logo-lockup.brand-logo-lockup--hero .brand-wordmark {
+  font-size: var(--font-size-lockup-wordmark);
+}
+
+.brand-logo-lockup .brand-logo-mark,
+.brand-logo-lockup .brand-logo-mark-png {
+  display: block;
+}
+
+.brand-logo-lockup .brand-logo-mark {
+  mask-position: center bottom;
+  -webkit-mask-position: center bottom;
+}
+
+.brand-logo-lockup .brand-logo-mark-png {
+  object-position: bottom;
+}
+
+.brand-logo-lockup .brand-wordmark {
+  line-height: 1;
+  transform: translateY(var(--lockup-wordmark-offset));
+}
+
+.brand-logo-lockup[data-size="sm"] {
+  --lockup-wordmark-offset: 0.0625rem;
+  gap: var(--space-gap-sm);
+}
+
+.brand-logo-lockup[data-size="sm"] .brand-logo-mark,
+.brand-logo-lockup[data-size="sm"] .brand-logo-mark-png {
+  width: var(--size-lockup-mark-sm);
+  height: var(--size-lockup-mark-sm);
+}
+
+.brand-logo-lockup[data-size="md"] {
+  --lockup-wordmark-offset: 0.0625rem;
+  gap: var(--space-gap-sm);
+}
+
+.brand-logo-lockup[data-size="md"] .brand-logo-mark,
+.brand-logo-lockup[data-size="md"] .brand-logo-mark-png {
+  width: var(--size-lockup-mark-md);
+  height: var(--size-lockup-mark-md);
+}
+
+.brand-logo-lockup[data-size="xl"] {
+  --lockup-wordmark-offset: var(--lockup-offset-compact);
+  gap: var(--space-lockup-gap-compact);
+}
+
+.brand-logo-lockup[data-size="xl"] .brand-logo-mark,
+.brand-logo-lockup[data-size="xl"] .brand-logo-mark-png {
+  width: var(--size-lockup-mark-compact);
+  height: var(--size-lockup-mark-compact);
+}
+
+.brand-logo-lockup[data-size="2xl"] {
+  --lockup-wordmark-offset: var(--lockup-offset);
+  gap: var(--space-lockup-gap);
+}
+
+.brand-logo-lockup[data-size="2xl"] .brand-logo-mark,
+.brand-logo-lockup[data-size="2xl"] .brand-logo-mark-png {
+  width: var(--size-lockup-mark);
+  height: var(--size-lockup-mark);
+}
+
+/** “Visual Era” wordmark — Syne display; Visual + Era split clips (lockup; mark uses .brand-logo-mark) */
+.brand-wordmark {
+  font-family: var(--font-brand-display), ui-sans-serif, system-ui, sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  text-wrap: balance;
+  display: inline-block;
+}
+
+.brand-wordmark-visual,
+.brand-wordmark-era {
+  display: inline;
+}
+
+.brand-wordmark-visual {
+  color: var(--brand-wordmark-visual-color);
+}
+
+.brand-wordmark-era {
+  color: var(--brand-wordmark-era-color);
+}
+
+.brand-wordmark--sm {
+  font-size: var(--font-size-wordmark-sm);
+}
+
+.brand-wordmark--md {
+  font-size: var(--font-size-wordmark-md);
+}
+
+.brand-wordmark--lg {
+  font-size: var(--font-size-lockup-wordmark);
+}
+
+.brand-wordmark--xl {
+  font-size: var(--font-size-lockup-wordmark-compact);
+}
+
+.brand-wordmark--2xl {
+  font-size: var(--font-size-lockup-wordmark);
 }
 
 /** PNG alpha mask + CSS gradient — full logo shape, palette-driven colors. */
@@ -109,8 +329,8 @@ body {
 }
 
 .glass-panel {
-  background: linear-gradient(145deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.035));
-  border: 1px solid rgba(255, 255, 255, 0.11);
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.1), var(--color-surface-panel));
+  border: 1px solid var(--color-border-default);
   box-shadow: 0 24px 80px rgba(0, 0, 0, 0.35);
   backdrop-filter: blur(22px);
 }

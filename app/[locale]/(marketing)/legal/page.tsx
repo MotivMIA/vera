@@ -1,16 +1,19 @@
-import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 import { LEGAL_DOCUMENTS } from "@/lib/legal/documents";
+import { Link } from "@/i18n/navigation";
 
-export default function LegalIndexPage() {
+export default async function LegalIndexPage() {
+  const t = await getTranslations("Legal");
+
   return (
     <main className="min-h-screen px-5 py-12 md:px-8 md:py-16">
       <div className="mx-auto max-w-3xl space-y-8">
         <header className="space-y-3">
           <Link href="/" className="text-sm font-semibold tracking-wide text-foreground">
-            Visual Era
+            {t("homeLink")}
           </Link>
-          <h1 className="text-4xl font-semibold">Legal</h1>
-          <p className="text-muted-foreground">Policies and notices for Visual Era creator onboarding.</p>
+          <h1 className="text-4xl font-semibold">{t("indexTitle")}</h1>
+          <p className="text-muted-foreground">{t("indexDescription")}</p>
         </header>
         <ul className="space-y-3">
           {LEGAL_DOCUMENTS.map((doc) => (

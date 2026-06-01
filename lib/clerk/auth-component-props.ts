@@ -1,4 +1,4 @@
-import { ONBOARDING_ENTRY_PATH } from "@/lib/routes";
+import { authSignInPath, authSignUpPath, ONBOARDING_ENTRY_PATH } from "@/lib/routes";
 
 const redirectProps = {
   fallbackRedirectUrl: ONBOARDING_ENTRY_PATH,
@@ -9,12 +9,12 @@ const redirectProps = {
 export const clerkSignUpComponentProps = {
   ...redirectProps,
   oauthFlow: "auto" as const,
-  signInUrl: "/sign-in",
+  signInUrl: authSignInPath(),
 };
 
 /** Props for <SignIn /> — includes OAuth when enabled in Clerk Dashboard. */
 export const clerkSignInComponentProps = {
   ...redirectProps,
   oauthFlow: "auto" as const,
-  signUpUrl: "/sign-up",
+  signUpUrl: authSignUpPath(),
 };

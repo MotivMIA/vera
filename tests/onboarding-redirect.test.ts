@@ -14,7 +14,7 @@ function snapshot(overrides: Partial<OnboardingSnapshot>): OnboardingSnapshot {
 
 describe("resolveNextOnboardingPath", () => {
   it("returns the earliest incomplete step", () => {
-    expect(resolveNextOnboardingPath(snapshot({ consentComplete: false }))).toBe("/onboarding/consent");
+    expect(resolveNextOnboardingPath(snapshot({ consentComplete: false }))).toBe("/onboarding");
     expect(
       resolveNextOnboardingPath(snapshot({ consentComplete: true, identityVerified: false })),
     ).toBe("/verify-identity");
@@ -43,14 +43,16 @@ describe("resolveOnboardingRedirect", () => {
     expect(resolveOnboardingRedirect(s, "/sign-in")).toBeNull();
   });
 
-  it("forces consent when incomplete", () => {
+  it("allows welcome and consent when incomplete", () => {
     const s = snapshot({ consentComplete: false });
-    expect(resolveOnboardingRedirect(s, "/verify-identity")).toBe("/onboarding/consent");
+    expect(resolveOnboardingRedirect(s, "/verify-identity")).toBe("/onboarding");
+    expect(resolveOnboardingRedirect(s, "/onboarding")).toBeNull();
     expect(resolveOnboardingRedirect(s, "/onboarding/consent")).toBeNull();
   });
 
-  it("redirects away from consent when complete", () => {
+  it("redirects away from welcome and consent when complete", () => {
     const s = snapshot({ consentComplete: true, identityVerified: false, currentStep: "identity" });
+    expect(resolveOnboardingRedirect(s, "/onboarding")).toBe("/verify-identity");
     expect(resolveOnboardingRedirect(s, "/onboarding/consent")).toBe("/verify-identity");
   });
 

@@ -1,0 +1,115 @@
+{
+  "Metadata": {
+    "title": "Visual Era | Onboarding para creadores",
+    "description": "Construye la presencia, la confianza y el impulso que tu marca merece."
+  },
+  "OnboardingWelcome": {
+    "badge": "Onboarding para creadores, elevado",
+    "eyebrow": "Bienvenido",
+    "title": "Configuremos tu perfil de Visual Era",
+    "description": "Un flujo breve para verificar tu identidad, revisar políticas y completar tu onboarding como creador.",
+    "cta": "Empezar",
+    "steps": {
+      "consent": "Revisa y acepta las políticas requeridas",
+      "identity": "Verifica tu identidad de forma segura",
+      "documents": "Firma tus documentos de onboarding"
+    }
+  },
+  "OfmMarketing": {
+    "metaTitle": "Visual Era | Gestión OnlyFans para creadores",
+    "metaDescription": "Gestión premium de OnlyFans y onboarding para creadores profesionales.",
+    "headerLogin": "Acceso creadores",
+    "badge": "Gestión premium de OnlyFans",
+    "title": "Haz crecer tu negocio como creador con Visual Era",
+    "description": "Ayudamos a creadores profesionales con estrategia, operaciones y un onboarding fluido para que te enfoques en contenido y comunidad.",
+    "ctaApply": "Solicitar como creador",
+    "ctaLogin": "Acceso creadores",
+    "closingTitle": "¿Lista para unirte?",
+    "closingBody": "Empieza con una solicitud breve. Te guiaremos por verificación y onboarding en la app.",
+    "values": {
+      "0": {
+        "title": "Enfoque en crecimiento",
+        "body": "Estrategia basada en datos y apoyo práctico para ingresos sostenibles."
+      },
+      "1": {
+        "title": "Cumplimiento primero",
+        "body": "Verificación de identidad, contratos y políticas con cuidado."
+      },
+      "2": {
+        "title": "Operaciones para creadores",
+        "body": "Herramientas y flujos diseñados para cómo trabajan los creadores."
+      }
+    }
+  },
+  "HomeBranding": {
+    "badge": "Onboarding para creadores, elevado",
+    "title": "Tu marca, elevada",
+    "description": "Escala tu marca. Haz crecer tu audiencia. La plataforma premium para creadores con ambición."
+  },
+  "Footer": {
+    "description": "Plataforma premium para creadores ambiciosos que escalan su marca y hacen crecer su audiencia.",
+    "startOnboarding": "Comenzar onboarding",
+    "getStarted": "Empezar",
+    "downloadApp": "Descarga nuestra app gratis",
+    "appTagline": "Gestiona tu perfil de creador, verificación y contenido desde cualquier lugar.",
+    "legal": "Legal",
+    "terms": "Términos",
+    "privacy": "Privacidad",
+    "copyright": "© {year} Todos los derechos reservados.",
+    "disclaimer": "La información de este sitio es solo para fines generales y no constituye asesoramiento legal ni financiero.",
+    "languageLabel": "Idioma"
+  },
+  "Legal": {
+    "allDocuments": "Todos los documentos legales",
+    "indexTitle": "Legal",
+    "indexDescription": "Políticas y avisos para el onboarding de creadores de Visual Era.",
+    "homeLink": "Visual Era"
+  },
+  "Auth": {
+    "tabs": {
+      "signUp": "Crear cuenta",
+      "signIn": "Iniciar sesión"
+    },
+    "authenticated": {
+      "eyebrow": "Autenticado",
+      "title": "Continuar onboarding",
+      "body": "Tu cuenta está activa y lista para continuar.",
+      "cta": "Continuar onboarding"
+    },
+    "toggle": {
+      "hasAccount": "¿Ya tienes cuenta?",
+      "signIn": "Iniciar sesión",
+      "newHere": "¿Eres nuevo?",
+      "createAccount": "Crear una cuenta"
+    },
+    "signInView": {
+      "backHome": "← Volver al inicio"
+    },
+    "form": {
+      "continueGoogle": "Continuar con Google",
+      "continueX": "Continuar con X",
+      "or": "o",
+      "email": "Correo electrónico",
+      "password": "Contraseña",
+      "signIn": "Iniciar sesión",
+      "continue": "Continuar",
+      "createAccount": "Crear cuenta",
+      "verifyTitle": "Verifica que eres tú",
+      "verifyEmailHint": "Introduce el código que enviamos a tu correo.",
+      "verificationCode": "Código de verificación",
+      "verify": "Verificar",
+      "verifyEmailTitle": "Verifica tu correo",
+      "verifyEmailSent": "Enviamos un código a <highlight></highlight>."
+    },
+    "notices": {
+      "proxyBlockedTitle": "No se puede cargar el inicio de sesión en este host",
+      "proxyBlockedLocalLead": "El desarrollo local necesita claves de desarrollo de Clerk (pk_test_ / sk_test_). Tu .env.local usa pk_live_ de producción, que solo funciona en",
+      "proxyBlockedLocalSite": "visual-era.com",
+      "proxyBlockedLocalTail": "mediante el proxy /__clerk registrado.",
+      "proxyBlockedLocalHint": "Añade claves de desarrollo en NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY_DEV / CLERK_SECRET_KEY_DEV en .env.local (mantén las de producción en *_PROD). Omite NEXT_PUBLIC_CLERK_PROXY_URL para pk_test_ y reinicia npm run dev. Ver docs/ops/LOCAL_ENV.md.",
+      "proxyBlockedProd": "El proxy de la API Frontend de Clerk devolvió host_invalid. Las claves de producción requieren un proxy registrado en /__clerk — ver docs/ops/CLERK_PROXY_SETUP.md o ejecuta npm run smoke:clerk-proxy.",
+      "unavailableTitle": "La autenticación no está disponible temporalmente",
+      "unavailableBody": "Actualiza la página. Si el problema continúa, inténtalo de nuevo en unos minutos."
+    }
+  }
+}

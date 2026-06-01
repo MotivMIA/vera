@@ -1,5 +1,5 @@
 import { HomeHero } from "@/components/marketing/home-hero";
 
-export default function HomePage() {
+export default function AppLoginPage() {
   return <HomeHero />;
 }

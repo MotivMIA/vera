@@ -2,10 +2,13 @@ import Link from "next/link";
 import { CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { getPreferredLocale } from "@/lib/i18n/preferred-locale";
+import { pathWithLocale } from "@/lib/i18n/paths";
 import { enforceOnboardingPath } from "@/lib/onboarding/guards";
 
 export default async function SuccessPage() {
   await enforceOnboardingPath("/success");
+  const homeHref = pathWithLocale(await getPreferredLocale(), "/");
   return (
     <main className="flex min-h-screen items-center justify-center px-5 py-10">
       <Card className="glass-panel max-w-xl rounded-2xl text-center">
@@ -20,7 +23,7 @@ export default async function SuccessPage() {
             </p>
           </div>
           <Button asChild>
-            <Link href="/">Return home</Link>
+            <Link href={homeHref}>Return home</Link>
           </Button>
         </CardContent>
       </Card>

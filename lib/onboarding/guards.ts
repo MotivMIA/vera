@@ -1,11 +1,14 @@
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
+import { getPreferredLocale } from "@/lib/i18n/preferred-locale";
 import { getOnboardingSnapshot, resolveOnboardingRedirect } from "@/lib/onboarding/status";
+import { authSignInPath } from "@/lib/routes";
 
 export async function requireAuthUserId() {
   const { userId } = await auth();
   if (!userId) {
-    redirect("/sign-in");
+    const locale = await getPreferredLocale();
+    redirect(authSignInPath(locale));
   }
   return userId;
 }

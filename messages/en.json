@@ -1,0 +1,115 @@
+{
+  "Metadata": {
+    "title": "Visual Era | Creator Onboarding",
+    "description": "Build the presence, trust, and momentum your brand was made for."
+  },
+  "OnboardingWelcome": {
+    "badge": "Creator onboarding, elevated",
+    "eyebrow": "Welcome",
+    "title": "Let's set up your Visual Era profile",
+    "description": "A short guided flow to verify your identity, review policies, and complete your creator onboarding.",
+    "cta": "Get started",
+    "steps": {
+      "consent": "Review and accept required policies",
+      "identity": "Verify your identity securely",
+      "documents": "Sign your onboarding documents"
+    }
+  },
+  "OfmMarketing": {
+    "metaTitle": "Visual Era | OnlyFans Management for Creators",
+    "metaDescription": "Premium OnlyFans management and creator onboarding for professional creators.",
+    "headerLogin": "Creator login",
+    "badge": "Premium OnlyFans management",
+    "title": "Build your creator business with Visual Era",
+    "description": "We help professional creators grow with strategy, operations, and a streamlined onboarding experience — so you can focus on content and community.",
+    "ctaApply": "Apply as a creator",
+    "ctaLogin": "Creator login",
+    "closingTitle": "Ready to join?",
+    "closingBody": "Start with a short application. We'll guide you through verification and onboarding in the app.",
+    "values": {
+      "0": {
+        "title": "Growth-focused",
+        "body": "Data-informed strategy and hands-on support built for sustainable revenue."
+      },
+      "1": {
+        "title": "Compliance-first",
+        "body": "Identity verification, contracts, and policies handled with care."
+      },
+      "2": {
+        "title": "Creator-first ops",
+        "body": "Tools and workflows designed around how creators actually work."
+      }
+    }
+  },
+  "HomeBranding": {
+    "badge": "Creator onboarding, elevated",
+    "title": "Your Brand, Elevated",
+    "description": "Scale your brand. Grow your audience. The premium platform for creators who mean business."
+  },
+  "Footer": {
+    "description": "Premium platform for ambitious creators scaling their brand and growing their audience.",
+    "startOnboarding": "Start onboarding",
+    "getStarted": "Get started",
+    "downloadApp": "Download our free app",
+    "appTagline": "Manage your creator profile, verification, and content from anywhere.",
+    "legal": "Legal",
+    "terms": "Terms",
+    "privacy": "Privacy",
+    "copyright": "© {year} All rights reserved.",
+    "disclaimer": "Information on this site is for general purposes only and is not legal or financial advice.",
+    "languageLabel": "Language"
+  },
+  "Legal": {
+    "allDocuments": "All legal documents",
+    "indexTitle": "Legal",
+    "indexDescription": "Policies and notices for Visual Era creator onboarding.",
+    "homeLink": "Visual Era"
+  },
+  "Auth": {
+    "tabs": {
+      "signUp": "Create account",
+      "signIn": "Sign in"
+    },
+    "authenticated": {
+      "eyebrow": "Authenticated",
+      "title": "Continue onboarding",
+      "body": "Your account is active and ready to continue.",
+      "cta": "Continue onboarding"
+    },
+    "toggle": {
+      "hasAccount": "Already have an account?",
+      "signIn": "Sign in",
+      "newHere": "New here?",
+      "createAccount": "Create an account"
+    },
+    "signInView": {
+      "backHome": "← Back to home"
+    },
+    "form": {
+      "continueGoogle": "Continue with Google",
+      "continueX": "Continue with X",
+      "or": "or",
+      "email": "Email",
+      "password": "Password",
+      "signIn": "Sign in",
+      "continue": "Continue",
+      "createAccount": "Create account",
+      "verifyTitle": "Verify it's you",
+      "verifyEmailHint": "Enter the code we sent to your email.",
+      "verificationCode": "Verification code",
+      "verify": "Verify",
+      "verifyEmailTitle": "Verify your email",
+      "verifyEmailSent": "We sent a code to <highlight></highlight>."
+    },
+    "notices": {
+      "proxyBlockedTitle": "Sign-in cannot load on this host",
+      "proxyBlockedLocalLead": "Local dev needs Clerk development keys (pk_test_ / sk_test_). Your .env.local uses production pk_live_, which only works on",
+      "proxyBlockedLocalSite": "visual-era.com",
+      "proxyBlockedLocalTail": "via the registered /__clerk proxy.",
+      "proxyBlockedLocalHint": "Add development keys to NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY_DEV / CLERK_SECRET_KEY_DEV in .env.local (keep production keys in *_PROD). Omit NEXT_PUBLIC_CLERK_PROXY_URL for pk_test_, then restart npm run dev. See docs/ops/LOCAL_ENV.md.",
+      "proxyBlockedProd": "The Clerk Frontend API proxy for this origin returned host_invalid. Production keys require a registered proxy at /__clerk — see docs/ops/CLERK_PROXY_SETUP.md or run npm run smoke:clerk-proxy.",
+      "unavailableTitle": "Authentication is temporarily unavailable",
+      "unavailableBody": "Refresh the page. If the problem continues, try again in a few minutes."
+    }
+  }
+}
