@@ -2,7 +2,7 @@ import Image from "next/image";
 import type { AppStoreLink } from "@/lib/brand/app";
 
 const badgeClassName =
-  "inline-flex min-h-[2.75rem] min-w-[8.25rem] flex-1 items-center gap-2 rounded-lg bg-black px-3 py-2 text-left text-white ring-1 ring-white/10";
+  "inline-flex w-full min-h-[2.75rem] min-w-[8.25rem] flex-1 items-center gap-2 rounded-lg bg-black px-3 py-2 text-left text-white ring-1 ring-white/10 sm:w-auto sm:flex-none";
 
 const badgeInteractiveClassName =
   "transition hover:bg-neutral-900 hover:ring-white/20";
@@ -56,7 +56,7 @@ type AppStoreBadgesProps = {
 
 export function AppStoreBadges({ links }: AppStoreBadgesProps) {
   return (
-    <div className="flex flex-row flex-wrap gap-2.5">
+    <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:gap-2.5">
       {links.map((link) => {
         if (link.href === null) {
           return (
