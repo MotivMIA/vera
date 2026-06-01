@@ -11,12 +11,12 @@
 
 | Area | Routes | Code | Maturity |
 |------|--------|------|----------|
-| **Marketing** | `/`, `/legal/*` | `components/marketing/*`, `app/page.tsx` | Good UI shell; brand tokens now centralized |
+| **Marketing** | `/`, `/legal/*`, `/login` | `app/[locale]/(marketing)/`, `components/marketing/*` | `/` = `OfmMarketingPage` on **main**; `CrmLandingPage` + `landing/*` in progress on agent branch; `/login` = `AppAuthShell` |
 | **Auth** | `/sign-in`, `/sign-up` | `components/auth/*`, `components/marketing/auth-card.tsx`, `lib/clerk/*` | Clerk embedded in marketing card; proxy + origins hardened |
 | **Onboarding** | `/onboarding`, `/onboarding/consent` | `lib/onboarding/*`, `components/onboarding/consent-form.tsx` | Guards, status, audit trail in place |
 | **Verification** | `/verify-identity` | `lib/didit.ts`, `components/onboarding/didit-embed.tsx`, `app/api/didit/*` | Embedded DIDIT; webhooks + consent gate |
 | **Contracts / PDF** | `/documents`, `/success` | `lib/onboarding/pdf.ts`, `components/onboarding/internal-signing-packet.tsx`, `app/api/documents/*` | In-app signing; PDF logic lives under `onboarding/` |
-| **Dashboard** | — | — | Not started |
+| **Dashboard** | `/creator`, `/admin`, `/chatter` | `app/(dashboard)/`, `lib/dashboard/constants.ts` | Placeholders; middleware protects routes; **site admin** spec: [ADMIN_UI.md](./ADMIN_UI.md) |
 
 ### Strengths
 
@@ -24,11 +24,11 @@
 - **Platform libs** already split: `lib/clerk`, `lib/didit`, `lib/supabase`, `lib/onboarding`.
 - **UI primitives** (`components/ui/*`) separate from feature components.
 - **Brand module** started: `lib/brand/colors.ts`, `components/brand/brand-logo.tsx`, CSS tokens in `app/globals.css`.
-- **Design tokens:** role-based semantic layer in `lib/brand/tokens.css` — see [design/COLOR_TOKENS.md](./design/COLOR_TOKENS.md).
+- **Design tokens:** semantic layer in `lib/brand/tokens.css` + `styles/tokens/colors.css` (`data-theme` palettes) — see [design/COLOR_TOKENS.md](./design/COLOR_TOKENS.md).
 
 ### Gaps vs target modular model
 
-- **App Router folders** are flat — marketing, auth, onboarding, verification, and contracts share `app/` without route groups; harder to see module boundaries at a glance.
+- **Locale + route groups** — URLs use `app/[locale]/(marketing|auth|onboarding|dashboard)/`; onboarding/API paths stay locale-free per [design/I18N.md](./design/I18N.md).
 - **Contracts + PDF** are nested under `lib/onboarding/` instead of a dedicated contracts/pdf module (growing pain as dashboards arrive).
 - **No `lib/email`** yet (Resend not wired in product code).
 - **Cross-cutting paths** (`middleware.ts`, `lib/env.ts`, webhooks) are correct but must stay stable during any move.
@@ -68,8 +68,11 @@ app/
     documents/page.tsx
     success/page.tsx
 
-  (dashboard)/                  # future — empty until product spec
-    # creator/, admin/, chatter/ …
+  (dashboard)/                  # auth-gated; not locale-prefixed
+    layout.tsx
+    creator/page.tsx            # creator product (deferred)
+    admin/page.tsx              # site admin (scaffold → [ADMIN_UI.md](./ADMIN_UI.md))
+    chatter/page.tsx            # future ops surface
 
   api/                          # unchanged top-level; optional subfolders later
     didit/
@@ -100,11 +103,12 @@ lib/
 components/
   brand/           # BrandLogo, future BrandMark               ✅ started
   ui/              # shadcn primitives                         ✅ keep
-  marketing/       # home, footer, auth card                   ✅ keep
+  marketing/       # CRM/OFM landings, landing/*, AppAuthShell, footer  ✅ keep
   auth/            # sign-in/up views                          ✅ keep
   onboarding/      # consent, didit, documents shell           ✅ keep
   contracts/       # internal-signing-packet (move later)      🔜
-  dashboard/       # future                                    🔜
+  dashboard/       # shared dashboard chrome (future)          🔜
+  admin/           # site admin panels (footer, i18n, theme)   🔜 — see [ADMIN_UI.md](./ADMIN_UI.md)
 ```
 
 ---
@@ -135,7 +139,7 @@ Do **not** move or refactor these without explicit approval and a dedicated PR:
 | **P2** | Extract `lib/contracts/` + `lib/pdf/` from `lib/onboarding/pdf.ts` and signing components | Onboarding lib stops being a junk drawer |
 | **P3** | `components/contracts/internal-signing-packet.tsx` | Aligns UI with contracts module |
 | **P4** | `lib/didit/` folder (client, types, webhook helpers) | Easier DIDIT upgrades |
-| **P5** | `(dashboard)/` scaffold + `lib/dashboard/` | Future creator/admin/chatter surfaces |
+| **P5** | `(dashboard)/` scaffold + `lib/dashboard/` | Creator/admin/chatter — **admin** spec in [ADMIN_UI.md](./ADMIN_UI.md); `admin/page.tsx` scaffold exists |
 | **P6** | `lib/email/` when transactional email ships | Isolated from onboarding |
 
 **Not recommended now:** merging marketing + onboarding layouts, replacing Clerk components with custom auth again, or splitting `api/` across repos.
@@ -173,6 +177,7 @@ Do **not** move or refactor these without explicit approval and a dedicated PR:
 
 - [x] `(dashboard)/layout.tsx` — Clerk auth gate
 - [x] `(dashboard)/creator/page.tsx` — coming soon
+- [x] `(dashboard)/admin/page.tsx` — site admin coming soon (+ [ADMIN_UI.md](./ADMIN_UI.md))
 - [x] Middleware protects `/creator`, `/admin`, `/chatter`
 
 Each phase: one writer branch, CI green, no middleware/env edits bundled in.
@@ -217,13 +222,15 @@ Each phase: one writer branch, CI green, no middleware/env edits bundled in.
 
 ## Quick reference — module ownership
 
-| Module | Agent (see `docs/agents/ROSTER.md`) | Owns |
-|--------|--------------------------------------|------|
-| Marketing + brand | vera-website | `(marketing)`, `components/marketing`, `lib/brand` |
-| Auth | vera-clerk | `(auth)`, `lib/clerk`, auth card |
-| Onboarding | vera-onboarding | consent, status, guards |
-| Verification | vera-identity | DIDIT embed + API |
-| Contracts | vera-onboarding (+ future vera-contracts) | documents, pdf, signing UI |
-| Dashboard | TBD | `(dashboard)` when spec exists |
+Single implementation agent (**vera-website**) owns all rows below unless [DECISIONS.md](./DECISIONS.md) defers to **vera-product** for dashboard.
+
+| Module | Owns |
+|--------|------|
+| Marketing + brand | `(marketing)`, `components/marketing`, `lib/brand`, `styles/tokens/` |
+| Auth (Clerk UI) | `(auth)`, `lib/clerk`, `AppAuthShell`, `AuthCard` |
+| Onboarding | consent, status, guards, `(onboarding)` routes |
+| Verification | DIDIT embed + `app/api/didit/*` |
+| Contracts | documents, `lib/pdf`, `lib/contracts`, signing UI |
+| Dashboard | `(dashboard)` — creator/chatter **vera-product**; **site admin** panels in `components/admin/` per [ADMIN_UI.md](./ADMIN_UI.md) |
 
 See also: [CODEBASE_MAP.md](./CODEBASE_MAP.md) · [ARCHITECTURE.md](./ARCHITECTURE.md)

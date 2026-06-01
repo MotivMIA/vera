@@ -1,0 +1,180 @@
+/**
+ * CRM landing — scoped under `.crm-landing` only.
+ * Inherits global data-theme semantic tokens (styles/tokens/colors.css).
+ */
+.crm-landing {
+  color-scheme: inherit;
+
+  --landing-bg: var(--color-bg);
+  --landing-text: var(--color-text);
+  --landing-text-secondary: var(--color-text-soft);
+  --landing-muted: var(--color-text-muted);
+  --landing-border: var(--color-border);
+  --landing-border-strong: var(--color-border-strong);
+  --landing-shadow: 0 8px 30px color-mix(in srgb, var(--color-bg) 35%, #000);
+  --landing-shadow-hover: 0 12px 40px color-mix(in srgb, var(--color-bg) 48%, #000);
+  --landing-radius-sm: 16px;
+  --landing-radius-lg: 24px;
+  --landing-max-width: 75rem;
+  --landing-section-y: clamp(4rem, 8vw, 6.5rem);
+  --landing-gap: clamp(1.25rem, 2.5vw, 2rem);
+
+  --landing-accent-orange: var(--color-accent);
+  --landing-accent-orange-hover: var(--color-accent-hover);
+  --landing-cta-fg: #ffffff;
+
+  --landing-surface: var(--color-surface);
+  --landing-surface-elevated: var(--color-surface-elevated);
+  --landing-surface-muted: var(--color-surface-panel);
+  --landing-surface-subtle: var(--color-surface-panel-emphasis);
+  --landing-surface-hover: var(--color-surface-panel-hover);
+  --landing-surface-inset: color-mix(in srgb, var(--color-text) 6%, transparent);
+  --landing-skeleton: color-mix(in srgb, var(--color-text) 10%, transparent);
+  --landing-skeleton-muted: color-mix(in srgb, var(--color-text) 6%, transparent);
+  --landing-section-alt: color-mix(in srgb, var(--color-surface) 88%, var(--color-bg));
+
+  --landing-accent-peach: color-mix(in srgb, var(--color-accent) 22%, var(--color-surface));
+  --landing-accent-blue: color-mix(in srgb, var(--color-accent-secondary) 28%, var(--color-surface));
+  --landing-accent-green: color-mix(in srgb, var(--color-success) 20%, var(--color-surface));
+  --landing-accent-lavender: color-mix(in srgb, var(--color-accent-secondary) 32%, var(--color-surface));
+  --landing-accent-warm: color-mix(in srgb, var(--color-accent-deep) 22%, var(--color-surface));
+
+  --landing-poll-track: var(--landing-surface-inset);
+  --landing-poll-peach: color-mix(in srgb, var(--color-accent) 72%, var(--color-warning));
+  --landing-poll-blue: color-mix(in srgb, var(--color-accent-hover) 55%, var(--color-accent-secondary));
+  --landing-poll-green: color-mix(in srgb, var(--color-success) 72%, var(--color-surface));
+  --landing-poll-lavender: color-mix(in srgb, var(--color-accent) 55%, var(--color-accent-secondary));
+  --landing-chart-from: var(--color-accent);
+  --landing-chart-to: color-mix(in srgb, var(--color-accent-hover) 65%, var(--color-accent-secondary));
+  --landing-badge-positive: color-mix(in srgb, var(--color-success) 25%, var(--color-surface));
+  --landing-badge-positive-text: var(--color-success);
+  --landing-chat-border: color-mix(in srgb, var(--color-accent-secondary) 45%, transparent);
+
+  --landing-dot-red: var(--color-danger);
+  --landing-dot-yellow: var(--color-warning);
+  --landing-dot-green: var(--color-success);
+
+  background-color: var(--landing-bg);
+  background-image: var(--gradient-hero);
+  color: var(--landing-text);
+  font-family:
+    Inter,
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.crm-landing .landing-container {
+  width: 100%;
+  max-width: var(--landing-max-width);
+  margin-inline: auto;
+  padding-inline: clamp(1.25rem, 4vw, 2rem);
+}
+
+.crm-landing .landing-section {
+  padding-block: var(--landing-section-y);
+}
+
+.crm-landing .landing-card {
+  border-radius: var(--landing-radius-sm);
+  border: 1px solid var(--landing-border);
+  background: var(--landing-surface);
+  box-shadow: var(--landing-shadow);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.crm-landing .landing-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--landing-shadow-hover);
+}
+
+.crm-landing .landing-headline {
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.08;
+  color: var(--landing-text);
+}
+
+.crm-landing .landing-subhead {
+  color: var(--landing-muted);
+  line-height: 1.6;
+}
+
+.crm-landing .landing-eyebrow {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--landing-muted);
+}
+
+/** Lockup wordmark — keep Syne + split colors; .crm-landing sets Inter on the page shell. */
+.crm-landing .brand-wordmark {
+  font-family: var(--font-brand-display), ui-sans-serif, system-ui, sans-serif;
+}
+
+/** Damascus dark landing — steel tints, soft shadows (inherits lib/brand/themes/damascus-steel-dark.css). */
+[data-theme="damascus-steel-dark"] .crm-landing,
+[data-theme="damascus-steel"] .crm-landing {
+  --landing-accent-orange: #7a8fa6;
+  --landing-accent-orange-hover: #9aa8bc;
+  --landing-shadow: 0 8px 30px color-mix(in srgb, var(--color-bg) 50%, #000);
+  --landing-shadow-hover: 0 12px 40px color-mix(in srgb, var(--color-bg) 62%, #000);
+  --landing-cta-fg: #1a1d22;
+  --landing-chart-from: #7a8fa6;
+  --landing-chart-to: color-mix(in srgb, #9aa8bc 55%, #4a6fa5);
+  --landing-chat-border: color-mix(in srgb, #4a6fa5 35%, transparent);
+  --landing-accent-peach: color-mix(in srgb, var(--color-surface-elevated) 88%, var(--color-accent-deep));
+  --landing-accent-blue: color-mix(in srgb, var(--color-surface) 92%, var(--color-accent));
+  --landing-accent-green: color-mix(in srgb, var(--color-surface) 90%, var(--color-success));
+  --landing-accent-lavender: color-mix(in srgb, var(--color-surface-elevated) 86%, var(--color-accent-secondary));
+  --landing-accent-warm: color-mix(in srgb, var(--color-surface) 88%, var(--color-warning));
+  --landing-poll-peach: color-mix(in srgb, var(--color-accent-deep) 55%, var(--color-surface-elevated));
+  --landing-poll-blue: color-mix(in srgb, var(--color-accent) 45%, var(--color-surface-elevated));
+  --landing-poll-green: color-mix(in srgb, var(--color-success) 40%, var(--color-surface-elevated));
+  --landing-poll-lavender: color-mix(in srgb, var(--color-accent-secondary) 50%, var(--color-surface-elevated));
+  --brand-wordmark-visual-color: #e0e4e9;
+  --brand-wordmark-era-color: #b8c4d4;
+}
+
+/** Dark CRM landing — steel/orange tints (see lib/brand/themes/crm-dark.css). */
+[data-theme="crm-dark"] .crm-landing {
+  --landing-shadow: 0 8px 30px color-mix(in srgb, var(--color-bg) 50%, #000);
+  --landing-shadow-hover: 0 12px 40px color-mix(in srgb, var(--color-bg) 62%, #000);
+  --landing-cta-fg: #181b21;
+  --landing-accent-peach: color-mix(in srgb, var(--color-surface-elevated) 88%, var(--color-accent-deep));
+  --landing-accent-blue: color-mix(in srgb, var(--color-surface) 92%, var(--color-accent-secondary));
+  --landing-accent-green: color-mix(in srgb, var(--color-surface) 90%, var(--color-success));
+  --landing-accent-lavender: color-mix(in srgb, var(--color-surface-elevated) 86%, var(--color-accent-secondary));
+  --landing-accent-warm: color-mix(in srgb, var(--color-surface) 88%, var(--color-warning));
+  --landing-poll-peach: color-mix(in srgb, var(--color-accent-deep) 55%, var(--color-surface-elevated));
+  --landing-poll-blue: color-mix(in srgb, var(--color-accent-secondary) 45%, var(--color-surface-elevated));
+  --landing-poll-green: color-mix(in srgb, var(--color-success) 40%, var(--color-surface-elevated));
+  --landing-poll-lavender: color-mix(in srgb, var(--color-accent) 38%, var(--color-surface-elevated));
+  --brand-wordmark-visual-color: #e8eaed;
+  --brand-wordmark-era-color: #b8bcc4;
+}
+
+/** Light CRM landing — pastels + shadows (see lib/brand/themes/crm-light.css). */
+[data-theme="crm-light"] .crm-landing {
+  --landing-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+  --landing-shadow-hover: 0 12px 40px rgba(0, 0, 0, 0.1);
+  --landing-cta-fg: #050505;
+  --landing-accent-peach: #fff0e8;
+  --landing-accent-blue: #e8f4ff;
+  --landing-accent-green: #e8f9ef;
+  --landing-accent-lavender: #f0ebff;
+  --landing-accent-warm: #fff4e6;
+  --landing-poll-peach: #ffd4b8;
+  --landing-poll-blue: #b8d9ff;
+  --landing-poll-green: #b8e8c8;
+  --landing-poll-lavender: #d4c8ff;
+  --brand-wordmark-visual-color: #0a0a0a;
+  --brand-wordmark-era-color: #2a2a2a;
+}

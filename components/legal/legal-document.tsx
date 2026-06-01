@@ -3,19 +3,22 @@ import type { LegalDocument } from "@/lib/legal/documents";
 
 type LegalDocumentViewProps = {
   document: LegalDocument;
+  lastUpdatedLabel: string;
 };
 
-export function LegalDocumentView({ document }: LegalDocumentViewProps) {
+export function LegalDocumentView({ document, lastUpdatedLabel }: LegalDocumentViewProps) {
   return (
     <article className="mx-auto max-w-3xl space-y-8 px-5 py-12 md:px-8 md:py-16">
-      <header className="space-y-4 border-b border-white/10 pb-8">
+      <header className="space-y-4 border-b border-border-default pb-8">
         <Link href="/" className="text-sm font-semibold tracking-wide text-foreground">
           Visual Era
         </Link>
         <div className="space-y-3">
           <h1 className="text-4xl font-semibold tracking-normal">{document.title}</h1>
           <p className="text-muted-foreground">{document.description}</p>
-          <p className="text-sm text-muted-foreground">Last updated: {document.lastUpdated}</p>
+          <p className="text-sm text-muted-foreground">
+            {lastUpdatedLabel} {document.lastUpdated}
+          </p>
         </div>
       </header>
       <div className="space-y-6 text-base leading-7 text-muted-foreground">

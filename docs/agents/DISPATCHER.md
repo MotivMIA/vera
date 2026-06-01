@@ -14,7 +14,7 @@ All onboarding website work → **vera-website**.
 ## Workflow
 
 1. `./scripts/start-agent-task.sh cursor <slug>`
-2. Implement on `agent-cursor-web-*`
+2. Implement on `agent-cursor-*` (`./scripts/start-agent-task.sh cursor <slug>`)
 3. `./scripts/agent-quick-check.sh`
 4. `./scripts/agent-finish.sh "[cursor] …"` when ready
 

@@ -1,0 +1,75 @@
+/**
+ * vera-classic — original launch gold (May 2026)
+ * Source: git initial commit b4152d8 — dark UI + #d8b56d accent (not magenta).
+ * Mood: warm ivory text, charcoal-gold surfaces, soft gold ring/glow.
+ * Distinct from noir-magenta (#e41a76). Premium low-contrast surface ramp.
+ */
+[data-theme="vera-classic"] {
+  color-scheme: dark;
+
+  --color-bg: #14161b;
+  --color-bg-soft: #15181d;
+  --color-surface: #171a20;
+  --color-surface-elevated: #191c22;
+  --color-border: rgba(216, 181, 109, 0.07);
+  --color-border-strong: rgba(216, 181, 109, 0.09);
+  --color-text: #d8d4d0;
+  --color-text-muted: #9e9890;
+  --color-text-soft: #c4c0b6;
+  --color-accent: #d8b56d;
+  --color-accent-hover: #e4c078;
+  --color-accent-soft: rgba(216, 181, 109, 0.1);
+  --color-accent-glow: rgba(216, 181, 109, 0.12);
+  --color-accent-deep: #a88b48;
+  --color-accent-secondary: #6b7c94;
+  --color-success: #6bc99a;
+  --color-warning: #c4a84a;
+  --color-danger: #e07060;
+
+  --color-surface-panel: color-mix(in srgb, var(--color-accent) 7%, transparent);
+  --color-surface-panel-hover: color-mix(in srgb, var(--color-accent) 10%, transparent);
+  --color-surface-panel-emphasis: color-mix(in srgb, var(--color-accent) 13%, transparent);
+  --color-surface-tab-rail: color-mix(in srgb, var(--color-bg) 88%, var(--color-surface));
+
+  --color-border-accent: color-mix(in srgb, var(--color-accent) 22%, transparent);
+  --color-border-accent-strong: color-mix(in srgb, var(--color-accent) 28%, transparent);
+  --color-border-accent-hover: color-mix(in srgb, var(--color-accent) 40%, transparent);
+
+  --brand-wordmark-visual-color: #dcd8d0;
+  --brand-wordmark-era-color: #beb088;
+
+  --gradient-hero: radial-gradient(
+      ellipse 165% 105% at 18% -14%,
+      color-mix(in srgb, var(--color-accent) 9%, transparent) 0%,
+      color-mix(in srgb, var(--color-accent) 4.5%, transparent) 28%,
+      color-mix(in srgb, var(--color-accent) 2%, transparent) 48%,
+      transparent 70%
+    ),
+    radial-gradient(
+      ellipse 115% 78% at 94% 5%,
+      color-mix(in srgb, var(--color-accent-secondary) 8%, transparent) 0%,
+      color-mix(in srgb, var(--color-accent-secondary) 3.5%, transparent) 34%,
+      color-mix(in srgb, var(--color-accent-secondary) 1.2%, transparent) 52%,
+      transparent 68%
+    );
+  --gradient-card: linear-gradient(
+    145deg,
+    color-mix(in srgb, var(--color-accent) 6%, transparent),
+    color-mix(in srgb, var(--color-surface-elevated) 32%, transparent)
+  );
+  --shadow-glow: 0 0 40px -16px color-mix(in srgb, var(--color-accent) 12%, transparent);
+  --gradient-brand: linear-gradient(135deg, var(--color-accent-hover) 0%, var(--color-accent-deep) 100%);
+  --gradient-page-accent: radial-gradient(
+      ellipse 145% 82% at 50% -26%,
+      color-mix(in srgb, var(--color-accent) 7%, transparent) 0%,
+      color-mix(in srgb, var(--color-accent) 3.5%, transparent) 32%,
+      color-mix(in srgb, var(--color-accent) 1.5%, transparent) 52%,
+      transparent 72%
+    ),
+    radial-gradient(
+      ellipse 95% 62% at 78% 16%,
+      color-mix(in srgb, var(--color-accent-secondary) 5%, transparent) 0%,
+      color-mix(in srgb, var(--color-accent-secondary) 2%, transparent) 42%,
+      transparent 66%
+    );
+}

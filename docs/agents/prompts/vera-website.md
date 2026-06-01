@@ -20,6 +20,6 @@ You implement the **public website + creator onboarding flow end-to-end** for Vi
 - Global env/config/deploy files (e.g. `next.config.ts`, CI/workflows, scripts)
 - `app/dashboard/**` (except minimal handoff redirect/link if required)
 
-**Branch:** `agent-cursor-web-<slug>`
+**Branch:** `agent-cursor-<slug>` — create with `./scripts/start-agent-task.sh cursor <slug>`
 
 **Ship:** `agent-quick-check.sh` → `agent-finish.sh`

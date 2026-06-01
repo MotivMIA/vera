@@ -1,0 +1,52 @@
+/**
+ * vera-classic-light — launch gold in daylight
+ * Light counterpart to vera-classic: warm neutral ivory grounds, launch gold #d8b56d on
+ * CTAs/links/focus — accent not smeared across hero/page gradients.
+ * Best for: side-by-side palette comparison, heritage brand storytelling on light canvas.
+ */
+[data-theme="vera-classic-light"] {
+  color-scheme: light;
+
+  --color-bg: #f5f4f1;
+  --color-bg-soft: #ebeae6;
+  --color-surface: #faf9f6;
+  --color-surface-elevated: #e3e1dc;
+  --color-border: rgba(42, 36, 24, 0.14);
+  --color-border-strong: rgba(42, 36, 24, 0.24);
+  --color-text: #2a2418;
+  --color-text-muted: #7a6f5c;
+  --color-text-soft: #4a4034;
+  --color-accent: #d8b56d;
+  --color-accent-hover: #daa862;
+  --color-accent-soft: rgba(216, 181, 109, 0.12);
+  --color-accent-glow: rgba(216, 181, 109, 0.22);
+  --color-accent-deep: #a88b48;
+  --color-accent-secondary: #6b7c94;
+  --color-success: #4a8f62;
+  --color-warning: #c9923a;
+  --color-danger: #c44d42;
+  --gradient-hero: radial-gradient(
+      ellipse 140% 90% at 16% 8%,
+      rgba(42, 36, 24, 0.045) 0%,
+      rgba(42, 36, 24, 0.018) 30%,
+      transparent 70%
+    ),
+    radial-gradient(
+      ellipse 95% 65% at 88% 4%,
+      rgba(42, 36, 24, 0.03) 0%,
+      transparent 62%
+    );
+  --gradient-card: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.75),
+    color-mix(in srgb, var(--color-text) 4%, transparent)
+  );
+  --shadow-glow: 0 8px 30px rgba(0, 0, 0, 0.06);
+  --gradient-brand: linear-gradient(135deg, var(--color-accent-hover) 0%, var(--color-accent-deep) 100%);
+  --gradient-page-accent: radial-gradient(
+    ellipse 135% 75% at 50% -20%,
+    rgba(42, 36, 24, 0.04) 0%,
+    rgba(42, 36, 24, 0.015) 40%,
+    transparent 74%
+  );
+}

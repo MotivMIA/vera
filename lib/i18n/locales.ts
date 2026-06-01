@@ -4,4 +4,5 @@ import type { AppLocale } from "@/i18n/routing";
 export const LOCALE_LABELS: Record<AppLocale, string> = {
   en: "English",
   es: "Español",
+  it: "Italiano",
 };

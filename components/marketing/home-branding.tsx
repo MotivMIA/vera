@@ -35,7 +35,7 @@ export function HomeBranding({ className, variant = "full" }: HomeBrandingProps)
         initial={{ opacity: 0, y: 8 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.45 }}
-        className={cn("space-y-fluid-gap-md", className)}
+        className={cn("w-full min-w-0 space-y-fluid-gap-md", className)}
       >
         <Link href="/" className="inline-flex rounded-lg transition-opacity hover:opacity-90">
           <BrandLogo size="xl" showWordmark priority />
@@ -54,7 +54,7 @@ export function HomeBranding({ className, variant = "full" }: HomeBrandingProps)
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className={cn(fluidBlockGapClass, className)}
+      className={cn(fluidBlockGapClass, "w-full min-w-0", className)}
     >
       <Link href="/" className="mx-auto inline-flex rounded-lg transition-opacity hover:opacity-90 lg:mx-0">
         <BrandLogo size="lg" showWordmark priority className="brand-logo-lockup--hero" />

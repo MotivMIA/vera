@@ -28,7 +28,8 @@ export function SocialSpriteIcon({
       <svg
         aria-hidden
         viewBox="0 0 24 24"
-        className={cn("shrink-0", className)}
+        className={cn("brand-social-icon brand-social-icon--mono shrink-0", className)}
+        data-social-variant={variant}
       >
         <use href={`${SOCIAL_SPRITE_PATH}#${variant}`} />
       </svg>
@@ -36,14 +37,19 @@ export function SocialSpriteIcon({
   }
 
   return (
-    <Image
-      src={BRAND_SOCIAL_ICON_PATHS[variant]}
-      alt=""
-      width={24}
-      height={24}
-      aria-hidden
-      className={cn("size-full shrink-0 object-contain", className)}
-    />
+    <span
+      className={cn("brand-social-icon inline-flex shrink-0", className)}
+      data-social-variant={variant}
+    >
+      <Image
+        src={BRAND_SOCIAL_ICON_PATHS[variant]}
+        alt=""
+        width={24}
+        height={24}
+        aria-hidden
+        className="size-full object-contain"
+      />
+    </span>
   );
 }
 

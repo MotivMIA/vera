@@ -10,7 +10,7 @@ One **implementation agent** for the onboarding website. See [DECISIONS.md](../D
 
 | Agent ID | Owns | Branch prefix |
 |----------|------|---------------|
-| **vera-website** | Public site + onboarding end-to-end (`app/**` except `app/dashboard/**`, DIDIT, onboarding APIs) | `agent-cursor-web-` |
+| **vera-website** | Public site + onboarding end-to-end (`app/**` except `app/dashboard/**`, DIDIT, onboarding APIs) | `agent-cursor-` (CI: `agent-cursor-<slug>`) |
 
 **Prompt:** [prompts/vera-website.md](./prompts/vera-website.md)
 

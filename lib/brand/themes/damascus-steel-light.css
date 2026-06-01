@@ -1,0 +1,65 @@
+/**
+ * damascus-steel-light — forged metal in daylight
+ * Light counterpart to damascus-steel-dark: cool silver-white / pale blue-gray grounds,
+ * silver-blue accents (deeper on white for contrast).
+ * Best for: side-by-side palette comparison, trust/security marketing on light canvas.
+ */
+[data-theme="damascus-steel-light"] {
+  color-scheme: light;
+
+  --color-bg: #eef1f5;
+  --color-bg-soft: #e4e9ef;
+  --color-surface: #f6f8fb;
+  --color-surface-elevated: #dce2ea;
+  --color-border: rgba(122, 143, 166, 0.18);
+  --color-border-strong: rgba(122, 143, 166, 0.28);
+  --color-text: #1a1f26;
+  --color-text-muted: #6b7585;
+  --color-text-soft: #3a424e;
+  --color-accent: #5a6d82;
+  --color-accent-hover: #7a8fa6;
+  --color-accent-soft: rgba(122, 143, 166, 0.2);
+  --color-accent-glow: rgba(122, 143, 166, 0.34);
+  --color-accent-deep: #4a5a6e;
+  --color-accent-secondary: #2c3540;
+  --color-success: #3d8f6a;
+  --color-warning: #a89238;
+  --color-danger: #c44d42;
+  --gradient-hero: radial-gradient(circle at 20% 0%, var(--color-accent-soft), transparent 28rem),
+    radial-gradient(circle at 90% 18%, rgba(44, 53, 64, 0.08), transparent 22rem);
+  --gradient-card: linear-gradient(
+    145deg,
+    rgba(255, 255, 255, 0.75),
+    color-mix(in srgb, var(--color-accent) 8%, transparent)
+  );
+  --shadow-glow: 0 8px 36px -10px color-mix(in srgb, var(--color-accent) 28%, transparent);
+  --gradient-brand: linear-gradient(
+    135deg,
+    #9aa8bc 0%,
+    var(--color-accent-hover) 38%,
+    var(--color-accent-deep) 72%,
+    var(--color-accent-secondary) 100%
+  );
+  --gradient-page-accent: radial-gradient(
+      ellipse 78% 52% at 50% -20%,
+      color-mix(in srgb, var(--color-accent) 12%, transparent),
+      transparent 54%
+    ),
+    radial-gradient(
+      circle at 22% 12%,
+      color-mix(in srgb, var(--color-accent) 10%, transparent),
+      transparent 38%
+    ),
+    radial-gradient(
+      circle at 78% 8%,
+      color-mix(in srgb, var(--color-accent-deep) 8%, transparent),
+      transparent 32%
+    ),
+    linear-gradient(
+      125deg,
+      rgba(255, 255, 255, 0.7) 0%,
+      transparent 32%,
+      color-mix(in srgb, var(--color-accent) 8%, transparent) 68%,
+      color-mix(in srgb, var(--color-accent-secondary) 6%, transparent) 100%
+    );
+}

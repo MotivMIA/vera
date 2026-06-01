@@ -12,7 +12,8 @@ Custom domain setup: [ops/CUSTOM_DOMAIN_SETUP.md](./ops/CUSTOM_DOMAIN_SETUP.md)
 
 | Check | Result |
 |-------|--------|
-| `/` route | Next.js `app/page.tsx` (HomeHero) |
+| `/` route | `app/[locale]/(marketing)/page.tsx` — `OfmMarketingPage` on **main**; `CrmLandingPage` when CRM branch merges |
+| `/login` route | `app/[locale]/(marketing)/login/page.tsx` — `HomeHero` → `AppAuthShell` |
 | `vercel.json` | Not used (App Router defaults) |
 | `next.config.ts` | No redirects blocking `/` |
 

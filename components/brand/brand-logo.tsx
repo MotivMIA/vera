@@ -102,7 +102,7 @@ export function BrandLogo({
     >
       {mark}
       {showWordmark ? (
-        <span className={cn(brandWordmarkClass, dimensions.wordmark)}>
+        <span className={brandWordmarkClass}>
           <span className="brand-wordmark-visual">Visual </span>
           <span className="brand-wordmark-era">Era</span>
         </span>

@@ -1,0 +1,86 @@
+/**
+ * damascus-steel-dark — forged metal
+ * Mood: gunmetal and brushed silver with cool blue-steel highlights; industrial precision.
+ * Soft contrast (gunmetal family, not noir obsidian) — pairs with damascus-steel-light.
+ */
+[data-theme="damascus-steel-dark"],
+[data-theme="damascus-steel"] {
+  color-scheme: dark;
+
+  --color-bg: #1b1e23;
+  --color-bg-soft: #1c1f25;
+  --color-surface: #1e2229;
+  --color-surface-elevated: #21262e;
+  --color-border: rgba(122, 143, 166, 0.07);
+  --color-border-strong: rgba(122, 143, 166, 0.09);
+  --color-text: #d6dadf;
+  --color-text-muted: #a8b4c4;
+  --color-text-soft: #bcc3cc;
+  --color-accent: #7a8fa6;
+  --color-accent-hover: #9aa8bc;
+  --color-accent-soft: rgba(122, 143, 166, 0.12);
+  --color-accent-glow: rgba(122, 143, 166, 0.12);
+  --color-accent-deep: #5c6d82;
+  --color-accent-secondary: #4a6fa5;
+  --color-success: #6bc99a;
+  --color-warning: #c4b04a;
+  --color-danger: #e07060;
+
+  /* Steel-tinted panels — avoid bright text-mix wash (noir-like contrast) */
+  --color-surface-panel: color-mix(in srgb, var(--color-accent) 7%, transparent);
+  --color-surface-panel-hover: color-mix(in srgb, var(--color-accent) 10%, transparent);
+  --color-surface-panel-emphasis: color-mix(in srgb, var(--color-accent) 13%, transparent);
+  --color-surface-tab-rail: color-mix(in srgb, var(--color-bg) 88%, var(--color-surface));
+
+  --color-border-accent: color-mix(in srgb, var(--color-accent) 22%, transparent);
+  --color-border-accent-strong: color-mix(in srgb, var(--color-accent) 28%, transparent);
+  --color-border-accent-hover: color-mix(in srgb, var(--color-accent) 42%, transparent);
+
+  --brand-wordmark-visual-color: #d2d6db;
+  --brand-wordmark-era-color: #a8b4c0;
+
+  --gradient-hero: radial-gradient(
+      circle at 20% 0%,
+      color-mix(in srgb, var(--color-accent) 11%, transparent),
+      transparent 28rem
+    ),
+    radial-gradient(
+      circle at 90% 18%,
+      color-mix(in srgb, var(--color-accent-secondary) 14%, transparent),
+      transparent 22rem
+    );
+  --gradient-card: linear-gradient(
+    145deg,
+    color-mix(in srgb, var(--color-accent) 6%, transparent),
+    color-mix(in srgb, var(--color-surface-elevated) 35%, transparent)
+  );
+  --shadow-glow: 0 0 40px -14px color-mix(in srgb, var(--color-accent) 12%, transparent);
+  --gradient-brand: linear-gradient(
+    135deg,
+    #a8b4c4 0%,
+    var(--color-accent) 36%,
+    var(--color-accent-deep) 68%,
+    #3a4552 100%
+  );
+  --gradient-page-accent: radial-gradient(
+      ellipse 78% 52% at 50% -20%,
+      color-mix(in srgb, var(--color-accent) 7%, transparent),
+      transparent 54%
+    ),
+    radial-gradient(
+      circle at 22% 12%,
+      color-mix(in srgb, var(--color-accent) 6%, transparent),
+      transparent 38%
+    ),
+    radial-gradient(
+      circle at 78% 8%,
+      color-mix(in srgb, var(--color-accent-deep) 5%, transparent),
+      transparent 32%
+    ),
+    linear-gradient(
+      125deg,
+      color-mix(in srgb, var(--color-accent) 4%, transparent) 0%,
+      transparent 36%,
+      color-mix(in srgb, var(--color-accent-deep) 4%, transparent) 100%
+    );
+}

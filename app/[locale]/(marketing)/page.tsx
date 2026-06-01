@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
 import { getTranslations, setRequestLocale } from "next-intl/server";
-import { OfmMarketingPage } from "@/components/marketing/ofm-marketing-page";
+import { CrmLandingPage } from "@/components/marketing/crm-landing-page";
 
 type PageProps = { params: Promise<{ locale: string }> };
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { locale } = await params;
   setRequestLocale(locale);
-  const t = await getTranslations({ locale, namespace: "OfmMarketing" });
+  const t = await getTranslations({ locale, namespace: "CrmLanding" });
   return {
     title: t("metaTitle"),
     description: t("metaDescription"),
@@ -15,5 +15,5 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 }
 
 export default function HomePage() {
-  return <OfmMarketingPage />;
+  return <CrmLandingPage />;
 }

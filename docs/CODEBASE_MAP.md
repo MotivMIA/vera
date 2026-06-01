@@ -8,10 +8,10 @@ Modular layout: see [MODULAR_ARCHITECTURE.md](./MODULAR_ARCHITECTURE.md).
 
 | Group | Routes | Folder |
 |-------|--------|--------|
-| Marketing | `/`, `/legal/*` | `app/(marketing)/` |
-| Auth | `/sign-in`, `/sign-up` | `app/(auth)/` |
+| Marketing | `/`, `/legal/*`, `/login` | `app/[locale]/(marketing)/` |
+| Auth | `/sign-in`, `/sign-up` | `app/[locale]/(auth)/` |
 | Onboarding | `/onboarding/*`, `/verify-identity`, `/documents`, `/success` | `app/(onboarding)/` |
-| Dashboard | `/creator` (placeholder) | `app/(dashboard)/` |
+| Dashboard | `/creator`, `/admin` (placeholders), `/chatter` (protected) | `app/(dashboard)/` · spec: [ADMIN_UI.md](./ADMIN_UI.md) |
 | API | `/api/*` | `app/api/` |
 
 ## Onboarding flow
@@ -58,7 +58,8 @@ Clerk after sign-in/up should point to `/onboarding/consent` (see `.env.example`
 - `components/brand/*` — logo, brand shell
 - `components/contracts/*` — internal signing packet
 - `components/onboarding/*` — consent form, DIDIT embed, documents shell
-- `components/marketing/*` — home hero, auth card, site footer
+- `components/marketing/*` — `CrmLandingPage` (WIP), `OfmMarketingPage` (main today), `AppAuthShell`, `AuthCard`, `landing/*`, unified `LandingFooter` / `SiteFooter`
+- `components/dev/theme-switcher.tsx` — dev-only `data-theme` cycle (not for production)
 - `components/legal/legal-document.tsx` — legal page renderer
 - `app/legal/[slug]` — public policy pages
 
@@ -68,7 +69,7 @@ See `SUPABASE_SCHEMA.md` for `users`, `onboarding_status`, `verification_status`
 
 ## Agent workflow
 
-- Branch: `agent-cursor-<task>`
+- Branch: `agent-cursor-<task>` or `agent-codex-<task>` (CI-enforced on PRs to `main`)
 - `./scripts/start-agent-task.sh`, `./scripts/agent-quick-check.sh`, `./scripts/agent-finish.sh`
 - Docs: `AGENTS.md`, `docs/AGENT_WORKFLOW.md`
 

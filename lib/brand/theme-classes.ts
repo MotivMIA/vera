@@ -37,7 +37,7 @@ export const authCardWidthClass = "w-full max-w-auth-card";
 export const brandWordmarkClass = "brand-wordmark";
 
 export const heroGridClass =
-  "relative mx-auto grid min-h-full max-w-content grid-cols-1 grid-rows-[auto] gap-fluid-gap-lg px-fluid-inline py-section lg:min-h-[calc(100vh-var(--hero-min-height-offset))] lg:grid-cols-[1.05fr_.95fr] lg:items-center";
+  "relative mx-auto grid w-full min-w-0 max-w-content grid-cols-1 gap-fluid-gap-lg px-fluid-inline lg:min-h-[calc(100vh-var(--hero-min-height-offset))] lg:grid-cols-[minmax(0,1.05fr)_minmax(0,.95fr)] lg:items-center";
 
 export const borderDefaultClass = "border-border-default";
 

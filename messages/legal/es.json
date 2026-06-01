@@ -1,0 +1,228 @@
+{
+  "terms": {
+    "title": "Términos y Condiciones",
+    "description": "Términos que rigen el uso de los servicios de incorporación y gestión de creadores de Visual Era.",
+    "lastUpdated": "21 de mayo de 2026",
+    "blocks": [
+      {
+        "type": "paragraph",
+        "text": "Estos Términos rigen su uso de los servicios prestados por Visual Era, una plataforma de gestión de creadores que opera conforme a la legislación de Florida."
+      },
+      { "type": "heading", "text": "1. Elegibilidad" },
+      {
+        "type": "paragraph",
+        "text": "Debe tener al menos 18 años. La verificación de edad e identidad puede ser obligatoria según la ley aplicable, incluido el 18 U.S.C. § 2257 cuando corresponda."
+      },
+      { "type": "heading", "text": "2. Servicios" },
+      {
+        "type": "paragraph",
+        "text": "Los servicios incluyen incorporación, coordinación de verificación de identidad, firma de documentos, apoyo en cumplimiento normativo y herramientas de gestión de creadores. No se garantizan ingresos ni resultados."
+      },
+      { "type": "heading", "text": "3. Responsabilidades" },
+      {
+        "type": "paragraph",
+        "text": "Debe proporcionar información veraz, cumplir las leyes y las normas de las plataformas, y asegurarse de que todo el contenido que cree o distribuya sea legal y consensuado."
+      },
+      { "type": "heading", "text": "4. Compensación" },
+      {
+        "type": "paragraph",
+        "text": "Los términos de compensación y reparto de ingresos se definen en sus acuerdos de gestión o de cliente firmados con Visual Era."
+      },
+      { "type": "heading", "text": "5. Propiedad intelectual" },
+      {
+        "type": "paragraph",
+        "text": "Usted conserva la titularidad de su contenido y otorga a Visual Era una licencia limitada para gestionar, promocionar y operar cuentas según lo descrito en sus acuerdos."
+      },
+      { "type": "heading", "text": "6. Confidencialidad" },
+      {
+        "type": "paragraph",
+        "text": "La información empresarial, financiera y personal confidencial compartida durante la incorporación no debe divulgarse sin autorización."
+      },
+      { "type": "heading", "text": "7. Terminación" },
+      {
+        "type": "paragraph",
+        "text": "Cualquiera de las partes puede rescindir conforme a los términos de su acuerdo de gestión o a la ley aplicable."
+      },
+      { "type": "heading", "text": "8. Limitación de responsabilidad" },
+      {
+        "type": "paragraph",
+        "text": "Los servicios se proporcionan «tal cual». En la máxima medida permitida por la ley, la responsabilidad se limita a daños directos derivados de nuestra negligencia grave o conducta dolosa."
+      },
+      { "type": "heading", "text": "9. Disputas" },
+      {
+        "type": "paragraph",
+        "text": "Estos Términos se rigen por la ley de Florida. Las disputas se resolverán mediante arbitraje vinculante en el condado de Miami-Dade, Florida. Se renuncia a las acciones colectivas."
+      },
+      { "type": "heading", "text": "10. Privacidad" },
+      {
+        "type": "paragraph",
+        "text": "Consulte nuestra Política de Privacidad en /legal/privacy para conocer cómo recopilamos y utilizamos datos personales."
+      }
+    ]
+  },
+  "privacy": {
+    "title": "Política de Privacidad",
+    "description": "Cómo Visual Era recopila, utiliza y protege la información personal.",
+    "lastUpdated": "21 de mayo de 2026",
+    "blocks": [
+      {
+        "type": "paragraph",
+        "text": "Visual Era respeta su privacidad y cumple las leyes de protección de datos aplicables, incluida la Florida Information Protection Act."
+      },
+      { "type": "heading", "text": "Información que recopilamos" },
+      {
+        "type": "paragraph",
+        "text": "Recopilamos la información necesaria para el acceso a la cuenta, el estado de verificación de identidad, la firma de documentos, el registro de auditoría y el cumplimiento legal. DIDIT procesa documentos de identidad; Visual Era almacena el estado de verificación y metadatos, no imágenes de identificación en bruto."
+      },
+      { "type": "heading", "text": "Cómo utilizamos los datos" },
+      {
+        "type": "paragraph",
+        "text": "Los datos se utilizan para operar la incorporación, verificar elegibilidad, mantener registros de auditoría, comunicarnos con usted y cumplir obligaciones legales."
+      },
+      { "type": "heading", "text": "Seguridad" },
+      {
+        "type": "paragraph",
+        "text": "Aplicamos salvaguardas técnicas y organizativas razonables. Ningún sistema es completamente seguro."
+      },
+      { "type": "heading", "text": "Conservación" },
+      {
+        "type": "paragraph",
+        "text": "Los registros se conservan según exija la ley, las obligaciones contractuales y las necesidades empresariales legítimas."
+      },
+      { "type": "heading", "text": "Sus derechos" },
+      {
+        "type": "paragraph",
+        "text": "Puede solicitar acceso, rectificación o supresión de sus datos contactando a privacy@visual-era.com."
+      }
+    ]
+  },
+  "code-of-conduct": {
+    "title": "Código de Conducta",
+    "description": "Estándares profesionales y de contenido para creadores y socios de Visual Era.",
+    "lastUpdated": "21 de mayo de 2026",
+    "blocks": [
+      { "type": "heading", "text": "Conducta general" },
+      {
+        "type": "paragraph",
+        "text": "Todos los participantes deben comportarse de forma profesional, lícita y respetuosa con el personal, los socios y otros creadores."
+      },
+      { "type": "heading", "text": "Normas de contenido" },
+      {
+        "type": "paragraph",
+        "text": "El contenido debe ser original cuando se presente como tal, consensuado, exclusivo para adultos cuando corresponda, y conforme a las normas de las plataformas y la ley."
+      },
+      { "type": "heading", "text": "Cumplimiento" },
+      {
+        "type": "paragraph",
+        "text": "Las partes deben cooperar con la verificación de edad, la conservación de registros y los requisitos de cumplimiento de las plataformas."
+      },
+      { "type": "heading", "text": "Consecuencias" },
+      {
+        "type": "paragraph",
+        "text": "Las infracciones pueden dar lugar a suspensión, terminación o remisión a las autoridades competentes."
+      }
+    ]
+  },
+  "accessibility": {
+    "title": "Declaración de Accesibilidad",
+    "description": "Compromiso de Visual Era con experiencias digitales accesibles.",
+    "lastUpdated": "21 de mayo de 2026",
+    "blocks": [
+      {
+        "type": "paragraph",
+        "text": "Visual Era está comprometida con la accesibilidad y se esfuerza por cumplir el nivel AA de las WCAG 2.1 cuando sea razonablemente posible."
+      },
+      {
+        "type": "paragraph",
+        "text": "Si encuentra barreras de accesibilidad, contacte a hello@visual-era.com indicando la URL de la página y una descripción del problema."
+      }
+    ]
+  },
+  "dmca": {
+    "title": "Política de Retirada DMCA",
+    "description": "Procedimientos de notificación por infracción de derechos de autor.",
+    "lastUpdated": "21 de mayo de 2026",
+    "blocks": [
+      {
+        "type": "paragraph",
+        "text": "Visual Era respeta los derechos de propiedad intelectual y cumple la Digital Millennium Copyright Act (17 U.S.C. § 512)."
+      },
+      { "type": "heading", "text": "1. Notificación de infracción" },
+      {
+        "type": "paragraph",
+        "text": "Envíe las notificaciones DMCA a legal@visual-era.com. Incluya su firma, identificación de la obra protegida, ubicación del material infractor, datos de contacto, una declaración de buena fe y una declaración bajo pena de perjurio."
+      },
+      { "type": "heading", "text": "2. Nuestra respuesta" },
+      {
+        "type": "paragraph",
+        "text": "Retiraremos o deshabilitaremos el acceso al material notificado con prontitud cuando proceda y notificaremos a las partes afectadas."
+      },
+      { "type": "heading", "text": "3. Contrainformes" },
+      {
+        "type": "paragraph",
+        "text": "Los contrainformes deben cumplir la DMCA y consentir la jurisdicción del condado de Miami-Dade, Florida."
+      },
+      { "type": "heading", "text": "4. Infractores reincidentes" },
+      {
+        "type": "paragraph",
+        "text": "Las cuentas con reclamaciones de infracción válidas reiteradas pueden ser terminadas."
+      }
+    ]
+  },
+  "refunds": {
+    "title": "Política de Reembolsos y Pagos",
+    "description": "Condiciones de pago, contracargos y solicitudes de reembolso.",
+    "lastUpdated": "21 de mayo de 2026",
+    "blocks": [
+      {
+        "type": "paragraph",
+        "text": "Las condiciones de pago de Visual Era se definen en sus acuerdos de gestión o de servicios firmados. Esta política describe prácticas generales para la incorporación y las tarifas de plataforma cuando correspondan."
+      },
+      { "type": "heading", "text": "Facturación" },
+      {
+        "type": "paragraph",
+        "text": "Las tarifas, el reparto de ingresos y los calendarios de pago se indican en su contrato. Los procesadores de terceros pueden aplicar sus propios términos."
+      },
+      { "type": "heading", "text": "Solicitudes de reembolso" },
+      {
+        "type": "paragraph",
+        "text": "Envíe las consultas de reembolso por escrito a hello@visual-era.com con el correo de su cuenta, los datos de la transacción y el motivo. Revisamos las solicitudes en un plazo de 5 a 10 días hábiles."
+      },
+      { "type": "heading", "text": "Contracargos" },
+      {
+        "type": "paragraph",
+        "text": "Los contracargos no autorizados o fraudulentos pueden dar lugar a la suspensión de la cuenta mientras se investiga."
+      }
+    ]
+  },
+  "contact": {
+    "title": "Contáctenos",
+    "description": "Cómo comunicarse con Visual Era para soporte y avisos legales.",
+    "lastUpdated": "21 de mayo de 2026",
+    "blocks": [
+      {
+        "type": "paragraph",
+        "text": "Para consultas generales, soporte de incorporación, avisos legales o solicitudes de datos, utilice los canales indicados a continuación."
+      },
+      { "type": "heading", "text": "Consultas generales y comerciales" },
+      {
+        "type": "paragraph",
+        "text": "Correo electrónico: hello@visual-era.com"
+      },
+      { "type": "heading", "text": "Privacidad y derechos sobre datos" },
+      {
+        "type": "paragraph",
+        "text": "Correo electrónico: privacy@visual-era.com. Indique su nombre completo, el correo de la cuenta y la solicitud específica (acceso, rectificación o supresión)."
+      },
+      { "type": "heading", "text": "DMCA y avisos legales" },
+      {
+        "type": "paragraph",
+        "text": "Correo electrónico: legal@visual-era.com"
+      },
+      {
+        "type": "paragraph",
+        "text": "Nuestro objetivo es responder en un plazo de 3 a 5 días hábiles. Los avisos legales urgentes deben enviarse al correo DMCA o legal indicado arriba."
+      }
+    ]
+  }
+}
