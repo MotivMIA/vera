@@ -1,14 +1,18 @@
 import type { FooterColumn } from "@/components/marketing/landing/landing-footer";
 
-const productIndices = [0, 2, 3] as const;
-const supportIndices = [0, 2] as const;
+const productIndices = [0, 1, 2, 3] as const;
+const companyIndices = [0, 1, 2] as const;
+const supportIndices = [0, 1, 2] as const;
 
 type ColumnTranslator = (
   key:
     | "footer.product"
+    | "footer.company"
     | "footer.support"
     | `footer.productLinks.${(typeof productIndices)[number]}.label`
     | `footer.productLinks.${(typeof productIndices)[number]}.href`
+    | `footer.companyLinks.${(typeof companyIndices)[number]}.label`
+    | `footer.companyLinks.${(typeof companyIndices)[number]}.href`
     | `footer.supportLinks.${(typeof supportIndices)[number]}.label`
     | `footer.supportLinks.${(typeof supportIndices)[number]}.href`,
 ) => string;
@@ -21,6 +25,13 @@ export function buildMarketingFooterColumns(t: ColumnTranslator): FooterColumn[]
       links: productIndices.map((i) => ({
         label: t(`footer.productLinks.${i}.label`),
         href: t(`footer.productLinks.${i}.href`),
+      })),
+    },
+    {
+      title: t("footer.company"),
+      links: companyIndices.map((i) => ({
+        label: t(`footer.companyLinks.${i}.label`),
+        href: t(`footer.companyLinks.${i}.href`),
       })),
     },
     {
