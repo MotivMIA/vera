@@ -48,7 +48,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           />
           {children}
           <Toaster />
-          <DevThemeSwitcher />
+          <DevThemeSwitcher variant="floating" />
         </body>
       </html>
     </ClerkProvider>
