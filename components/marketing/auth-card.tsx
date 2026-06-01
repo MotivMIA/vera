@@ -2,45 +2,26 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import {
-  ClerkDegraded,
-  ClerkFailed,
-  SignIn,
-  SignUp,
-  UserButton,
-  useAuth,
-} from "@clerk/nextjs";
+import { ClerkDegraded, ClerkFailed, UserButton, useAuth } from "@clerk/nextjs";
 import { ArrowRight, LoaderCircle, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import {
-  clerkSignInComponentProps,
-  clerkSignUpComponentProps,
-} from "@/lib/clerk/auth-component-props";
-import { clerkAppearance } from "@/lib/clerk/appearance";
+import { SiteAuthForm } from "@/components/marketing/site-auth-form";
 import {
   isClerkProductionKeyClient,
   isLocalDevHost,
   shouldUseClerkProxyClient,
 } from "@/lib/clerk/client-env";
+import {
+  accentCalloutClass,
+  borderDefaultClass,
+  linkAccentClass,
+  panelShellClass,
+  panelSurfaceClass,
+} from "@/lib/brand/theme-classes";
 import { ONBOARDING_ENTRY_PATH } from "@/lib/routes";
+import { cn } from "@/lib/utils";
 
 type AuthMode = "sign-up" | "sign-in";
-
-type ClerkEmbedRouting = { routing: "hash" } | { routing: "path"; path: string };
-
-function useClerkEmbedRouting(): ClerkEmbedRouting {
-  const pathname = usePathname() ?? "/";
-
-  if (pathname === "/sign-up" || pathname.startsWith("/sign-up/")) {
-    return { routing: "path", path: "/sign-up" };
-  }
-  if (pathname === "/sign-in" || pathname.startsWith("/sign-in/")) {
-    return { routing: "path", path: "/sign-in" };
-  }
-
-  return { routing: "hash" };
-}
 
 function useClerkProxyBlocked(): boolean {
   const shouldProbe = shouldUseClerkProxyClient();
@@ -95,7 +76,12 @@ function AuthTabs({
   onModeChange: (mode: AuthMode) => void;
 }) {
   return (
-    <div className="mb-4 grid grid-cols-2 gap-2 rounded-2xl border border-white/10 bg-black/20 p-1">
+    <div
+      className={cn(
+        "mb-4 grid grid-cols-2 gap-2 rounded-2xl border bg-surface-tab-rail p-1",
+        borderDefaultClass,
+      )}
+    >
       <button
         type="button"
         onClick={() => onModeChange("sign-up")}
@@ -121,13 +107,24 @@ function AuthTabs({
 function AuthLoadingShell() {
   return (
     <div className="space-y-4">
-      <div className="grid grid-cols-2 gap-2 rounded-2xl border border-white/10 bg-black/20 p-1">
+      <div
+        className={cn(
+          "grid grid-cols-2 gap-2 rounded-2xl border bg-surface-tab-rail p-1",
+          borderDefaultClass,
+        )}
+      >
         <div className="rounded-[0.9rem] bg-white py-2.5 text-center text-sm font-medium text-[#090a0d]">
           Create account
         </div>
         <div className="rounded-[0.9rem] py-2.5 text-center text-sm font-medium text-[#9da3af]">Sign in</div>
       </div>
-      <div className="flex min-h-72 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.04]">
+      <div
+        className={cn(
+          "flex min-h-72 items-center justify-center rounded-2xl border",
+          borderDefaultClass,
+          panelSurfaceClass,
+        )}
+      >
         <LoaderCircle className="size-5 animate-spin text-accent" />
       </div>
     </div>
@@ -141,7 +138,7 @@ function ClerkProxyBlockedNotice() {
 
   return (
     <div
-      className="rounded-2xl border border-accent/25 bg-accent/10 px-5 py-6 text-sm leading-6 text-[#d7dbe2]"
+      className={cn(accentCalloutClass, "px-5 py-6 text-sm leading-6 text-[#d7dbe2]")}
       role="alert"
     >
       <p className="font-medium text-foreground">Sign-in cannot load on this host</p>
@@ -155,7 +152,7 @@ function ClerkProxyBlockedNotice() {
             <code className="text-xs text-accent">pk_live_</code>, which only works on{" "}
             <a
               href="https://visual-era.com/sign-in"
-              className="text-accent underline-offset-2 hover:text-[var(--brand-magenta-bright)] hover:underline"
+              className={cn("text-accent", linkAccentClass)}
             >
               visual-era.com
             </a>{" "}
@@ -189,41 +186,11 @@ function ClerkProxyBlockedNotice() {
 function AuthUnavailableNotice() {
   return (
     <div
-      className="rounded-2xl border border-white/10 bg-white/[0.04] px-5 py-6 text-sm leading-6 text-muted-foreground"
+      className={cn(panelShellClass, "text-sm leading-6 text-muted-foreground")}
       role="alert"
     >
       <p className="font-medium text-foreground">Authentication is temporarily unavailable</p>
       <p className="mt-2">Refresh the page. If the problem continues, try again in a few minutes.</p>
-    </div>
-  );
-}
-
-function ClerkAuthPanel({ mode }: { mode: AuthMode }) {
-  const routingProps = useClerkEmbedRouting();
-  const shellClass =
-    "auth-clerk-embed overflow-hidden rounded-2xl border border-white/10 bg-white/[0.04] px-5 py-6";
-
-  if (mode === "sign-up") {
-    return (
-      <div className={shellClass}>
-        <SignUp
-          key="sign-up"
-          {...clerkSignUpComponentProps}
-          {...routingProps}
-          appearance={clerkAppearance}
-        />
-      </div>
-    );
-  }
-
-  return (
-    <div className={shellClass}>
-      <SignIn
-        key="sign-in"
-        {...clerkSignInComponentProps}
-        {...routingProps}
-        appearance={clerkAppearance}
-      />
     </div>
   );
 }
@@ -238,7 +205,7 @@ function AuthCardContent({ initialMode }: { initialMode: AuthMode }) {
 
   if (isSignedIn) {
     return (
-      <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-7 text-[#f6f4ef]">
+      <div className={cn(panelShellClass, "p-7")}>
         <div className="mb-6 flex items-center justify-between">
           <div>
             <p className="text-sm uppercase tracking-[0.22em] text-[#9da3af]">Authenticated</p>
@@ -246,7 +213,7 @@ function AuthCardContent({ initialMode }: { initialMode: AuthMode }) {
           </div>
           <UserButton />
         </div>
-        <div className="rounded-2xl border border-accent/25 bg-accent/10 p-4 text-sm leading-6 text-[#d7dbe2]">
+        <div className={cn(accentCalloutClass, "p-4 text-sm leading-6 text-[#d7dbe2]")}>
           <ShieldCheck className="mb-3 size-5 text-accent" />
           Your account is active and ready to continue.
         </div>
@@ -263,14 +230,14 @@ function AuthCardContent({ initialMode }: { initialMode: AuthMode }) {
   return (
     <>
       <AuthTabs mode={mode} onModeChange={setMode} />
-      <ClerkAuthPanel mode={mode} />
+      <SiteAuthForm mode={mode} />
       <p className="mt-4 text-center text-xs text-[#6b7280]">
         {mode === "sign-up" ? (
           <>
             Already have an account?{" "}
             <button
               type="button"
-              className="text-accent underline-offset-2 hover:text-[var(--brand-magenta-bright)] hover:underline"
+              className={cn("text-accent", linkAccentClass)}
               onClick={() => setMode("sign-in")}
             >
               Sign in
@@ -281,7 +248,7 @@ function AuthCardContent({ initialMode }: { initialMode: AuthMode }) {
             New here?{" "}
             <button
               type="button"
-              className="text-accent underline-offset-2 hover:text-[var(--brand-magenta-bright)] hover:underline"
+              className={cn("text-accent", linkAccentClass)}
               onClick={() => setMode("sign-up")}
             >
               Create an account

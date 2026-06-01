@@ -2,8 +2,11 @@
  * Visual Era brand palette — single source of truth for CSS.
  * JS consumers: lib/brand/colors.ts (keep hex values in sync).
  * Logo gradient in UI reads these vars via .brand-logo-mark (see globals.css).
+ *
+ * Layer: primitives → semantic role tokens → app/globals.css (:root shadcn + @theme).
  */
 :root {
+  /* —— Primitives —— */
   --brand-magenta: #e41a76;
   --brand-magenta-bright: #ff2d8a;
   --brand-magenta-mid: #c91c72;
@@ -13,4 +16,20 @@
   --brand-glow: rgba(228, 26, 118, 0.16);
   --brand-glow-purple: rgba(107, 2, 107, 0.14);
   --brand-selection: rgba(228, 26, 118, 0.35);
+
+  /* —— Semantic role tokens (Webflow-style aliases → primitives) —— */
+  --color-border-default: rgba(255, 255, 255, 0.1);
+  --color-border-accent: color-mix(in srgb, var(--brand-magenta) 25%, transparent);
+  --color-border-accent-strong: color-mix(in srgb, var(--brand-magenta) 30%, transparent);
+  --color-border-accent-hover: color-mix(in srgb, var(--brand-magenta) 50%, transparent);
+
+  --color-surface-panel: rgba(255, 255, 255, 0.04);
+  --color-surface-panel-hover: rgba(255, 255, 255, 0.06);
+  --color-surface-panel-emphasis: rgba(255, 255, 255, 0.08);
+  --color-surface-accent-muted: color-mix(in srgb, var(--brand-magenta) 10%, transparent);
+  --color-surface-tab-rail: rgba(0, 0, 0, 0.2);
+
+  --color-text-link: var(--brand-magenta);
+  --color-text-link-hover: var(--brand-magenta-bright);
+  --color-focus-ring: color-mix(in srgb, var(--brand-magenta) 50%, transparent);
 }

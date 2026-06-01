@@ -17,7 +17,7 @@ export function HomeHero() {
         </div>
         <section className="flex min-h-[56vh] flex-col justify-center pt-16 lg:min-h-0 lg:pt-0">
           <motion.div initial={false} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="space-y-8">
-            <Badge className="w-fit gap-2 border-accent/30 bg-accent/10 text-accent">
+            <Badge className="w-fit gap-2 border-border-accent-strong bg-surface-accent-muted text-accent">
               <Sparkles className="size-3" />
               Creator onboarding, elevated
             </Badge>
