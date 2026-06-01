@@ -162,11 +162,8 @@ export async function CrmLandingPage() {
         resourcesItems={resourceItems}
         helpLabel={t("header.help")}
         helpHref="/legal"
-        languageLabel={t("header.language")}
-        talkToSales={t("header.talkToSales")}
         startTrial={t("header.startTrial")}
         signUpHref="/sign-up"
-        salesHref="/sign-up"
       />
 
       <main className="flex-1">

@@ -20,11 +20,8 @@ type LandingHeaderProps = {
   resourcesItems: NavDropdownItem[];
   helpLabel: string;
   helpHref: string;
-  languageLabel: string;
-  talkToSales: string;
   startTrial: string;
   signUpHref: string;
-  salesHref: string;
 };
 
 export function LandingHeader({
@@ -33,11 +30,8 @@ export function LandingHeader({
   resourcesItems,
   helpLabel,
   helpHref,
-  languageLabel,
-  talkToSales,
   startTrial,
   signUpHref,
-  salesHref,
 }: LandingHeaderProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [resourcesOpen, setResourcesOpen] = useState(false);
@@ -97,12 +91,6 @@ export function LandingHeader({
 
         <div className="hidden min-w-0 items-center gap-2 lg:flex">
           <DevThemeSwitcher variant="compact" />
-          <span className="rounded-lg px-2 py-1.5 text-xs font-medium text-[var(--landing-muted)]">
-            {languageLabel}
-          </span>
-          <LandingButton variant="secondary" size="sm" asChild>
-            <Link href={salesHref}>{talkToSales}</Link>
-          </LandingButton>
           <LandingButton size="sm" asChild>
             <Link href={signUpHref}>{startTrial}</Link>
           </LandingButton>
@@ -155,9 +143,6 @@ export function LandingHeader({
           </nav>
           <div className="mt-4 flex flex-col gap-2 border-t border-[var(--landing-border)] pt-4">
             <DevThemeSwitcherDrawerRow />
-            <LandingButton variant="secondary" asChild>
-              <Link href={salesHref}>{talkToSales}</Link>
-            </LandingButton>
             <LandingButton asChild>
               <Link href={signUpHref}>{startTrial}</Link>
             </LandingButton>
