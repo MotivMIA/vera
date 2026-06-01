@@ -13,6 +13,7 @@ export async function MarketingSiteBar({ className }: { className?: string }) {
     <footer className={cn("border-t border-border-default", className)}>
       <div className={cn(contentShellClass, "px-5 py-6 md:px-8")}>
         <FooterDisclaimerRow
+          columnCount={1}
           legal={buildFooterLegalLinks(t)}
           disclaimer={t("disclaimer")}
           copyright={t("copyright", { year })}

@@ -6,6 +6,17 @@ import { APP_STORE_LINKS } from "@/lib/brand/app";
 import type { SocialLink } from "@/lib/brand/social";
 import { marketingFooterMarkClass } from "@/lib/brand/light-themes";
 import { contentShellClass } from "@/lib/brand/theme-classes";
+import {
+  footerBrandCellClass,
+  footerBrandGridClass,
+  footerBrandSocialClass,
+  footerDownloadBadgesClass,
+  footerDownloadCellClass,
+  footerDownloadGridClass,
+  footerMainBandClass,
+  footerMenuNavClass,
+  footerMenusGridClass,
+} from "@/lib/marketing/footer-grid";
 import type { FooterLegalLink } from "@/lib/marketing/footer-config";
 import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
@@ -22,7 +33,6 @@ type LandingFooterProps = {
   tagline: string;
   columns: FooterColumn[];
   copyright: string;
-  /** `null` = logo without link (CRM landing hero style). Default `/` for site. */
   logoHref?: string | null;
   socialLinks?: readonly SocialLink[];
   appSection?: { title: string };
@@ -37,26 +47,8 @@ const siteLinkClass =
 const siteHeadingClass =
   "text-fluid-small font-semibold uppercase tracking-wide text-foreground";
 
-const footerColumnClass = "min-w-0";
-
-/** Keep Product / Company / Support labels on one line; nav scrolls if cramped. */
 const footerMenuColumnClass = "min-w-max shrink-0";
 const footerMenuLabelClass = "whitespace-nowrap";
-
-/** md+ evenly spaced top-level containers: brand | download | menu group. */
-function footerTopRowGridClass(hasDownload: boolean, hasMenus: boolean): string {
-  const count = 1 + (hasDownload ? 1 : 0) + (hasMenus ? 1 : 0);
-  if (count <= 1) return "";
-  if (count === 2) return "md:grid-cols-2";
-  return "md:grid-cols-3";
-}
-
-/** Product / Company / Support stay inside the menu container. */
-function footerMenuGroupGridClass(columnCount: number): string {
-  if (columnCount <= 1) return "";
-  if (columnCount === 2) return "grid-cols-2";
-  return "grid-cols-1 sm:grid-cols-2 md:grid-cols-3";
-}
 
 export function LandingFooter({
   variant = "landing",
@@ -86,15 +78,15 @@ export function LandingFooter({
     ? "mt-4 max-w-xs text-sm leading-relaxed text-[var(--landing-muted)]"
     : "mt-4 max-w-xs text-fluid-small leading-fluid-body text-muted-foreground";
 
+  const disclaimerColumnCount: 1 | 2 | 3 = showLanguageSelector ? 3 : 2;
+
+  const mainBandClass =
+    hasMenus || hasDownload ? footerMainBandClass : "grid min-w-0 grid-cols-1";
+
   const body = (
-    <>
-      <div
-        className={cn(
-          "grid min-w-0 grid-cols-1 items-start gap-y-10 gap-x-6 md:gap-x-8 lg:gap-x-10",
-          footerTopRowGridClass(hasDownload, hasMenus),
-        )}
-      >
-        <div className={footerColumnClass}>
+    <div className="flex min-w-0 flex-col gap-y-10 md:gap-y-12">
+      <div className={mainBandClass}>
+        <div className={cn(footerBrandCellClass, footerBrandGridClass)}>
           {logoHref === null ? (
             <BrandLogo size={isLanding ? "md" : "sm"} showWordmark href={null} />
           ) : (
@@ -107,12 +99,7 @@ export function LandingFooter({
           )}
           <p className={taglineClass}>{tagline}</p>
           {socialLinks && socialLinks.length > 0 ? (
-            <div
-              className={cn(
-                "mt-4 flex flex-wrap items-center gap-3",
-                !isLanding && "justify-center md:justify-start",
-              )}
-            >
+            <div className={footerBrandSocialClass}>
               {socialLinks.map((social) => (
                 <a
                   key={social.href}
@@ -138,62 +125,61 @@ export function LandingFooter({
         {appSection ? (
           <div
             id="download"
-            className={cn(footerColumnClass, "flex flex-col items-center text-center")}
+            className={cn(footerDownloadCellClass, footerDownloadGridClass)}
           >
-            <p className={cn(columnHeadingClass, "w-full break-words")}>{appSection.title}</p>
-            <div className="mt-3 flex w-full min-w-0 justify-center">
+            <p className={cn(columnHeadingClass, "w-full")}>{appSection.title}</p>
+            <div className={footerDownloadBadgesClass}>
               <AppStoreBadges
                 links={APP_STORE_LINKS}
                 size="sm"
                 layout="row"
-                className="min-w-0 items-center justify-center sm:items-center"
+                className="min-w-0 items-center justify-center sm:justify-start"
               />
             </div>
           </div>
         ) : null}
 
         {hasMenus ? (
-          <nav
-            aria-label="Footer"
-            className={cn(
-              "min-w-0 overflow-x-auto",
-              "grid items-start gap-x-4 gap-y-10 sm:gap-x-6",
-              footerMenuGroupGridClass(columns.length),
-            )}
-          >
-            {columns.map((col) => (
-              <div key={col.title} className={footerMenuColumnClass}>
-                <p className={cn(columnHeadingClass, footerMenuLabelClass)}>{col.title}</p>
-                <ul className="mt-3 space-y-2">
-                  {col.links.map((link) => (
-                    <li key={`${col.title}-${link.href}-${link.label}`}>
-                      <Link href={link.href} className={cn(columnLinkClass, footerMenuLabelClass)}>
-                        {link.label}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ))}
-          </nav>
+          <div className={footerMenusGridClass}>
+            <nav aria-label="Footer" className={cn(footerMenuNavClass, "overflow-x-auto")}>
+              {columns.map((col) => (
+                <div key={col.title} className={footerMenuColumnClass}>
+                  <p className={cn(columnHeadingClass, footerMenuLabelClass)}>{col.title}</p>
+                  <ul className="mt-3 space-y-2">
+                    {col.links.map((link) => (
+                      <li key={`${col.title}-${link.href}-${link.label}`}>
+                        <Link
+                          href={link.href}
+                          className={cn(columnLinkClass, footerMenuLabelClass)}
+                        >
+                          {link.label}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </nav>
+          </div>
         ) : null}
       </div>
 
       <div
         className={cn(
-          "mt-14 border-t pt-9 md:mt-16 md:pt-10",
+          "border-t pt-9 md:pt-10",
           isLanding ? "border-[var(--landing-border)]" : "border-border-default",
         )}
       >
         <FooterDisclaimerRow
           variant={variant}
+          columnCount={disclaimerColumnCount}
           disclaimer={disclaimer}
           copyright={copyright}
           legal={legal}
           showLanguageSelector={showLanguageSelector}
         />
       </div>
-    </>
+    </div>
   );
 
   if (isLanding) {

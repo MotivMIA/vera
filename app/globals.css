@@ -187,6 +187,42 @@ h1.brand-motto--compact {
   }
 }
 
+/* Footer disclaimer — scales with the center column (download track), stays centered */
+.footer-disclaimer-center {
+  container-type: inline-size;
+  container-name: footer-disc;
+}
+
+.footer-disclaimer-copy {
+  font-size: var(--font-size-caption);
+  line-height: 1.5;
+}
+
+@supports (container-type: inline-size) {
+  @container footer-disc (inline-size <= 36rem) {
+    .footer-disclaimer-copy {
+      font-size: min(
+        var(--font-size-caption),
+        clamp(0.6875rem, calc(0.5rem + 1.65cqi), 0.8125rem)
+      );
+    }
+  }
+
+  @container footer-disc (inline-size <= 18rem) {
+    .footer-disclaimer-copy {
+      font-size: clamp(0.625rem, calc(0.4375rem + 2.25cqi), 0.75rem);
+    }
+  }
+}
+
+@supports not (container-type: inline-size) {
+  @media (max-width: 48rem) {
+    .footer-disclaimer-copy {
+      font-size: min(var(--font-size-caption), 0.75rem);
+    }
+  }
+}
+
 .brand-page-glow {
   background: var(--gradient-page-accent);
 }
