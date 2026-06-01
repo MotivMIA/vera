@@ -21,7 +21,9 @@ function readEnv(name: string): string {
 }
 
 function writeEnv(name: string, value: string): void {
-  process.env[name] = value;
+  // Dynamic key avoids Next bundler rewriting NEXT_PUBLIC_* assignments.
+  const key = name;
+  process.env[key] = value;
 }
 
 export function isClerkDevContext(): boolean {
@@ -46,7 +48,8 @@ function pickDualKey(devValue: string | undefined, prodValue: string | undefined
   const dev = devValue?.trim() ?? "";
   const prod = prodValue?.trim() ?? "";
   if (!dev && !prod) return "";
-  return isClerkDevContext() ? dev : prod;
+  // Prefer dev keys locally, but fall back to prod when dev slots are empty (post env-split).
+  return isClerkDevContext() ? dev || prod : prod || dev;
 }
 
 export function getClerkPublishableKey(): string {
@@ -70,9 +73,25 @@ export function getClerkSecretKey(): string {
 }
 
 /** Apply resolved keys to process.env for Clerk SDK and middleware. */
+let loggedDevProdFallback = false;
+
 export function applyResolvedClerkEnv(): void {
   const publishable = getClerkPublishableKey();
   const secret = getClerkSecretKey();
+
+  if (
+    !loggedDevProdFallback &&
+    isClerkDevContext() &&
+    hasDualClerkKeys() &&
+    !readEnv(ENV.PUBLISHABLE_KEY_DEV) &&
+    readEnv(ENV.PUBLISHABLE_KEY_PROD)
+  ) {
+    loggedDevProdFallback = true;
+    console.warn(
+      "[clerk] NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY_DEV is empty — using *_PROD for local dev. " +
+        "Sign-in on localhost needs pk_test_ in .env.dev (Clerk → Development → API Keys).",
+    );
+  }
 
   if (publishable) {
     writeEnv(ENV.PUBLISHABLE_KEY, publishable);

@@ -44,9 +44,9 @@ resolve_clerk_publishable_key() {
 
   if [[ -n "$dev" || -n "$prod" ]]; then
     if is_clerk_dev_context; then
-      echo "$dev"
+      echo "${dev:-$prod}"
     else
-      echo "$prod"
+      echo "${prod:-$dev}"
     fi
     return
   fi
@@ -61,9 +61,9 @@ resolve_clerk_secret_key() {
 
   if [[ -n "$dev" || -n "$prod" ]]; then
     if is_clerk_dev_context; then
-      echo "$dev"
+      echo "${dev:-$prod}"
     else
-      echo "$prod"
+      echo "${prod:-$dev}"
     fi
     return
   fi
@@ -105,7 +105,7 @@ resolved_sk="$(resolve_clerk_secret_key)"
 if [[ -z "$resolved_pk" ]]; then
   if [[ "$has_dual_clerk_keys" == true ]]; then
     if is_clerk_dev_context; then
-      missing+=("NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY_DEV")
+      missing+=("NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY_DEV (or *_PROD for fallback)")
     else
       missing+=("NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY_PROD")
     fi
@@ -117,7 +117,7 @@ fi
 if [[ -z "$resolved_sk" ]]; then
   if [[ "$has_dual_clerk_keys" == true ]]; then
     if is_clerk_dev_context; then
-      missing+=("CLERK_SECRET_KEY_DEV")
+      missing+=("CLERK_SECRET_KEY_DEV (or *_PROD for fallback)")
     else
       missing+=("CLERK_SECRET_KEY_PROD")
     fi
@@ -168,7 +168,11 @@ fi
 
 if [[ "$PROFILE" == "dev" && "$pk" == pk_live_* ]]; then
   echo "warn: pk_live_ active in dev profile — sign-in will not work on localhost." >&2
-  echo "      Set pk_test_/sk_test_ in NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY_DEV / CLERK_SECRET_KEY_DEV." >&2
+  if [[ -z "${NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY_DEV:-}" ]]; then
+    echo "      Using *_PROD fallback — add pk_test_/sk_test_ to *_DEV in .env.dev." >&2
+  else
+    echo "      Set pk_test_/sk_test_ in NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY_DEV / CLERK_SECRET_KEY_DEV." >&2
+  fi
 fi
 
 if [[ "$PROFILE" == "prod" && "$pk" == pk_test_* ]]; then
