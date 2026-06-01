@@ -4,15 +4,14 @@ import { motion } from "framer-motion";
 import { Sparkles } from "lucide-react";
 import { BrandLogo } from "@/components/brand/brand-logo";
 import { AuthCard } from "@/components/marketing/auth-card";
-import { SiteFooter } from "@/components/marketing/site-footer";
 import { Badge } from "@/components/ui/badge";
 
 export function HomeHero() {
   return (
-    <main className="relative min-h-screen overflow-hidden">
+    <main className="relative flex-1 overflow-hidden">
       <div className="brand-page-glow absolute inset-0" />
       <div className="absolute left-1/2 top-0 h-px w-2/3 -translate-x-1/2 bg-gradient-to-r from-transparent via-accent/35 to-transparent" />
-      <div className="relative mx-auto grid min-h-screen max-w-7xl grid-cols-1 gap-10 px-5 py-8 md:px-8 lg:grid-cols-[1.05fr_.95fr] lg:items-center lg:py-10">
+      <div className="relative mx-auto grid min-h-full max-w-7xl grid-cols-1 gap-10 px-5 py-8 md:px-8 lg:min-h-[calc(100vh-12rem)] lg:grid-cols-[1.05fr_.95fr] lg:items-center lg:py-10">
         <div className="absolute left-5 top-8 md:left-8 lg:top-10">
           <BrandLogo size="md" priority />
         </div>
@@ -39,7 +38,6 @@ export function HomeHero() {
           </motion.div>
         </section>
       </div>
-      <SiteFooter />
     </main>
   );
 }

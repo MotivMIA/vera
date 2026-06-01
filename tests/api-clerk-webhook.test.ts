@@ -7,7 +7,7 @@ const syncClerkUserFromWebhookEventMock = vi.fn();
 vi.mock("@clerk/nextjs/webhooks", () => ({
   verifyWebhook: (...args: unknown[]) => verifyWebhookMock(...args),
 }));
-vi.mock("@/lib/clerk/sync-user", () => ({
+vi.mock("@/lib/onboarding/clerk-webhook-sync", () => ({
   syncClerkUserFromWebhookEvent: (...args: unknown[]) => syncClerkUserFromWebhookEventMock(...args),
 }));
 

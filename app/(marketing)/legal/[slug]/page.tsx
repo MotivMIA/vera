@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { LegalDocumentView } from "@/components/legal/legal-document";
-import { SiteFooter } from "@/components/marketing/site-footer";
 import { getLegalDocument, getLegalSlugs } from "@/lib/legal/documents";
 
 type LegalPageProps = {
@@ -27,7 +26,6 @@ export default async function LegalPage({ params }: LegalPageProps) {
           All legal documents
         </Link>
       </div>
-      <SiteFooter />
     </main>
   );
 }

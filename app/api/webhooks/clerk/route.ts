@@ -1,6 +1,6 @@
 import { verifyWebhook } from "@clerk/nextjs/webhooks";
 import { NextRequest, NextResponse } from "next/server";
-import { syncClerkUserFromWebhookEvent } from "@/lib/clerk/sync-user";
+import { syncClerkUserFromWebhookEvent } from "@/lib/onboarding/clerk-webhook-sync";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";

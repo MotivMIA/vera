@@ -241,8 +241,8 @@ Safest agents first: GitHub → Vercel → Supabase → Resend → Cloudflare �
 
 ### Environment setup
 
-1. Copy `.env.example` → **`.env`** (gitignored). Set `ALLOW_DEV_AUTH_BYPASS=true` only for local dev without full Clerk keys.
-2. Set `NEXT_PUBLIC_SITE_URL=http://localhost:3001` to match `npm run dev`.
+1. Copy **`.env.dev.example` → `.env.dev`** and **`.env.prod.example` → `.env.prod`** (gitignored). Or run `npm run env:split` from a legacy `.env`.
+2. Use **`npm run dev`** (loads `.env.dev` via `scripts/with-env.sh`). Set `NEXT_PUBLIC_SITE_URL=http://localhost:3001` in `.env.dev`.
 3. No Docker or local databases — Clerk, Supabase, and Didit are hosted SaaS.
 
 **Cursor Cloud secrets (minimum for full flow testing):** `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY`, `CLERK_SECRET_KEY`, `NEXT_PUBLIC_SUPABASE_URL`, `NEXT_PUBLIC_SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`. See [docs/ops/AGENT_FULL_ACCESS_SETUP.md](docs/ops/AGENT_FULL_ACCESS_SETUP.md).

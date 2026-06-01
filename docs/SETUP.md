@@ -29,15 +29,17 @@ Open **`visual-era`** as the Cursor workspace root (not a parent folder).
 ## 2. Environment variables
 
 ```bash
-cp .env.example .env
+cp .env.dev.example .env.dev
+cp .env.prod.example .env.prod
 # Fill in Clerk, Supabase, Didit values
 npm run env:check
+npm run env:check:prod
 ```
 
 | File | Purpose |
 |------|---------|
-| `.env.example` | Committed template |
-| `.env` | Your secrets (gitignored) |
+| `.env.dev.example` / `.env.prod.example` | Committed templates |
+| `.env.dev` / `.env.prod` | Your secrets (gitignored) |
 
 **Local defaults:**
 

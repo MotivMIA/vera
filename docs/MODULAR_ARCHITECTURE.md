@@ -176,6 +176,16 @@ Do **not** move or refactor these without explicit approval and a dedicated PR:
 
 Each phase: one writer branch, CI green, no middleware/env edits bundled in.
 
+### Phase 5 — Boundaries + layouts + env profiles ✅
+
+- [x] `lib/routes.ts` — shared path constants (marketing/auth avoid `lib/onboarding/*`)
+- [x] ESLint `no-restricted-imports` for marketing, onboarding, clerk modules
+- [x] `(marketing)/layout.tsx` — shared footer (pages no longer embed `SiteFooter`)
+- [x] `(onboarding)/layout.tsx` — shared page glow shell
+- [x] `(auth)/layout.tsx` — thin auth shell
+- [x] `components/marketing/index.ts` — public module surface
+- [x] `.env.dev` / `.env.prod` workflow — `scripts/with-env.sh`, templates, `npm run env:split`
+
 ---
 
 ## 6. Risks (Clerk, DIDIT, Supabase, middleware, env)

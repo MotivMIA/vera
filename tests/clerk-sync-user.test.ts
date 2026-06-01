@@ -6,7 +6,7 @@ vi.mock("@/lib/onboarding/status", () => ({
   ensureUserRow: (...args: unknown[]) => ensureUserRowMock(...args),
 }));
 
-import { syncClerkUserFromWebhookEvent } from "@/lib/clerk/sync-user";
+import { syncClerkUserFromWebhookEvent } from "@/lib/onboarding/clerk-webhook-sync";
 
 describe("syncClerkUserFromWebhookEvent", () => {
   beforeEach(() => {

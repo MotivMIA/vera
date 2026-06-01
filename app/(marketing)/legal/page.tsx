@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { SiteFooter } from "@/components/marketing/site-footer";
 import { LEGAL_DOCUMENTS } from "@/lib/legal/documents";
 
 export default function LegalIndexPage() {
@@ -27,7 +26,6 @@ export default function LegalIndexPage() {
           ))}
         </ul>
       </div>
-      <SiteFooter />
     </main>
   );
 }

@@ -1,86 +1,81 @@
-# Local environment — single `.env` workflow
+# Local environment — `.env.dev` / `.env.prod`
 
-Use **one gitignored file** (`.env`) for local dev and for bulk import into Vercel.
+Use **two gitignored profile files** so dev and production values never fight in one file.
 
 ## Files
 
 | File | Committed | Purpose |
 |------|-----------|---------|
-| `.env.example` | Yes | Template — every key name, no secrets |
-| `.env` | No (gitignored) | Your real values; import this into Vercel |
-| `.cursor/mcp.env.example` | Yes | Template for Cursor MCP tokens only |
-| `.cursor/mcp.env` | No | GitHub MCP PAT, etc. — not app keys |
-
-You do **not** need `.env.local` unless you want overrides. Next.js loads `.env` in development.
+| `.env.dev.example` | Yes | Template for local development |
+| `.env.prod.example` | Yes | Template for production builds / Vercel import |
+| `.env.dev` | No | Real dev secrets — loaded by `npm run dev` |
+| `.env.prod` | No | Real prod secrets — loaded by `npm run build` |
+| `.env` | No | Legacy single file (still supported as fallback) |
 
 ## First-time setup
 
 ```bash
-cp .env.example .env
-# Fill values in .env (Clerk, Supabase, Didit, …)
-./scripts/check-local-env.sh
+cp .env.dev.example .env.dev
+cp .env.prod.example .env.prod
+# Fill values in both files
+npm run env:check
+npm run env:check:prod
 npm run dev
 ```
 
-Default dev URL: **http://localhost:3001** (`NEXT_PUBLIC_SITE_URL` must match).
+`npm run dev` runs `scripts/with-env.sh dev`, which **sources `.env.dev`** before starting Next.js.
 
-### Clerk (development instance)
+`npm run build` sources **`.env.prod`** (production Clerk keys, `https://visual-era.com`, no `ALLOW_DEV_AUTH_BYPASS`).
 
-Use **`pk_test_` / `sk_test_`** (e.g. **immense-sawfish-81**) in the `*_DEV` env vars. Do **not** set `NEXT_PUBLIC_CLERK_PROXY_URL` — development instances use hosted `*.clerk.accounts.dev`, not `/__clerk` proxy (see [CLERK_PROXY_SETUP.md](./CLERK_PROXY_SETUP.md)).
+### Migrate from an existing `.env`
 
-#### Dual keys (recommended)
+```bash
+npm run env:split
+# Creates .env.dev and .env.prod from .env with sensible defaults
+```
 
-Keep **both** dev and prod Clerk keys in `.env` — no manual swapping:
+## Clerk keys
 
-| Variable | When used |
-|----------|-----------|
-| `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY_DEV` / `CLERK_SECRET_KEY_DEV` | `npm run dev` (localhost) |
-| `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY_PROD` / `CLERK_SECRET_KEY_PROD` | Production builds / `visual-era.com` |
+| Variable | `.env.dev` | `.env.prod` |
+|----------|------------|-------------|
+| `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY_DEV` / `CLERK_SECRET_KEY_DEV` | `pk_test_` / `sk_test_` | optional copy |
+| `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY_PROD` / `CLERK_SECRET_KEY_PROD` | optional copy | `pk_live_` / `sk_live_` |
 
-Vercel Production can keep legacy `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` / `CLERK_SECRET_KEY` — dual keys are optional there. Resolution lives in `lib/clerk/keys.ts`.
+Do **not** set `NEXT_PUBLIC_CLERK_PROXY_URL` in `.env.dev` (dev instances use hosted Clerk).
+
+In `.env.prod`, enable proxy for `visual-era.com` when using `pk_live_` — see [CLERK_PROXY_SETUP.md](./CLERK_PROXY_SETUP.md).
+
+Resolution logic: `lib/clerk/keys.ts`.
 
 ## Sync with Vercel
+
+**Upload** (local → Vercel):
+
+```bash
+npm run vercel:sync-env   # reads .env.prod, then .env
+```
 
 **Download** (Vercel → local):
 
 ```bash
-vercel env pull .env
-# Then re-apply local-only overrides:
+vercel env pull .env.prod
+# Re-apply dev-only overrides in .env.dev:
 #   NEXT_PUBLIC_SITE_URL=http://localhost:3001
 #   ALLOW_DEV_AUTH_BYPASS=true
 ```
 
-**Upload** (local → Vercel):
-
-- **CLI:** `npm run vercel:sync-env` (adds missing keys from `.env`; never prints values)
-- **Dashboard:** Project → Settings → Environment Variables → **Import .env**
-
-Requires `vercel login` and `vercel link --yes --project visual-era`.
-
-After import, set in Vercel **Production** (not in local `.env` for prod):
-
-- `NEXT_PUBLIC_SITE_URL=https://visual-era.com`
-- Do **not** set `ALLOW_DEV_AUTH_BYPASS` on Production
-
-## Local-only keys
-
-| Key | Local | Production |
-|-----|-------|------------|
-| `ALLOW_DEV_AUTH_BYPASS` | `true` (optional) | **unset** |
-| `NEXT_PUBLIC_SITE_URL` | `http://localhost:3001` | `https://visual-era.com` |
-
-## Cursor agent automation
-
-1. Open `~/Documents/projects/visual-era` in Cursor.
-2. **Settings → Agents → Auto-Run:** Allowlist (with Sandbox).
-3. Copy `.cursor/mcp.env.example` → `.cursor/mcp.env` if using GitHub/Supabase/Vercel MCP.
-4. Tell the agent: keys are in `.env` — never paste secrets in chat.
-
-See [CURSOR_SANDBOX_SETUP.md](./CURSOR_SANDBOX_SETUP.md) · [LOCAL_WORKSPACE_STRATEGY.md](./LOCAL_WORKSPACE_STRATEGY.md)
-
 ## Verify
 
 ```bash
-./scripts/check-local-env.sh
+npm run env:check
+npm run env:check:prod
 npm run dev:smoke
 ```
+
+## Cursor agents
+
+- Never commit `.env.dev` / `.env.prod`
+- Never paste secrets in chat
+- Use `npm run dev` (not raw `next dev`) so the dev profile loads
+
+See [CURSOR_SANDBOX_SETUP.md](./CURSOR_SANDBOX_SETUP.md) · [AGENT_FULL_ACCESS_SETUP.md](./AGENT_FULL_ACCESS_SETUP.md)
