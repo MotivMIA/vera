@@ -96,15 +96,18 @@ export function LandingHeader({
           </LandingButton>
         </div>
 
-        <button
-          type="button"
-          className="inline-flex size-10 items-center justify-center rounded-lg border border-[var(--landing-border)] lg:hidden"
-          aria-expanded={mobileOpen}
-          aria-label={mobileOpen ? "Close menu" : "Open menu"}
-          onClick={() => setMobileOpen((o) => !o)}
-        >
-          {mobileOpen ? <X className="size-5" /> : <Menu className="size-5" />}
-        </button>
+        <div className="flex min-w-0 items-center gap-2 lg:hidden">
+          <DevThemeSwitcher variant="compact" className="max-w-[9.5rem] text-xs" />
+          <button
+            type="button"
+            className="inline-flex size-10 shrink-0 items-center justify-center rounded-lg border border-[var(--landing-border)]"
+            aria-expanded={mobileOpen}
+            aria-label={mobileOpen ? "Close menu" : "Open menu"}
+            onClick={() => setMobileOpen((o) => !o)}
+          >
+            {mobileOpen ? <X className="size-5" /> : <Menu className="size-5" />}
+          </button>
+        </div>
       </div>
 
       {mobileOpen ? (
