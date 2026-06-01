@@ -4,6 +4,7 @@ import { FooterLanguageSelector } from "@/components/marketing/footer-language-s
 import type { MarketingFooterVariant } from "@/components/marketing/landing/landing-footer";
 import type { FooterLegalLink } from "@/lib/marketing/footer-config";
 import { Link } from "@/i18n/navigation";
+import { fluidCaptionClass } from "@/lib/brand/theme-classes";
 import { cn } from "@/lib/utils";
 
 type FooterDisclaimerRowProps = {
@@ -36,12 +37,17 @@ export async function FooterDisclaimerRow({
   const separatorClass = cn("shrink-0 opacity-70", mutedClass);
 
   const copyrightDisclaimer = (
-    <p className="flex min-w-0 flex-wrap items-center justify-center gap-x-1.5 gap-y-1 text-center [overflow-wrap:anywhere]">
-      <span className="shrink-0">{copyrightText}</span>
+    <p
+      className={cn(
+        fluidCaptionClass,
+        "mx-auto min-w-0 max-w-[min(100%,40rem)] text-balance text-pretty leading-relaxed [overflow-wrap:anywhere]",
+      )}
+    >
+      <span className="whitespace-nowrap">{copyrightText}</span>{" "}
       <span className={separatorClass} aria-hidden>
         ·
-      </span>
-      <span className="min-w-0">{text}</span>
+      </span>{" "}
+      <span>{text}</span>
     </p>
   );
 
@@ -76,7 +82,7 @@ export async function FooterDisclaimerRow({
 
       <div
         className={cn(
-          "min-w-0 justify-self-center px-1",
+          "mx-auto w-full min-w-0 max-w-[min(100%,40rem)] justify-self-center px-1 text-center",
           "md:col-span-2 md:row-start-2",
           "lg:col-span-1 lg:col-start-2 lg:row-start-1",
         )}
