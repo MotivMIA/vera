@@ -5,10 +5,29 @@
 
 const LOCAL_SITE_PATTERN = /^https?:\/\/(localhost|127\.0\.0\.1|\[::1\])(:\d+)?/i;
 
+const ENV = {
+  SITE_URL: "NEXT_PUBLIC_SITE_URL",
+  PUBLISHABLE_KEY: "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY",
+  PUBLISHABLE_KEY_DEV: "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY_DEV",
+  PUBLISHABLE_KEY_PROD: "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY_PROD",
+  SECRET_KEY: "CLERK_SECRET_KEY",
+  SECRET_KEY_DEV: "CLERK_SECRET_KEY_DEV",
+  SECRET_KEY_PROD: "CLERK_SECRET_KEY_PROD",
+} as const;
+
+/** Bracket access avoids Next.js inlining NEXT_PUBLIC_* to literals in bundled server code. */
+function readEnv(name: string): string {
+  return process.env[name]?.trim() ?? "";
+}
+
+function writeEnv(name: string, value: string): void {
+  process.env[name] = value;
+}
+
 export function isClerkDevContext(): boolean {
   if (process.env.NODE_ENV === "development") return true;
 
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim() ?? "";
+  const siteUrl = readEnv(ENV.SITE_URL);
   if (siteUrl && LOCAL_SITE_PATTERN.test(siteUrl)) return true;
 
   return false;
@@ -16,10 +35,10 @@ export function isClerkDevContext(): boolean {
 
 export function hasDualClerkKeys(): boolean {
   return Boolean(
-    process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY_DEV?.trim() ||
-      process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY_PROD?.trim() ||
-      process.env.CLERK_SECRET_KEY_DEV?.trim() ||
-      process.env.CLERK_SECRET_KEY_PROD?.trim(),
+    readEnv(ENV.PUBLISHABLE_KEY_DEV) ||
+      readEnv(ENV.PUBLISHABLE_KEY_PROD) ||
+      readEnv(ENV.SECRET_KEY_DEV) ||
+      readEnv(ENV.SECRET_KEY_PROD),
   );
 }
 
@@ -32,19 +51,22 @@ function pickDualKey(devValue: string | undefined, prodValue: string | undefined
 
 export function getClerkPublishableKey(): string {
   const dual = pickDualKey(
-    process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY_DEV,
-    process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY_PROD,
+    readEnv(ENV.PUBLISHABLE_KEY_DEV) || undefined,
+    readEnv(ENV.PUBLISHABLE_KEY_PROD) || undefined,
   );
   if (dual) return dual;
 
-  return process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY?.trim() ?? "";
+  return readEnv(ENV.PUBLISHABLE_KEY);
 }
 
 export function getClerkSecretKey(): string {
-  const dual = pickDualKey(process.env.CLERK_SECRET_KEY_DEV, process.env.CLERK_SECRET_KEY_PROD);
+  const dual = pickDualKey(
+    readEnv(ENV.SECRET_KEY_DEV) || undefined,
+    readEnv(ENV.SECRET_KEY_PROD) || undefined,
+  );
   if (dual) return dual;
 
-  return process.env.CLERK_SECRET_KEY?.trim() ?? "";
+  return readEnv(ENV.SECRET_KEY);
 }
 
 /** Apply resolved keys to process.env for Clerk SDK and middleware. */
@@ -53,10 +75,10 @@ export function applyResolvedClerkEnv(): void {
   const secret = getClerkSecretKey();
 
   if (publishable) {
-    process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY = publishable;
+    writeEnv(ENV.PUBLISHABLE_KEY, publishable);
   }
   if (secret) {
-    process.env.CLERK_SECRET_KEY = secret;
+    writeEnv(ENV.SECRET_KEY, secret);
   }
 }
 
