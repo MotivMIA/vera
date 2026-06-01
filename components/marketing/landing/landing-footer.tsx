@@ -46,13 +46,12 @@ function footerNavBundleGridClass(navItemCount: number): string {
   return "sm:grid-cols-2 md:grid-cols-3";
 }
 
-/** lg+ one row: brand · download (fixed) · equal link columns. Literals required for Tailwind JIT. */
+/** lg+ one row: brand · download (fixed) · link column(s). Product + Support share one slot. */
 const footerLgGridClass: Record<string, string> = {
-  "d2": "lg:grid-cols-[minmax(0,1.15fr)_minmax(10.5rem,13.5rem)_minmax(0,1fr)_minmax(0,1fr)]",
-  "d1": "lg:grid-cols-[minmax(0,1.15fr)_minmax(10.5rem,13.5rem)_minmax(0,1fr)]",
-  "d0": "lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)_minmax(0,1fr)]",
-  "n2": "lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)_minmax(0,1fr)]",
-  "n1": "lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]",
+  d1: "lg:grid-cols-[minmax(0,1.15fr)_minmax(10.5rem,13.5rem)_minmax(0,1fr)]",
+  d0: "lg:grid-cols-[minmax(0,1.15fr)_minmax(10.5rem,13.5rem)]",
+  n1: "lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]",
+  n0: "lg:grid-cols-[minmax(0,1.15fr)]",
 };
 
 function footerMainGridClass(linkColumnCount: number, hasDownload: boolean): string | false {
@@ -75,7 +74,9 @@ export function LandingFooter({
 }: LandingFooterProps) {
   const isLanding = variant === "landing";
   const hasDownload = Boolean(appSection);
-  const navItemCount = columns.length + (hasDownload ? 1 : 0);
+  /** Product + Support render in one grid slot so they stay visually grouped. */
+  const linkGridSlots = columns.length > 1 ? 1 : columns.length;
+  const navItemCount = linkGridSlots + (hasDownload ? 1 : 0);
 
   const columnHeadingClass = isLanding
     ? "text-xs font-semibold uppercase tracking-wide text-[var(--landing-text)]"
@@ -94,7 +95,7 @@ export function LandingFooter({
       <div
         className={cn(
           "grid min-w-0 grid-cols-1 gap-x-6 gap-y-10 sm:gap-x-8 lg:items-start lg:gap-x-8 xl:gap-x-10 lg:gap-y-0",
-          footerMainGridClass(columns.length, hasDownload),
+          footerMainGridClass(linkGridSlots, hasDownload),
         )}
       >
         <div className={footerColumnClass}>
@@ -159,20 +160,30 @@ export function LandingFooter({
               </div>
             ) : null}
 
-            {columns.map((col) => (
-              <div key={col.title} className={footerColumnClass}>
-                <p className={cn(columnHeadingClass, "break-words")}>{col.title}</p>
-                <ul className="mt-3 space-y-2">
-                  {col.links.map((link) => (
-                    <li key={`${col.title}-${link.href}-${link.label}`}>
-                      <Link href={link.href} className={cn(columnLinkClass, "break-words")}>
-                        {link.label}
-                      </Link>
-                    </li>
-                  ))}
-                </ul>
+            {columns.length > 0 ? (
+              <div
+                className={cn(
+                  columns.length > 1 &&
+                    "flex min-w-0 flex-wrap items-start gap-x-8 gap-y-8 sm:gap-x-10 lg:gap-x-10 xl:gap-x-12",
+                  columns.length === 1 && footerColumnClass,
+                )}
+              >
+                {columns.map((col) => (
+                  <div key={col.title} className={footerColumnClass}>
+                    <p className={cn(columnHeadingClass, "break-words")}>{col.title}</p>
+                    <ul className="mt-3 space-y-2">
+                      {col.links.map((link) => (
+                        <li key={`${col.title}-${link.href}-${link.label}`}>
+                          <Link href={link.href} className={cn(columnLinkClass, "break-words")}>
+                            {link.label}
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                ))}
               </div>
-            ))}
+            ) : null}
           </div>
         ) : null}
       </div>

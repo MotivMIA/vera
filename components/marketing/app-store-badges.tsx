@@ -9,7 +9,6 @@ import {
 import {
   appStoreBadgeOfficialShellClass,
   appStoreBadgeShellClass,
-  marketingFooterMarkClass,
 } from "@/lib/brand/light-themes";
 import {
   borderAccentClass,
@@ -115,11 +114,7 @@ function OfficialBadgeArtwork({
       width={widthPx}
       height={heightPx}
       decoding="async"
-      className={cn(
-        heightClass,
-        marketingFooterMarkClass,
-        "block w-auto max-w-none object-contain",
-      )}
+      className={cn(heightClass, "block w-auto max-w-none object-contain")}
       aria-hidden
     />
   );
