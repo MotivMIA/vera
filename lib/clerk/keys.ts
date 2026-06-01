@@ -89,7 +89,7 @@ export function applyResolvedClerkEnv(): void {
     loggedDevProdFallback = true;
     console.warn(
       "[clerk] NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY_DEV is empty — using *_PROD for local dev. " +
-        "Sign-in on localhost needs pk_test_ in .env.dev (Clerk → Development → API Keys).",
+        "Sign-in on localhost needs pk_test_ in .env.local (Clerk → Development → API Keys).",
     );
   }
 

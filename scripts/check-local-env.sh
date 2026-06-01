@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Verify required keys exist in .env.dev / .env.prod (or legacy .env).
+# Verify required keys in .env.local / .env.production.local (or legacy paths).
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -10,17 +10,31 @@ if [[ "$PROFILE" != "dev" && "$PROFILE" != "prod" ]]; then
   exit 1
 fi
 
-ENV_FILE="${ROOT}/.env.${PROFILE}"
-
-if [[ ! -f "$ENV_FILE" ]]; then
-  if [[ -f "${ROOT}/.env" ]]; then
-    ENV_FILE="${ROOT}/.env"
-    echo "note: using legacy ${ENV_FILE} (.env.${PROFILE} not found)" >&2
+resolve_env_file() {
+  local -a candidates=()
+  if [[ "$PROFILE" == "dev" ]]; then
+    candidates=(".env.local" ".env.dev" ".env")
   else
-    echo "error: missing ${ENV_FILE} — run: cp .env.${PROFILE}.example .env.${PROFILE}" >&2
-    exit 1
+    candidates=(".env.production.local" ".env.prod" ".env")
   fi
-fi
+
+  local name
+  for name in "${candidates[@]}"; do
+    if [[ -f "${ROOT}/${name}" ]]; then
+      echo "${ROOT}/${name}"
+      return 0
+    fi
+  done
+
+  if [[ "$PROFILE" == "dev" ]]; then
+    echo "error: missing .env.local — run: cp .env.local.example .env.local" >&2
+  else
+    echo "error: missing .env.production.local — run: cp .env.production.local.example .env.production.local" >&2
+  fi
+  exit 1
+}
+
+ENV_FILE="$(resolve_env_file)"
 
 # shellcheck disable=SC1090
 set -a
@@ -142,7 +156,7 @@ fi
 echo "ok: required keys present (${ENV_FILE}, profile=${PROFILE})"
 
 if [[ "$has_dual_clerk_keys" == true ]]; then
-  echo "note: dual Clerk keys — dev profile uses *_DEV, prod profile uses *_PROD"
+  echo "note: dual Clerk keys — dev uses *_DEV, prod uses *_PROD"
 fi
 
 if [[ ${#optional_missing[@]} -gt 0 ]]; then
@@ -169,7 +183,7 @@ fi
 if [[ "$PROFILE" == "dev" && "$pk" == pk_live_* ]]; then
   echo "warn: pk_live_ active in dev profile — sign-in will not work on localhost." >&2
   if [[ -z "${NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY_DEV:-}" ]]; then
-    echo "      Using *_PROD fallback — add pk_test_/sk_test_ to *_DEV in .env.dev." >&2
+    echo "      Using *_PROD fallback — add pk_test_/sk_test_ to *_DEV in .env.local." >&2
   else
     echo "      Set pk_test_/sk_test_ in NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY_DEV / CLERK_SECRET_KEY_DEV." >&2
   fi

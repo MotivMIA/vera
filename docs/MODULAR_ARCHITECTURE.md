@@ -184,7 +184,7 @@ Each phase: one writer branch, CI green, no middleware/env edits bundled in.
 - [x] `(onboarding)/layout.tsx` — shared page glow shell
 - [x] `(auth)/layout.tsx` — thin auth shell
 - [x] `components/marketing/index.ts` — public module surface
-- [x] `.env.dev` / `.env.prod` workflow — `scripts/with-env.sh`, templates, `npm run env:split`
+- [x] `.env.local` / `.env.production.local` (Next.js native) — templates, `npm run env:split`, `env:migrate`
 
 ---
 
