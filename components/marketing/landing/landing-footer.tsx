@@ -39,19 +39,24 @@ const siteHeadingClass =
 
 const footerColumnClass = "min-w-0";
 
-/** lg+ outer grid: brand | download? | link-menu group (three siblings, top-aligned). */
+/**
+ * sm+ top row: brand | menu group (two columns, top-aligned).
+ * Download is a sibling with col-span-full so it is the only block that drops below.
+ */
 function footerOuterGridClass(hasDownload: boolean, hasMenus: boolean): string {
   if (!hasMenus && !hasDownload) return "";
   if (!hasMenus) {
     return hasDownload
-      ? "lg:grid-cols-[minmax(0,1.15fr)_minmax(10.5rem,13.5rem)]"
+      ? "sm:grid-cols-[minmax(0,1.15fr)_minmax(10.5rem,13.5rem)]"
       : "";
   }
   if (!hasDownload) {
-    return "lg:grid-cols-[minmax(0,1.15fr)_minmax(0,2fr)]";
+    return "sm:grid-cols-[minmax(0,1.15fr)_minmax(0,2fr)]";
   }
-  return "lg:grid-cols-[minmax(0,1.15fr)_minmax(10.5rem,13.5rem)_minmax(0,2fr)]";
+  return "sm:grid-cols-[minmax(0,1.15fr)_minmax(0,2fr)]";
 }
+
+const footerDownloadSpanClass = "col-span-full";
 
 /** Product / Company / Support live inside one wrapper — internal grid per breakpoint. */
 function footerMenuGroupGridClass(columnCount: number): string {
@@ -137,20 +142,6 @@ export function LandingFooter({
           ) : null}
         </div>
 
-        {appSection ? (
-          <div id="download" className={footerColumnClass}>
-            <p className={cn(columnHeadingClass, "break-words")}>{appSection.title}</p>
-            <div className="mt-3 min-w-0 w-full max-w-[13.5rem]">
-              <AppStoreBadges
-                links={APP_STORE_LINKS}
-                size="sm"
-                layout="row"
-                className="w-full min-w-0"
-              />
-            </div>
-          </div>
-        ) : null}
-
         {hasMenus ? (
           <nav
             aria-label="Footer"
@@ -175,6 +166,26 @@ export function LandingFooter({
               </div>
             ))}
           </nav>
+        ) : null}
+
+        {appSection ? (
+          <div
+            id="download"
+            className={cn(
+              footerColumnClass,
+              hasMenus && footerDownloadSpanClass,
+            )}
+          >
+            <p className={cn(columnHeadingClass, "break-words")}>{appSection.title}</p>
+            <div className="mt-3 min-w-0 w-full max-w-[13.5rem]">
+              <AppStoreBadges
+                links={APP_STORE_LINKS}
+                size="sm"
+                layout="row"
+                className="w-full min-w-0"
+              />
+            </div>
+          </div>
         ) : null}
       </div>
 
