@@ -125,13 +125,13 @@ export function LandingFooter({
                   rel="noopener noreferrer"
                   aria-label={social.label}
                   className={cn(
-                    "inline-flex size-9 shrink-0 items-center justify-center rounded-lg transition hover:opacity-90",
+                    "inline-flex size-7 shrink-0 items-center justify-center rounded-lg transition hover:opacity-90",
                     isLanding && "opacity-90 hover:opacity-100",
                   )}
                 >
                   <SocialSpriteIcon
                     variant={social.icon}
-                    className={cn("size-7", marketingFooterMarkClass)}
+                    className={cn("size-5", marketingFooterMarkClass)}
                   />
                 </a>
               ))}
