@@ -5,6 +5,7 @@ import { usePathname as useNextPathname, useRouter as useNextRouter } from "next
 import { useLocale } from "next-intl";
 import { usePathname as useIntlPathname, useRouter } from "@/i18n/navigation";
 import { getClientLocaleFromCookie } from "@/lib/i18n/client-locale";
+import { setClientLocaleCookie } from "@/lib/i18n/locale-cookie";
 import { pathWithLocale, stripLocalePrefix } from "@/lib/i18n/paths";
 import { routing, type AppLocale } from "@/i18n/routing";
 
@@ -46,13 +47,14 @@ export function useSwitchLocale() {
       }
 
       if (isUnprefixedAppPath(pathname)) {
-        document.cookie = `NEXT_LOCALE=${nextLocale};path=/;max-age=31536000;samesite=lax`;
+        setClientLocaleCookie(nextLocale);
         startTransition(() => {
           nextRouter.refresh();
         });
         return;
       }
 
+      setClientLocaleCookie(nextLocale);
       startTransition(() => {
         intlRouter.replace(pathname, { locale: nextLocale });
         nextRouter.refresh();
@@ -69,11 +71,12 @@ export function useSwitchLocale() {
       }
 
       if (isUnprefixedAppPath(pathname)) {
-        document.cookie = `NEXT_LOCALE=${nextLocale};path=/;max-age=31536000;samesite=lax`;
+        setClientLocaleCookie(nextLocale);
         window.location.reload();
         return;
       }
 
+      setClientLocaleCookie(nextLocale);
       window.location.assign(pathWithLocale(nextLocale, pathname));
     },
     [locale, pathname],

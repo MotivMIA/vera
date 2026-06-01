@@ -3,7 +3,8 @@ import { notFound } from "next/navigation";
 import { Link } from "@/i18n/navigation";
 import { LegalDocumentView } from "@/components/legal/legal-document";
 import { routing } from "@/i18n/routing";
-import { getLegalDocument, getLegalSlugs } from "@/lib/legal/documents";
+import { getLegalSlugs, isLegalSlug } from "@/lib/legal/documents";
+import { resolveLegalDocument } from "@/lib/legal/resolve-document";
 
 type LegalPageProps = {
   params: Promise<{ locale: string; slug: string }>;
@@ -17,18 +18,22 @@ export function generateStaticParams() {
 
 export default async function LegalPage({ params }: LegalPageProps) {
   const { slug } = await params;
-  const document = getLegalDocument(slug);
-  if (!document) {
+  if (!isLegalSlug(slug)) {
     notFound();
   }
 
   const t = await getTranslations("Legal");
+  const raw = t.raw(`documents.${slug}`);
+  const document = resolveLegalDocument(slug, raw);
+  if (!document) {
+    notFound();
+  }
 
   return (
-    <main className="min-h-screen">
-      <LegalDocumentView document={document} />
+    <main className="min-h-screen text-foreground">
+      <LegalDocumentView document={document} lastUpdatedLabel={t("lastUpdatedLabel")} />
       <div className="mx-auto max-w-3xl px-5 pb-10 md:px-8">
-        <Link href="/legal" className="text-sm text-accent hover:underline">
+        <Link href="/legal" className="text-sm text-link hover:text-link-hover hover:underline">
           {t("allDocuments")}
         </Link>
       </div>

@@ -1,6 +1,6 @@
 # Color tokens — Webflow inspiration vs Visual Era
 
-**Status:** Semantic token layer **implemented** (2026-06-01). Primitives + role aliases in `lib/brand/tokens.css`; Tailwind bridge in `app/globals.css`; marketing/auth shells migrated.
+**Status:** Semantic token layer **implemented** on `main` (2026-06-01, PR #89). Multi-palette `data-theme` system **in progress** on `agent-cursor-semantic-design-tokens` (`styles/tokens/colors.css`, `lib/brand/themes/*.css`).
 
 **Sources (Webflow):**
 
@@ -93,7 +93,7 @@ Webflow **variables** are reusable design tokens. Updating a variable updates ev
 | Hard-coded rgba/hex | `glass-panel`, `body` radial gradients, Clerk `#f6f4ef` | **Not** token-linked — one-off values |
 | JS constants | `brand.magenta` in `lib/clerk/appearance.ts` | Parallel source — must stay in sync with CSS |
 
-There is a `dark` custom variant in `globals.css`, but the app does not yet use a full light/dark **mode** column like Webflow’s Theme collection.
+There is a `dark` custom variant in `globals.css`. **Theme palettes** use `[data-theme]` (see §9); this is not the same as a single global light/dark toggle.
 
 ---
 
@@ -102,13 +102,13 @@ There is a `dark` custom variant in `globals.css`, but the app does not yet use 
 | Webflow | Visual Era today | Gap / note |
 |---------|------------------|------------|
 | **Collection: Color** | `lib/brand/tokens.css` | Primitives only; no separate “Theme” collection file |
-| **Collection: Theme / modes** | Single `:root` dark look | No light mode or sub-brand modes |
+| **Collection: Theme / modes** | `data-theme` palettes (branch WIP) | `noir-magenta` default on prod; dev switcher only |
 | **Group: Palette/Magenta 500** | `--brand-magenta` (name describes hue, not step) | No numeric ramp (100–900) |
 | **Semantic: Primary Text** | `--foreground` | Good |
 | **Semantic: Card Border** | `--border` (global) | No `border-accent` semantic; accents use `border-accent/25` (Tailwind → `--accent`) |
 | **Alias: Body Copy → Main Color** | `--accent` → `--brand-magenta` | Same pattern; primary duplicates accent |
 | **Apply variable to border** | `border-border` rare; often `border-white/10` | Many borders bypass `--border` |
-| **Variable modes (dark theme)** | N/A | Could use `[data-theme]` or `.dark` later |
+| **Variable modes (dark theme)** | `[data-theme="…"]` in `lib/brand/themes/*.css` | Ship default palette; remove dev switcher before launch polish |
 | **Copy CSS / custom code** | `var(--brand-*)` in arbitrary Tailwind | Same idea |
 | **Shared Library** | Monorepo `lib/brand/*` | One repo source of truth ✓ |
 | **Swatches → color variables** | Already on CSS variables | ✓ |
@@ -300,3 +300,36 @@ Or Tailwind-only: `className="rounded-2xl border border-border-default bg-surfac
 |------|----------|
 | 2026-05-31 | Document Webflow variable model vs current stack; recommend primitive/semantic alias layer |
 | 2026-06-01 | Implement semantic aliases + migrate marketing/auth shells; keep `--primary` / `--accent` shadcn mapping unchanged |
+| 2026-06-01 | Add `styles/tokens/colors.css` + per-theme files; bridge legacy `--brand-*` to semantic `--color-*` (agent branch, not on `main` yet) |
+
+---
+
+## 9. Multi-palette themes (in progress)
+
+**Branch:** `agent-cursor-semantic-design-tokens` (uncommitted WIP as of 2026-06-01)
+
+| Piece | Location |
+|-------|----------|
+| Theme selector | `document.documentElement` attribute `data-theme` |
+| Palette definitions | `lib/brand/themes/*.css` — dark + `*-light` pairs (`noir-magenta` / `noir-magenta-light`, `vera-classic` / `vera-classic-light`, `crm-dark` / `crm-light`, `damascus-steel-dark` / `damascus-steel-light`) |
+| Global bridge | `styles/tokens/colors.css` → imported from `app/globals.css` |
+| Landing scope | `lib/brand/landing-tokens.css` (CRM sections) |
+| Dev tool | `components/dev/theme-switcher.tsx` — **not for production** |
+
+**Production default (intended):** `noir-magenta` (`app/layout.tsx`).
+
+**Dark palettes:** premium low-contrast scaling — tight gunmetal surface steps (~4–6 per channel), soft off-white text (`#e8eaed`–`#ece8e4`), accent-hued borders, accent glows at ~10–12% (not 35%); reference: `damascus-steel-dark`.
+
+**`vera-classic`:** Original launch palette from initial commit `b4152d8` — dark chrome (`#07080a` / `#0d0f13`) with **gold accent `#d8b56d`** and gold hero glow (`rgba(216, 181, 109, 0.14)`). Not `noir-magenta` (magenta `#e41a76`). Dev preview: `data-theme="vera-classic"` or ThemeSwitcher label **VERA Classic**.
+
+**`crm-dark`:** Dark CRM / charcoal SaaS landing palette — bg **`#111318`**, text **`#f5f5f6`**, muted **`#9ca3af`**, orange CTA **`#f97316`** / hover **`#fb923c`** with **white button label** on landing. Cool blue secondary **`#4a6fa5`**. Multi-stop hero/page gradients (no banding). `color-scheme: dark` (`html.dark`). Pairs with **`crm-light`** for dev comparison. Scoped block overrides: `[data-theme="crm-dark"] .crm-landing` in `lib/brand/landing-tokens.css`. Dev label **CRM Dark**.
+
+**`crm-light`:** Light CRM / white SaaS landing palette — **white `#ffffff`**, text **`#050505`**, muted **`#6b6b6b`**, orange CTA **`#f97316`** / hover **`#ea580c`** with **black button label** on landing. Pastel blocks: peach `#fff0e8`, blue `#e8f4ff`, green `#e8f9ef`, lavender `#f0ebff`. Shadows `0 8px 30px rgba(0,0,0,0.06)`. `color-scheme: light` (no `html.dark`). Scoped pastel overrides: `[data-theme="crm-light"] .crm-landing` in `lib/brand/landing-tokens.css`. Dev label **CRM Light**.
+
+**`damascus-steel-dark`:** Forged metal — gunmetal **`#1a1d22`**, cool gray text **`#e8eaed`**, silver-blue accent **`#7a8fa6`** / hover **`#9aa8bc`**. Metallic `--gradient-brand` (silver → accent → deep steel). Brushed highlights via `--gradient-page-accent`. Distinct from magenta/gold palettes. `color-scheme: dark` (`html.dark`). Dev label **Damascus Steel Dark**. Light pair **`damascus-steel-light`**: cool silver-white **`#eef1f5`**, accent **`#5a6d82`**. Legacy id **`damascus-steel`** migrates to **`damascus-steel-dark`** in dev localStorage.
+
+**Light counterparts (`*-light`):** Each major dark palette has a dev-preview light variant in `lib/brand/themes/{id}-light.css`, registered in `lib/brand/light-themes.ts` and cycled after its dark sibling in `components/dev/theme-switcher.tsx`. Examples: **`noir-magenta-light`** (`#eef1f5` + magenta **`#e41a76`**), **`vera-classic-light`** (warm ivory + gold **`#d8b56d`**), **`damascus-steel-light`**.
+
+**Light palette accent discipline:** On light themes, keep **`--color-accent`** (and hover/deep) for CTAs, links, focus rings, and chips. Page canvas tokens — **`--gradient-hero`**, **`--gradient-page-accent`**, **`--color-bg` / `--color-bg-soft` / `--color-surface`** — stay near-neutral (white → soft gray or warm/cool ivory); avoid accent-tinted radials or gold/magenta washes across the full page. Reference: **`crm-light`**, **`damascus-steel-light`**. Lower **`--color-accent-soft`** / **`--color-accent-glow`** for UI tints only. CRM landing pastels remain scoped in `landing-tokens.css` under `[data-theme="crm-light"] .crm-landing` only.
+
+**Before Phase 3 launch:** pick one default palette, remove or gate dev switcher.

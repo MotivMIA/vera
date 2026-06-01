@@ -1,0 +1,207 @@
+/**
+ * Semantic color system — switch palettes via data-theme on <html>.
+ * Primitives + role aliases: lib/brand/tokens.css (imports after themes).
+ *
+ * Themes: lib/brand/themes/*.css
+ * Defaults: data-theme="noir-magenta" on <html> (layout + theme-init-script)
+ */
+@import "../../lib/brand/themes/noir-magenta.css";
+@import "../../lib/brand/themes/noir-magenta-light.css";
+@import "../../lib/brand/themes/vera-classic.css";
+@import "../../lib/brand/themes/vera-classic-light.css";
+@import "../../lib/brand/themes/crm-dark.css";
+@import "../../lib/brand/themes/crm-light.css";
+@import "../../lib/brand/themes/damascus-steel-dark.css";
+@import "../../lib/brand/themes/damascus-steel-light.css";
+@import "../../lib/brand/light-surface-contrast.css";
+
+/* —— shadcn / Tailwind bridge (reads semantic tokens) —— */
+:root,
+[data-theme] {
+  --background: var(--color-bg);
+  --foreground: var(--color-text);
+  --card: var(--color-surface);
+  --card-foreground: var(--color-text);
+  --popover: var(--color-surface);
+  --popover-foreground: var(--color-text);
+  --primary: var(--color-accent);
+  --primary-foreground: #ffffff;
+  --secondary: var(--color-surface-elevated);
+  --secondary-foreground: var(--color-text-soft);
+  --muted: var(--color-bg-soft);
+  --muted-foreground: var(--color-text-muted);
+  --accent: var(--color-accent);
+  --accent-foreground: #ffffff;
+  --destructive: var(--color-danger);
+  --border: var(--color-border);
+  --input: color-mix(in srgb, var(--color-text) 12%, transparent);
+  --ring: var(--color-accent);
+
+  /* Legacy brand aliases → semantic (keep components working) */
+  --brand-magenta: var(--color-accent);
+  --brand-magenta-bright: var(--color-accent-hover);
+  --brand-magenta-mid: color-mix(in srgb, var(--color-accent) 82%, var(--color-accent-deep));
+  --brand-magenta-deep: var(--color-accent-deep);
+  --brand-purple-deep: var(--color-accent-secondary);
+  --brand-gradient: var(--gradient-brand);
+  --brand-glow: var(--color-accent-soft);
+  --brand-glow-purple: color-mix(in srgb, var(--color-accent-secondary) 9%, transparent);
+  --brand-selection: color-mix(in srgb, var(--color-accent) 35%, transparent);
+}
+
+[data-theme]:not([data-theme="damascus-steel-dark"]):not([data-theme="damascus-steel"]) {
+  --brand-wordmark-visual-color: var(--color-text);
+  --brand-wordmark-era-color: color-mix(in srgb, var(--color-text) 75%, #000);
+}
+
+[data-theme="crm-light"] {
+  --primary-foreground: #050505;
+  --accent-foreground: #050505;
+}
+
+[data-theme="damascus-steel-dark"],
+[data-theme="damascus-steel"] {
+  --primary-foreground: #1a1d22;
+  --accent-foreground: #1a1d22;
+  --input: color-mix(in srgb, var(--color-accent) 10%, transparent);
+  --brand-wordmark-visual-color: #e0e4e9;
+  --brand-wordmark-era-color: #b8c4d4;
+  --brand-glow-purple: color-mix(in srgb, var(--color-accent-secondary) 8%, transparent);
+}
+
+[data-theme="crm-dark"] {
+  --primary-foreground: #181b21;
+  --accent-foreground: #181b21;
+  --input: color-mix(in srgb, var(--color-accent) 10%, transparent);
+}
+
+[data-theme="damascus-steel-light"] {
+  --primary-foreground: #ffffff;
+  --accent-foreground: #ffffff;
+}
+
+[data-theme="noir-magenta-light"] {
+  --primary-foreground: #ffffff;
+  --accent-foreground: #ffffff;
+}
+
+[data-theme="vera-classic-light"] {
+  --primary-foreground: #ffffff;
+  --accent-foreground: #ffffff;
+}
+
+/* —— Accessibility: focus, links, forms, autofill —— */
+a:not([class]) {
+  color: var(--color-accent);
+  text-decoration-color: color-mix(in srgb, var(--color-accent) 45%, transparent);
+}
+
+a:not([class]):hover {
+  color: var(--color-accent-hover);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible,
+button:focus-visible {
+  outline-color: var(--color-accent);
+  box-shadow: 0 0 0 3px var(--color-accent-glow);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: var(--color-text-muted);
+}
+
+input,
+textarea,
+select {
+  color: var(--color-text);
+  background-color: var(--color-surface);
+  border-color: var(--color-border);
+}
+
+input:disabled,
+textarea:disabled,
+select:disabled,
+button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+/* Themed autofill (WebKit) */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus,
+select:-webkit-autofill,
+select:-webkit-autofill:hover,
+select:-webkit-autofill:focus {
+  -webkit-text-fill-color: var(--color-text);
+  -webkit-box-shadow: 0 0 0 1000px var(--color-surface-elevated) inset;
+  box-shadow: 0 0 0 1000px var(--color-surface-elevated) inset;
+  caret-color: var(--color-text);
+  transition: background-color 9999s ease-out 0s;
+}
+
+[data-theme="crm-light"] input:-webkit-autofill,
+[data-theme="crm-light"] input:-webkit-autofill:hover,
+[data-theme="crm-light"] input:-webkit-autofill:focus,
+[data-theme="crm-light"] textarea:-webkit-autofill,
+[data-theme="crm-light"] textarea:-webkit-autofill:hover,
+[data-theme="crm-light"] textarea:-webkit-autofill:focus,
+[data-theme="damascus-steel-light"] input:-webkit-autofill,
+[data-theme="damascus-steel-light"] input:-webkit-autofill:hover,
+[data-theme="damascus-steel-light"] input:-webkit-autofill:focus,
+[data-theme="damascus-steel-light"] textarea:-webkit-autofill,
+[data-theme="damascus-steel-light"] textarea:-webkit-autofill:hover,
+[data-theme="damascus-steel-light"] textarea:-webkit-autofill:focus,
+[data-theme="noir-magenta-light"] input:-webkit-autofill,
+[data-theme="noir-magenta-light"] input:-webkit-autofill:hover,
+[data-theme="noir-magenta-light"] input:-webkit-autofill:focus,
+[data-theme="noir-magenta-light"] textarea:-webkit-autofill,
+[data-theme="noir-magenta-light"] textarea:-webkit-autofill:hover,
+[data-theme="noir-magenta-light"] textarea:-webkit-autofill:focus,
+[data-theme="vera-classic-light"] input:-webkit-autofill,
+[data-theme="vera-classic-light"] input:-webkit-autofill:hover,
+[data-theme="vera-classic-light"] input:-webkit-autofill:focus,
+[data-theme="vera-classic-light"] textarea:-webkit-autofill,
+[data-theme="vera-classic-light"] textarea:-webkit-autofill:hover,
+[data-theme="vera-classic-light"] textarea:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0 1000px var(--color-bg-soft) inset;
+  box-shadow: 0 0 0 1000px var(--color-bg-soft) inset;
+}
+
+/* Footer social icons + app store badges — dark marks on light palettes */
+[data-theme="crm-light"] .marketing-footer-mark,
+[data-theme="noir-magenta-light"] .marketing-footer-mark,
+[data-theme="vera-classic-light"] .marketing-footer-mark,
+[data-theme="damascus-steel-light"] .marketing-footer-mark {
+  filter: brightness(0);
+}
+
+[data-theme="crm-light"] .app-store-badge-shell--official,
+[data-theme="noir-magenta-light"] .app-store-badge-shell--official,
+[data-theme="vera-classic-light"] .app-store-badge-shell--official,
+[data-theme="damascus-steel-light"] .app-store-badge-shell--official {
+  background: transparent;
+  border-color: transparent;
+}
+
+.app-store-badge-shell.is-disabled {
+  opacity: 0.6;
+}
+
+[data-theme="crm-light"] .app-store-badge-shell.is-disabled,
+[data-theme="noir-magenta-light"] .app-store-badge-shell.is-disabled,
+[data-theme="vera-classic-light"] .app-store-badge-shell.is-disabled,
+[data-theme="damascus-steel-light"] .app-store-badge-shell.is-disabled {
+  opacity: 0.92;
+}

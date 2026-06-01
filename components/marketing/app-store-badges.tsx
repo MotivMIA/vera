@@ -7,6 +7,11 @@ import {
   type AppStorePlatform,
 } from "@/lib/brand/app";
 import {
+  appStoreBadgeOfficialShellClass,
+  appStoreBadgeShellClass,
+  marketingFooterMarkClass,
+} from "@/lib/brand/light-themes";
+import {
   borderAccentClass,
   borderAccentHoverClass,
   focusRingClass,
@@ -48,7 +53,8 @@ const sizeConfig = {
 } as const;
 
 const layoutConfig = {
-  row: "flex-row flex-wrap items-center",
+  /** Side-by-side from `sm` up; stack only on very narrow viewports. */
+  row: "flex-col items-start sm:flex-row sm:flex-nowrap sm:items-center",
   stack: "flex-col items-stretch",
 } as const;
 
@@ -66,10 +72,11 @@ function badgeShellClassName({
   const sized = sizeConfig[size];
 
   return cn(
+    appStoreBadgeShellClass,
     "inline-flex shrink-0 items-center justify-center overflow-hidden rounded-xl border text-left text-white",
     borderAccentClass,
     variant === "official"
-      ? "bg-surface-panel/40 p-0"
+      ? cn(appStoreBadgeOfficialShellClass, "bg-surface-panel/40 p-0")
       : cn("gap-2", panelSurfaceClass, sized.padding, sized.styledMinWidth),
     interactive &&
       cn(
@@ -83,7 +90,7 @@ function badgeShellClassName({
             ),
         focusRingClass,
       ),
-    disabled && "pointer-events-none cursor-default opacity-60",
+    disabled && "is-disabled pointer-events-none cursor-default",
   );
 }
 
@@ -108,7 +115,11 @@ function OfficialBadgeArtwork({
       width={widthPx}
       height={heightPx}
       decoding="async"
-      className={cn(heightClass, "block w-auto max-w-none object-contain")}
+      className={cn(
+        heightClass,
+        marketingFooterMarkClass,
+        "block w-auto max-w-none object-contain",
+      )}
       aria-hidden
     />
   );
@@ -227,10 +238,10 @@ export function AppStoreBadges({
   variant = "official",
   className,
 }: AppStoreBadgesProps) {
-  const gap = layout === "row" ? "gap-3 sm:gap-2.5" : "gap-2.5";
+  const gap = layout === "row" ? "gap-2.5 sm:gap-3" : "gap-2.5";
 
   return (
-    <div className={cn("flex", layoutConfig[layout], gap, className)}>
+    <div className={cn("flex w-fit max-w-full", layoutConfig[layout], gap, className)}>
       {links.map((link) => (
         <StoreBadge key={link.platform} link={link} size={size} variant={variant} />
       ))}

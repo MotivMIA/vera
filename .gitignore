@@ -36,3 +36,6 @@ dist-ssr
 # clerk configuration (can include secrets)
 /.clerk/
 .vercel
+
+# Webflow export drop folder (assets copied to public/)
+/images copy/

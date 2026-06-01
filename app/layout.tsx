@@ -1,11 +1,13 @@
 import type { Metadata, Viewport } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
+import { DevThemeSwitcher } from "@/components/dev/dev-theme-switcher";
 import { Toaster } from "@/components/ui/sonner";
 import { clerkAppearance } from "@/lib/clerk/appearance";
 import { getClerkProviderProxyProps } from "@/lib/clerk/hosted-only";
 import { getClerkPublishableKey } from "@/lib/clerk/keys";
 import { collectClerkOrigins } from "@/lib/clerk/origins";
 import { brandDisplayFont } from "@/lib/brand/fonts";
+import { getThemeInitScript } from "@/lib/brand/theme-init-script";
 import { getSiteUrl } from "@/lib/env";
 import { authSignInPath, authSignUpPath } from "@/lib/routes";
 import "./globals.css";
@@ -33,10 +35,20 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       signInUrl={authSignInPath()}
       signUpUrl={authSignUpPath()}
     >
-      <html lang="en" className={`dark ${brandDisplayFont.variable}`}>
+      <html
+        lang="en"
+        data-theme="noir-magenta"
+        className={`dark ${brandDisplayFont.variable}`}
+        suppressHydrationWarning
+      >
         <body>
+          <script
+            id="ve-theme-init"
+            dangerouslySetInnerHTML={{ __html: getThemeInitScript() }}
+          />
           {children}
           <Toaster />
+          <DevThemeSwitcher />
         </body>
       </html>
     </ClerkProvider>

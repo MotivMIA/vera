@@ -62,9 +62,8 @@ clamp(
 | `--font-size-lockup-wordmark-compact` | 2.27rem | 2.89rem | auth/mobile lockup (`size="xl"`) |
 | `--font-size-wordmark-sm` | 1.25rem | 1.37rem | footer / chrome |
 | `--font-size-wordmark-md` | 1.65rem | 1.83rem | marketing subpages |
-| `--size-lockup-mark` | `wordmark × 1.349` | — | hero mark (derived) |
-| `--size-lockup-mark-compact` | derived | — | compact lockup mark |
-| `--size-lockup-mark-sm` / `--md` | see `fluid-metrics.css` | — | sm/md lockups |
+| `--lockup-mark-ratio` | `1.349` | — | mark box ÷ wordmark font-size |
+| `--size-lockup-mark*` | `wordmark × ratio` | — | all lockup marks (derived) |
 | `--space-lockup-gap` | 0.78rem | 1.1rem | hero lockup gap |
 | `--lockup-offset` | 3px | 6px | wordmark baseline nudge |
 

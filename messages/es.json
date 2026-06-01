@@ -16,29 +16,229 @@
     }
   },
   "OfmMarketing": {
-    "metaTitle": "Visual Era | Gestión OnlyFans para creadores",
-    "metaDescription": "Gestión premium de OnlyFans y onboarding para creadores profesionales.",
+    "metaTitle": "Visual Era | Plataforma premium para creadores",
+    "metaDescription": "Tu marca, elevada. Onboarding profesional, verificación de identidad y contratos — para creadores OnlyFans ambiciosos y equipos de gestión.",
     "headerLogin": "Acceso creadores",
-    "badge": "Gestión premium de OnlyFans",
-    "title": "Haz crecer tu negocio como creador con Visual Era",
-    "description": "Ayudamos a creadores profesionales con estrategia, operaciones y un onboarding fluido para que te enfoques en contenido y comunidad.",
+    "badge": "Tu marca, elevada",
+    "socialProof": "Para creadores profesionales y socios de gestión",
+    "title": "La plataforma premium para creadores con ambición",
+    "description": "Visual Era es donde creadores ambiciosos y socios OFM lanzan con confianza — onboarding guiado, identidad verificada, acuerdos firmados y una experiencia de marca a la altura de tu ambición.",
+    "heroNote": "Solicitud en minutos · Verificación guiada en la app",
+    "heroImageAlt": "Espacio de trabajo abstracto con iluminación magenta",
     "ctaApply": "Solicitar como creador",
     "ctaLogin": "Acceso creadores",
-    "closingTitle": "¿Lista para unirte?",
-    "closingBody": "Empieza con una solicitud breve. Te guiaremos por verificación y onboarding en la app.",
+    "trust": {
+      "0": { "label": "Identidad verificada", "detail": "Verificación segura con DIDIT" },
+      "1": { "label": "Políticas y consentimiento", "detail": "Aceptaciones legales claras" },
+      "2": { "label": "Contratos firmados", "detail": "Documentos completados en la app" }
+    },
+    "whyTitle": "Por qué eligen Visual Era",
+    "whySubtitle": "Todo lo que necesitas para lanzar con profesionalismo — sin armar herramientas por tu cuenta.",
+    "why": {
+      "0": { "title": "Experiencia de marca", "body": "Un onboarding pulido que refleja la marca premium que estás construyendo." },
+      "1": { "title": "Cumplimiento integrado", "body": "Verificación, consentimiento y contratos en un solo recorrido guiado." },
+      "2": { "title": "Hecho para equipos OFM", "body": "Pensado para creadores solos o con gestión — pasos claros, sin adivinar." },
+      "3": { "title": "Seguro por diseño", "body": "Verificación y documentos con cuidado — tus datos protegidos." },
+      "4": { "title": "Empieza rápido", "body": "Solicita, verifica y firma desde cualquier dispositivo. Retoma cuando quieras." },
+      "5": { "title": "Espacio para crecer", "body": "Empieza con onboarding hoy — la base para escalar tu negocio como creador." }
+    },
+    "featuresTitle": "Onboarding que trabaja como tú",
+    "featuresSubtitle": "De la primera solicitud a los acuerdos firmados — un flujo, sin hojas dispersas.",
+    "features": {
+      "0": { "title": "Solicitud guiada", "body": "Cuéntanos quién eres y qué construyes. Te llevamos por los pasos correctos automáticamente." },
+      "1": { "title": "Políticas y consentimiento", "body": "Revisa términos, privacidad y firmas electrónicas en lenguaje claro antes de seguir." },
+      "2": { "title": "Verificación de identidad", "body": "Completa la verificación segura en la app — pensada para cumplimiento y tranquilidad." },
+      "3": { "title": "Firma de contratos", "body": "Revisa y firma documentos de onboarding digitalmente. Todo en un solo lugar." }
+    },
+    "howTitle": "Cómo funciona",
+    "howSubtitle": "Cuatro pasos claros, de la solicitud a listo para lanzar.",
+    "howImageAlt": "Gradiente ambiental abstracto de un espacio digital premium",
+    "steps": {
+      "0": { "step": "Paso 1", "title": "Solicita como creador", "body": "Crea tu cuenta y comparte lo básico. Solo unos minutos." },
+      "1": { "step": "Paso 2", "title": "Revisa políticas", "body": "Acepta lo legal y de consentimiento requerido antes de la verificación." },
+      "2": { "step": "Paso 3", "title": "Verifica tu identidad", "body": "Completa la verificación segura con nuestro socio de confianza." },
+      "3": { "step": "Paso 4", "title": "Firma y lanza", "body": "Termina tus documentos de onboarding y sigue el siguiente capítulo con Visual Era." }
+    },
+    "pillarsTitle": "Crece con confianza",
+    "pillarsSubtitle": "Estrategia, confianza y operaciones — alineadas para creadores que se toman su marca en serio.",
     "values": {
       "0": {
         "title": "Enfoque en crecimiento",
-        "body": "Estrategia basada en datos y apoyo práctico para ingresos sostenibles."
+        "body": "Una base para ingresos sostenibles — no parches que se caen después."
       },
       "1": {
-        "title": "Cumplimiento primero",
-        "body": "Verificación de identidad, contratos y políticas con cuidado."
+        "title": "Confianza y cumplimiento",
+        "body": "Verificación, contratos y políticas con el cuidado que tu marca merece."
       },
       "2": {
-        "title": "Operaciones para creadores",
-        "body": "Herramientas y flujos diseñados para cómo trabajan los creadores."
+        "title": "Primero el creador",
+        "body": "Flujos pensados para cómo trabajan creadores y socios — claros, calmados, profesionales."
       }
+    },
+    "voicesTitle": "Para creadores que exigen más",
+    "voicesSubtitle": "Lo que buscan socios y creadores en un onboarding premium.",
+    "voices": {
+      "0": { "quote": "Quería un onboarding tan premium como mi marca — no un formulario genérico y un PDF por correo.", "attribution": "Creadora profesional" },
+      "1": { "quote": "Tener verificación y contratos en un solo lugar nos ahorra horas con cada creador nuevo.", "attribution": "Socio de gestión" },
+      "2": { "quote": "Pasos claros, sin confusión. Siempre supe qué seguía y qué faltaba.", "attribution": "Creadora en solitario" }
+    },
+    "faqTitle": "Preguntas frecuentes",
+    "faq": {
+      "0": { "q": "¿Para quién es Visual Era?", "a": "Para creadores ambiciosos y socios OFM que quieren un onboarding profesional — ya lances solo o con un equipo de gestión." },
+      "1": { "q": "¿Qué pasa después de solicitar?", "a": "Crearás cuenta, revisarás políticas, completarás verificación de identidad y firmarás documentos — todo guiado en la app." },
+      "2": { "q": "¿La verificación de identidad es segura?", "a": "Sí. Usamos un socio de verificación de confianza (DIDIT) y no almacenamos documentos de identidad en bruto en nuestra base de datos." },
+      "3": { "q": "¿Cuánto tarda el onboarding?", "a": "Muchos creadores terminan en una sesión. La verificación puede variar; puedes guardar progreso y volver cuando quieras." },
+      "4": { "q": "Ya tengo cuenta — ¿dónde inicio sesión?", "a": "Usa Acceso creadores para continuar tu onboarding o acceder a tu perfil." }
+    },
+    "closingTitle": "¿Lista para elevar tu marca?",
+    "closingBody": "Únete a creadores que lanzan con Visual Era. Solicita hoy — te guiamos en cada paso.",
+    "closingNote": "Sin compromiso hasta completar tu solicitud."
+  },
+  "CrmLanding": {
+    "metaTitle": "Visual Era | CRM para creadores y agencias",
+    "metaDescription": "CRM premium para creadores y agencias — mensajería, analítica, listas inteligentes y copiloto IA en un solo espacio.",
+    "header": {
+      "pricing": "Precios",
+      "download": "Descargar",
+      "resources": "Recursos",
+      "help": "Ayuda",
+      "language": "ES",
+      "talkToSales": "Hablar con ventas",
+      "startTrial": "Prueba gratis"
+    },
+    "resources": {
+      "0": { "label": "Blog", "href": "/legal" },
+      "1": { "label": "Centro de ayuda", "href": "/legal" },
+      "2": { "label": "Documentación API", "href": "/legal" }
+    },
+    "hero": {
+      "eyebrow": "CRM #1 para negocios de creadores",
+      "title": "Gestiona tu imperio creativo desde un espacio premium",
+      "description": "Visual Era une mensajería, analítica de ingresos, turnos de equipo y asistencia IA — para creadores ambiciosos y las agencias que los escalan.",
+      "ctaPrimary": "Prueba gratis",
+      "ctaSecondary": "Hablar con ventas",
+      "note": "Sin tarjeta de crédito"
+    },
+    "why": {
+      "title": "Por qué los equipos eligen Visual Era",
+      "subtitle": "Fiabilidad de nivel empresarial con experiencia pensada para creadores — enfócate en crecer, no en parches.",
+      "0": { "title": "Seguridad bancaria", "body": "Cifrado en tránsito y reposo, acceso por roles y controles listos para auditoría." },
+      "1": { "title": "Alto rendimiento", "body": "Bandeja rápida, caché inteligente y flujos optimizados para operaciones de alto volumen." },
+      "2": { "title": "Seguridad por diseño", "body": "Políticas, permisos y barreras que protegen a creadores, fans y tu reputación." },
+      "3": { "title": "99,9 % uptime", "body": "Infraestructura fiable para no perder conversaciones valiosas ni ventanas de lanzamiento." },
+      "4": { "title": "Onboarding experto", "body": "Especialistas ayudan a migrar listas, automatizaciones e informes sin tiempo muerto." },
+      "5": { "title": "Soporte 24/7", "body": "Personas reales cuando las necesitas — en cualquier zona horaria o campaña." }
+    },
+    "revenue": {
+      "title": "Convierte conversaciones en ingresos",
+      "subtitle": "Herramientas para que los chatters vendan mejor — sin quemar al equipo.",
+      "0": { "title": "Mensajes más rápidos", "body": "Bandeja unificada con plantillas, etiquetas y atajos para ventas de creadores." },
+      "1": { "title": "Mensajes inteligentes", "body": "La oferta correcta en el momento correcto según gasto, recencia e intención." },
+      "2": { "title": "Masa prioritaria", "body": "Cola VIP primero mientras llegas a toda tu lista con seguridad." },
+      "3": { "title": "Listas inteligentes", "body": "Segmentos dinámicos que se actualizan al suscribir, dar propina o volver." }
+    },
+    "analytics": {
+      "title": "Gana más sabiendo qué impulsa el crecimiento",
+      "subtitle": "Ingresos, mensajería y rendimiento del equipo en un solo lugar.",
+      "0": { "title": "Panel de mensajes", "body": "Tasas de respuesta, PPV y eficiencia del chatter en tiempo real." },
+      "1": { "title": "Informes de fans", "body": "LTV, riesgo de churn y mejores gastadores con exportación." },
+      "2": { "title": "Informes de empleados", "body": "Métricas claras para chatters y líderes alineadas con tus KPIs." },
+      "3": { "title": "Turnos", "body": "Planifica cobertura, entregas y responsabilidad entre zonas horarias." }
+    },
+    "copilot": {
+      "badge": "Beta",
+      "title": "Copiloto IA para equipos de creadores",
+      "subtitle": "Borradores, resúmenes y oportunidades — siempre bajo tu control.",
+      "0": { "title": "Sugerencias de respuesta", "body": "Borradores contextuales que respetan tu tono y reglas." },
+      "1": { "title": "Resúmenes de hilos", "body": "Ponte al día en segundos antes de tomar una conversación." },
+      "2": { "title": "Insights de ingresos", "body": "Detecta upsells y fans en riesgo sin cambiar de pestaña." },
+      "3": { "title": "Playbooks de equipo", "body": "Convierte lo que mejor funciona en guía compartida." }
+    },
+    "testimonials": {
+      "title": "Querido por creadores y agencias",
+      "subtitle": "Voces ilustrativas de equipos con operaciones profesionales.",
+      "0": { "quote": "Reemplazamos tres herramientas con Visual Era. Una bandeja para chatters y una fuente de verdad para dirección.", "name": "Morgan R.", "role": "Líder de operaciones" },
+      "1": { "quote": "Las listas inteligentes pagaron el cambio — llegamos a VIPs primero sin parecer spam.", "name": "Alex T.", "role": "Manager de creadores" },
+      "2": { "quote": "El panel analítico es lo que siempre quise: ingresos, turnos y mensajes en una vista del lunes.", "name": "Jordan L.", "role": "Head of growth" }
+    },
+    "featuresGrid": {
+      "title": "Todo lo que necesitas para escalar",
+      "subtitle": "Del inbox a los insights — herramientas modulares que crecen contigo.",
+      "0": { "title": "Bandeja unificada", "body": "Todas las conversaciones en un lugar." },
+      "1": { "title": "Mensajes masivos", "body": "Difusiones segmentadas y seguras." },
+      "2": { "title": "Seguimiento PPV", "body": "Qué contenido convierte." },
+      "3": { "title": "Analítica de propinas", "body": "Tendencias de tipping en el tiempo." },
+      "4": { "title": "CRM de fans", "body": "Notas, etiquetas y campos personalizados." },
+      "5": { "title": "Roles de equipo", "body": "Permisos granulares por asiento." },
+      "6": { "title": "Planificador de turnos", "body": "Cobertura con claridad." },
+      "7": { "title": "Auto-asignación", "body": "Enruta fans al chatter correcto." },
+      "8": { "title": "Plantillas", "body": "Fragmentos aprobados para velocidad." },
+      "9": { "title": "Registros de cumplimiento", "body": "Trazas cuando las necesitas." },
+      "10": { "title": "Exportaciones", "body": "Informes CSV y API." },
+      "11": { "title": "Integraciones", "body": "Conecta tu stack con seguridad." }
+    },
+    "community": {
+      "title": "Qué priorizan los equipos",
+      "subtitle": "Instantáneas estilo encuesta de la comunidad Visual Era — datos propios.",
+      "polls": {
+        "0": {
+          "question": "¿Qué ayudaría más a tu equipo este trimestre?",
+          "options": {
+            "0": { "label": "Bandeja más rápida", "percent": 38 },
+            "1": { "label": "Segmentación más inteligente", "percent": 34 },
+            "2": { "label": "Métricas de chatters más claras", "percent": 28 }
+          }
+        },
+        "1": {
+          "question": "¿Cómo sigues el crecimiento hoy?",
+          "options": {
+            "0": { "label": "Hojas de cálculo", "percent": 22 },
+            "1": { "label": "Varias herramientas", "percent": 51 },
+            "2": { "label": "Una plataforma", "percent": 27 }
+          }
+        }
+      }
+    },
+    "faq": {
+      "title": "Preguntas frecuentes",
+      "0": { "q": "¿Para quién es Visual Era?", "a": "Creadores profesionales y agencias que necesitan un CRM unificado para mensajería, analítica, operaciones de equipo e IA asistida." },
+      "1": { "q": "¿Hay prueba gratis?", "a": "Sí. Empieza sin tarjeta de crédito y explora bandeja e informes antes de comprometerte." },
+      "2": { "q": "¿Puedo migrar desde otra herramienta?", "a": "El equipo de onboarding ayuda a importar listas, etiquetas y notas. El tiempo depende del tamaño del roster." },
+      "3": { "q": "¿Cómo funciona el Copiloto IA?", "a": "Sugiere borradores y resúmenes con el contexto del hilo. Tú apruebas cada mensaje — nada se envía solo." },
+      "4": { "q": "¿Varios creadores por espacio?", "a": "Sí. Las agencias gestionan varias cuentas con roles, turnos e informes por creador." },
+      "5": { "q": "¿Dónde se alojan mis datos?", "a": "Infraestructura cloud segura con cifrado. Contacta ventas para requisitos regionales o de cumplimiento." }
+    },
+    "finalCta": {
+      "title": "¿Listo para crecer con claridad?",
+      "body": "Únete a creadores y agencias que gestionan su negocio en Visual Era. Empieza tu prueba hoy.",
+      "primary": "Prueba gratis",
+      "secondary": "Hablar con ventas",
+      "note": "Sin tarjeta · Cancela cuando quieras"
+    },
+    "footer": {
+      "tagline": "CRM premium para creadores y agencias.",
+      "product": "Producto",
+      "company": "Empresa",
+      "support": "Soporte",
+      "productLinks": {
+        "0": { "label": "Precios", "href": "/sign-up" },
+        "1": { "label": "Descargar", "href": "/#download" },
+        "2": { "label": "Funciones", "href": "/#features" },
+        "3": { "label": "Copiloto IA", "href": "/#copilot" }
+      },
+      "companyLinks": {
+        "0": { "label": "Nosotros", "href": "/legal" },
+        "1": { "label": "Empleo", "href": "/legal" },
+        "2": { "label": "Contacto", "href": "/legal" }
+      },
+      "supportLinks": {
+        "0": { "label": "Centro de ayuda", "href": "/legal" },
+        "1": { "label": "Estado", "href": "/legal" },
+        "2": { "label": "Acceso creador", "href": "/login" }
+      },
+      "terms": "Términos",
+      "privacy": "Privacidad",
+      "copyright": "© {year} Visual Era. Todos los derechos reservados."
     }
   },
   "HomeBranding": {
@@ -47,11 +247,7 @@
     "description": "Escala tu marca. Haz crecer tu audiencia. La plataforma premium para creadores con ambición."
   },
   "Footer": {
-    "description": "Plataforma premium para creadores ambiciosos que escalan su marca y hacen crecer su audiencia.",
-    "startOnboarding": "Comenzar onboarding",
-    "getStarted": "Empezar",
     "downloadApp": "Descarga nuestra app gratis",
-    "appTagline": "Gestiona tu perfil de creador, verificación y contenido desde cualquier lugar.",
     "legal": "Legal",
     "terms": "Términos",
     "privacy": "Privacidad",
@@ -63,7 +259,8 @@
     "allDocuments": "Todos los documentos legales",
     "indexTitle": "Legal",
     "indexDescription": "Políticas y avisos para el onboarding de creadores de Visual Era.",
-    "homeLink": "Visual Era"
+    "homeLink": "Visual Era",
+    "lastUpdatedLabel": "Última actualización:"
   },
   "Auth": {
     "tabs": {

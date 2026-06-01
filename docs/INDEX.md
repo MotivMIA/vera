@@ -13,12 +13,16 @@
 | [DECISIONS.md](./DECISIONS.md) | Current constraints & rejected approaches |
 | [ARCHITECTURE.md](./ARCHITECTURE.md) | System design, auth, DIDIT, Supabase |
 | [MODULAR_ARCHITECTURE.md](./MODULAR_ARCHITECTURE.md) | Module boundaries, phased refactor plan |
+| [ADMIN_UI.md](./ADMIN_UI.md) | Site admin UI — goals, v1 scope, auth, routes (planned) |
 | [CODEBASE_MAP.md](./CODEBASE_MAP.md) | Routes, APIs, file map |
 | [SETUP.md](./SETUP.md) | Local dev, Vercel, platform setup |
 | [.env.example](../.env.example) | Environment variable template |
 | [AGENTS.md](../AGENTS.md) | Branch rules, ship scripts |
 | [docs/agents/prompts/vera-website.md](./agents/prompts/vera-website.md) | Implementation agent prompt |
 | [CI_CD.md](./CI_CD.md) | Branch protection, CI |
+| [design/COLOR_TOKENS.md](./design/COLOR_TOKENS.md) | Semantic color tokens, palettes |
+| [design/FLUID_METRICS.md](./design/FLUID_METRICS.md) | Viewport-fluid type and spacing |
+| [design/I18N.md](./design/I18N.md) | Locales, message files, URL prefixes |
 
 ---
 

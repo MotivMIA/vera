@@ -22,8 +22,9 @@ Browser
 ## Request flow — onboarding
 
 ```text
-/  → marketing / signup
-/sign-in, /sign-up  → Clerk
+/  → public marketing (OfmMarketingPage on main; CrmLandingPage in progress on agent branch)
+/login  → AppAuthShell (hero + AuthCard)
+/sign-in, /sign-up  → same AppAuthShell / Clerk (marketing links preserved)
 /onboarding/consent  → POST /api/onboarding/consent
 /verify-identity    → POST /api/didit/start, poll GET /api/didit/status, DIDIT webhook
 /documents          → POST /api/documents/submit, status APIs

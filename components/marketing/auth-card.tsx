@@ -91,7 +91,7 @@ function ClerkProxyBlockedNotice() {
 
   return (
     <div
-      className={cn(accentCalloutClass, "px-fluid-inline py-fluid-card-y text-fluid-small leading-6 text-[#d7dbe2]")}
+      className={cn(accentCalloutClass, "px-fluid-inline py-fluid-card-y text-fluid-small leading-6 text-[var(--color-text-soft)]")}
       role="alert"
     >
       <p className="font-medium text-foreground">{t("proxyBlockedTitle")}</p>
@@ -139,14 +139,14 @@ function AuthCardContent() {
       <div className={cn(panelShellClass, "p-7")}>
         <div className="mb-6 flex items-center justify-between">
           <div>
-            <p className="text-fluid-small uppercase tracking-[0.22em] text-[#9da3af]">
+            <p className="text-fluid-small uppercase tracking-[0.22em] text-[var(--color-text-muted)]">
               {t("authenticated.eyebrow")}
             </p>
             <h3 className={cn("mt-2", fluidH2Class)}>{t("authenticated.title")}</h3>
           </div>
           <UserButton />
         </div>
-        <div className={cn(accentCalloutClass, "p-4 text-fluid-small leading-6 text-[#d7dbe2]")}>
+        <div className={cn(accentCalloutClass, "p-4 text-fluid-small leading-6 text-[var(--color-text-soft)]")}>
           <ShieldCheck className="mb-3 size-5 text-accent" />
           {t("authenticated.body")}
         </div>

@@ -52,7 +52,7 @@
     calc(1.5rem + (2.875rem - 1.5rem) * ((100vw - var(--fluid-vw-min)) / var(--fluid-vw-range))),
     2.875rem
   );
-  /* Compact auth/mobile motto — 320px→768px; caps before 3-line wrap in ~280px columns */
+  /* Compact auth/mobile motto — 320→768 (single clamp; Firefox rejects nested clamp()) */
   --font-size-motto-compact: clamp(
     1.375rem,
     calc(1.375rem + (2rem - 1.375rem) * ((100vw - var(--fluid-vw-min)) / (48rem - var(--fluid-vw-min)))),
@@ -63,8 +63,9 @@
 
   /**
    * Logo lockup — wordmark + mark scale with the same viewport curve as motto/h1.
-   * Mark size ≈ wordmark × 1.349 (lg lockup geometry).
+   * Mark box = wordmark font-size × ratio (see globals .brand-logo-lockup).
    */
+  --lockup-mark-ratio: 1.349;
   --font-size-lockup-wordmark: clamp(
     2.27rem,
     calc(2.27rem + (3.65rem - 2.27rem) * ((100vw - var(--fluid-vw-min)) / var(--fluid-vw-range))),

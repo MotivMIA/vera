@@ -1,0 +1,30 @@
+/**
+ * Light palettes — readable logos and near-white social marks on pale surfaces.
+ * Scoped to light palettes; dark themes unchanged.
+ */
+[data-theme="crm-light"],
+[data-theme="noir-magenta-light"],
+[data-theme="vera-classic-light"],
+[data-theme="damascus-steel-light"] {
+  --gradient-brand: linear-gradient(
+    135deg,
+    var(--color-accent-deep) 0%,
+    color-mix(in srgb, var(--color-text) 82%, var(--color-accent-deep)) 100%
+  );
+  --brand-wordmark-era-color: color-mix(in srgb, var(--color-text) 68%, var(--color-accent-deep));
+}
+
+[data-theme="crm-light"] .brand-logo-mark,
+[data-theme="noir-magenta-light"] .brand-logo-mark,
+[data-theme="vera-classic-light"] .brand-logo-mark,
+[data-theme="damascus-steel-light"] .brand-logo-mark {
+  filter: saturate(1.1) contrast(1.08);
+}
+
+/** x.svg is a light mark for dark UI; invert to near-black on light backgrounds. */
+[data-theme="crm-light"] .brand-social-icon[data-social-variant="x"] img,
+[data-theme="noir-magenta-light"] .brand-social-icon[data-social-variant="x"] img,
+[data-theme="vera-classic-light"] .brand-social-icon[data-social-variant="x"] img,
+[data-theme="damascus-steel-light"] .brand-social-icon[data-social-variant="x"] img {
+  filter: brightness(0);
+}

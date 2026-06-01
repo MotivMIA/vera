@@ -2,7 +2,7 @@
 
 Single source of truth for **how we work now**. Supersedes older multi-agent docs where they conflict.
 
-**Last updated:** 2026-05-28
+**Last updated:** 2026-06-01
 
 ---
 
@@ -11,8 +11,31 @@ Single source of truth for **how we work now**. Supersedes older multi-agent doc
 | Decision | Detail |
 |----------|--------|
 | **This repo = onboarding website only** | Public flow through success; no dashboard product |
-| **Product app deferred** | `app/dashboard/**` and vera-product agent come later |
+| **Product app deferred** | `app/(dashboard)/**` and vera-product agent come later; **site admin** planned — see [ADMIN_UI.md](./ADMIN_UI.md) |
 | **No ai-ops in repo** | Planning/council live outside; paste text briefs only |
+
+### Public surfaces (marketing vs auth)
+
+| Decision | Detail |
+|----------|--------|
+| **`/` = public marketing** | Informative landing (CRM-style `CrmLandingPage` in progress). Not the Clerk login shell. |
+| **`/login` = app login shell** | `AppAuthShell` — branding column + `AuthCard` (hero + auth). Stable URL for “get started”. |
+| **`/sign-in`, `/sign-up`** | Same `AppAuthShell` / unified Clerk flow; routes kept for links and Clerk dashboard config. |
+| **Legacy OFM page** | `OfmMarketingPage` remains in repo; on **`main`** until CRM landing ships. Do not delete until cutover is merged. |
+| **Apex vs product** | **visual-era.com** (apex) = this onboarding + marketing site. “OFM agency site” copy is marketing positioning, not a separate deploy. |
+| **Future app host** | Optional **app.visual-era.com** for authenticated app + admin; apex remains marketing. Not required for v1 admin scaffold. |
+
+### Site Admin UI (planned — ADR)
+
+| Decision | Detail |
+|----------|--------|
+| **Admin on app host, not marketing** | `/admin` under `app/(dashboard)/`, protected by existing middleware matchers — **no** `[locale]/(marketing)/admin` routes |
+| **Auth** | Clerk session (dashboard layout) + **site admin** authorization via env allowlist (`SITE_ADMIN_USER_IDS`) and/or Clerk public metadata / org role |
+| **Public surface** | Do not link admin from marketing header/footer; no indexed admin pages |
+| **Data v1** | File-based i18n + TS config (`messages/*`, `lib/marketing/footer-config.ts`); Supabase settings tables only when vera-product owns migrations |
+| **Out of scope v1** | CMS, CRUD media library, middleware drive-by changes, new Clerk apps or webhook shapes |
+
+Full spec: [ADMIN_UI.md](./ADMIN_UI.md) · Roadmap: [LAUNCH_ROADMAP.md](./LAUNCH_ROADMAP.md) § Phase 4b.
 
 ---
 
@@ -23,7 +46,8 @@ Single source of truth for **how we work now**. Supersedes older multi-agent doc
 | **GitHub** | [natew-dev/vera](https://github.com/natew-dev/vera) (private) |
 | **Production URL** | https://visual-era.com |
 | **Never push to `main`** | PR + CI required |
-| **Branch naming** | `agent-cursor-web-<slug>` for website work |
+| **Branch naming** | `agent-cursor-<slug>` or `agent-codex-<slug>` — enforced on PRs ([CI_CD.md](./CI_CD.md), `.github/workflows/branch-naming.yml`). Prompts may suggest `agent-cursor-web-*` as a convention only. |
+| **PR #89 (merged 2026-06-01)** | Partial design-system ship: semantic tokens, fluid metrics, `AppAuthShell`, auth/marketing shell polish — see [LAUNCH_ROADMAP.md](./LAUNCH_ROADMAP.md) §2b |
 | **One writer per branch** | No concurrent Cursor + Codex on same branch |
 
 ---
@@ -68,6 +92,17 @@ Do **not** change unless the human explicitly requests:
 
 ---
 
+## Design system
+
+| Decision | Detail |
+|----------|--------|
+| **Semantic colors** | Role tokens in `lib/brand/tokens.css`; Tailwind bridge in `app/globals.css` — see [design/COLOR_TOKENS.md](./design/COLOR_TOKENS.md) |
+| **Multi-palette (in progress)** | `data-theme` on `<html>`; palettes in `lib/brand/themes/*.css` + `styles/tokens/colors.css`. Default production: `noir-magenta`. Dev-only `ThemeSwitcher` until palette is chosen. |
+| **Fluid layout** | Viewport-interpolated type/spacing in `lib/brand/fluid-metrics.css` — see [design/FLUID_METRICS.md](./design/FLUID_METRICS.md) |
+| **Landing-specific tokens** | `lib/brand/landing-tokens.css` for CRM landing sections; inherits global semantic tokens |
+
+---
+
 ## Clerk & DIDIT
 
 | Decision | Detail |
@@ -88,6 +123,7 @@ Do **not** change unless the human explicitly requests:
 | 2 — Onboarding product build | **Current** |
 | 3 — Launch polish | Next |
 | 4 — Product app | Deferred |
+| 4b — Site Admin UI | Planned (scaffold `/admin`; spec in [ADMIN_UI.md](./ADMIN_UI.md)) |
 
 Details: [LAUNCH_ROADMAP.md](./LAUNCH_ROADMAP.md)
 
