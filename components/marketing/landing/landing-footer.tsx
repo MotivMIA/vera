@@ -39,25 +39,47 @@ const siteHeadingClass =
 
 const footerColumnClass = "min-w-0";
 
-/** Nav link + download cells — 2-col from sm, 3-col from md when there are three items. */
-function footerNavBundleGridClass(navItemCount: number): string {
-  if (navItemCount <= 1) return "grid-cols-1";
-  if (navItemCount === 2) return "sm:grid-cols-2";
-  return "sm:grid-cols-2 md:grid-cols-3";
+/** Brand spans full width on sm/md; nav cells share one row from lg. */
+function footerBrandColSpanClass(linkColumnCount: number, hasDownload: boolean): string {
+  const navCells = linkColumnCount + (hasDownload ? 1 : 0);
+  if (navCells === 0) return "";
+  return cn("sm:col-span-2", navCells >= 2 && "md:col-span-3", "lg:col-span-1");
 }
 
-/** lg+ one row: brand · download (fixed) · link column(s). Product + Support share one slot. */
-const footerLgGridClass: Record<string, string> = {
-  d1: "lg:grid-cols-[minmax(0,1.15fr)_minmax(10.5rem,13.5rem)_minmax(0,1fr)]",
-  d0: "lg:grid-cols-[minmax(0,1.15fr)_minmax(10.5rem,13.5rem)]",
-  n1: "lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]",
-  n0: "lg:grid-cols-[minmax(0,1.15fr)]",
-};
+/** One grid for brand + download + link columns — explicit cols per breakpoint. */
+function footerResponsiveGridClass(linkColumnCount: number, hasDownload: boolean): string {
+  const navCells = linkColumnCount + (hasDownload ? 1 : 0);
+  if (navCells === 0) return "";
 
-function footerMainGridClass(linkColumnCount: number, hasDownload: boolean): string | false {
-  if (linkColumnCount === 0 && !hasDownload) return false;
-  const key = `${hasDownload ? "d" : "n"}${linkColumnCount}`;
-  return footerLgGridClass[key] ?? false;
+  const classes: string[] = ["sm:grid-cols-2"];
+  if (navCells >= 2) classes.push("md:grid-cols-3");
+
+  if (hasDownload) {
+    if (linkColumnCount >= 3) {
+      classes.push(
+        "lg:grid-cols-[minmax(0,1.15fr)_minmax(10.5rem,13.5rem)_repeat(3,minmax(0,1fr))]",
+      );
+    } else if (linkColumnCount === 2) {
+      classes.push(
+        "lg:grid-cols-[minmax(0,1.15fr)_minmax(10.5rem,13.5rem)_repeat(2,minmax(0,1fr))]",
+      );
+    } else if (linkColumnCount === 1) {
+      classes.push("lg:grid-cols-[minmax(0,1.15fr)_minmax(10.5rem,13.5rem)_minmax(0,1fr)]");
+    } else {
+      classes.push("lg:grid-cols-[minmax(0,1.15fr)_minmax(10.5rem,13.5rem)]");
+    }
+    return classes.join(" ");
+  }
+
+  if (linkColumnCount >= 3) {
+    classes.push("lg:grid-cols-[minmax(0,1.15fr)_repeat(3,minmax(0,1fr))]");
+  } else if (linkColumnCount === 2) {
+    classes.push("lg:grid-cols-[minmax(0,1.15fr)_repeat(2,minmax(0,1fr))]");
+  } else if (linkColumnCount === 1) {
+    classes.push("lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]");
+  }
+
+  return classes.join(" ");
 }
 
 export function LandingFooter({
@@ -74,9 +96,7 @@ export function LandingFooter({
 }: LandingFooterProps) {
   const isLanding = variant === "landing";
   const hasDownload = Boolean(appSection);
-  /** Product + Support render in one grid slot so they stay visually grouped. */
-  const linkGridSlots = columns.length > 1 ? 1 : columns.length;
-  const navItemCount = linkGridSlots + (hasDownload ? 1 : 0);
+  const linkColumnCount = columns.length;
 
   const columnHeadingClass = isLanding
     ? "text-xs font-semibold uppercase tracking-wide text-[var(--landing-text)]"
@@ -95,10 +115,10 @@ export function LandingFooter({
       <div
         className={cn(
           "grid min-w-0 grid-cols-1 gap-x-6 gap-y-10 sm:gap-x-8 lg:items-start lg:gap-x-8 xl:gap-x-10 lg:gap-y-0",
-          footerMainGridClass(linkGridSlots, hasDownload),
+          footerResponsiveGridClass(linkColumnCount, hasDownload),
         )}
       >
-        <div className={footerColumnClass}>
+        <div className={cn(footerColumnClass, footerBrandColSpanClass(linkColumnCount, hasDownload))}>
           {logoHref === null ? (
             <BrandLogo size={isLanding ? "md" : "sm"} showWordmark href={null} />
           ) : (
@@ -139,53 +159,34 @@ export function LandingFooter({
           ) : null}
         </div>
 
-        {navItemCount > 0 ? (
-          <div
-            className={cn(
-              "grid min-w-0 gap-x-6 gap-y-8 sm:gap-x-8 lg:contents lg:gap-y-0",
-              footerNavBundleGridClass(navItemCount),
-            )}
-          >
-            {appSection ? (
-              <div id="download" className={footerColumnClass}>
-                <p className={cn(columnHeadingClass, "break-words")}>{appSection.title}</p>
-                <div className="mt-3 min-w-0 w-full max-w-[13.5rem]">
-                  <AppStoreBadges
-                    links={APP_STORE_LINKS}
-                    size="sm"
-                    layout="row"
-                    className="w-full min-w-0"
-                  />
-                </div>
-              </div>
-            ) : null}
-
-            {columns.length > 0 ? (
-              <div
-                className={cn(
-                  columns.length > 1 &&
-                    "flex min-w-0 flex-wrap items-start gap-x-8 gap-y-8 sm:gap-x-10 lg:gap-x-10 xl:gap-x-12",
-                  columns.length === 1 && footerColumnClass,
-                )}
-              >
-                {columns.map((col) => (
-                  <div key={col.title} className={footerColumnClass}>
-                    <p className={cn(columnHeadingClass, "break-words")}>{col.title}</p>
-                    <ul className="mt-3 space-y-2">
-                      {col.links.map((link) => (
-                        <li key={`${col.title}-${link.href}-${link.label}`}>
-                          <Link href={link.href} className={cn(columnLinkClass, "break-words")}>
-                            {link.label}
-                          </Link>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                ))}
-              </div>
-            ) : null}
+        {appSection ? (
+          <div id="download" className={footerColumnClass}>
+            <p className={cn(columnHeadingClass, "break-words")}>{appSection.title}</p>
+            <div className="mt-3 min-w-0 w-full max-w-[13.5rem]">
+              <AppStoreBadges
+                links={APP_STORE_LINKS}
+                size="sm"
+                layout="row"
+                className="w-full min-w-0"
+              />
+            </div>
           </div>
         ) : null}
+
+        {columns.map((col) => (
+          <div key={col.title} className={footerColumnClass}>
+            <p className={cn(columnHeadingClass, "break-words")}>{col.title}</p>
+            <ul className="mt-3 space-y-2">
+              {col.links.map((link) => (
+                <li key={`${col.title}-${link.href}-${link.label}`}>
+                  <Link href={link.href} className={cn(columnLinkClass, "break-words")}>
+                    {link.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
       </div>
 
       <div
