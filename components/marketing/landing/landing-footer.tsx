@@ -39,47 +39,25 @@ const siteHeadingClass =
 
 const footerColumnClass = "min-w-0";
 
-/** Brand spans full width on sm/md; nav cells share one row from lg. */
-function footerBrandColSpanClass(linkColumnCount: number, hasDownload: boolean): string {
-  const navCells = linkColumnCount + (hasDownload ? 1 : 0);
-  if (navCells === 0) return "";
-  return cn("sm:col-span-2", navCells >= 2 && "md:col-span-3", "lg:col-span-1");
+/** lg+ outer grid: brand | download? | link-menu group (three siblings, top-aligned). */
+function footerOuterGridClass(hasDownload: boolean, hasMenus: boolean): string {
+  if (!hasMenus && !hasDownload) return "";
+  if (!hasMenus) {
+    return hasDownload
+      ? "lg:grid-cols-[minmax(0,1.15fr)_minmax(10.5rem,13.5rem)]"
+      : "";
+  }
+  if (!hasDownload) {
+    return "lg:grid-cols-[minmax(0,1.15fr)_minmax(0,2fr)]";
+  }
+  return "lg:grid-cols-[minmax(0,1.15fr)_minmax(10.5rem,13.5rem)_minmax(0,2fr)]";
 }
 
-/** One grid for brand + download + link columns — explicit cols per breakpoint. */
-function footerResponsiveGridClass(linkColumnCount: number, hasDownload: boolean): string {
-  const navCells = linkColumnCount + (hasDownload ? 1 : 0);
-  if (navCells === 0) return "";
-
-  const classes: string[] = ["sm:grid-cols-2"];
-  if (navCells >= 2) classes.push("md:grid-cols-3");
-
-  if (hasDownload) {
-    if (linkColumnCount >= 3) {
-      classes.push(
-        "lg:grid-cols-[minmax(0,1.15fr)_minmax(10.5rem,13.5rem)_repeat(3,minmax(0,1fr))]",
-      );
-    } else if (linkColumnCount === 2) {
-      classes.push(
-        "lg:grid-cols-[minmax(0,1.15fr)_minmax(10.5rem,13.5rem)_repeat(2,minmax(0,1fr))]",
-      );
-    } else if (linkColumnCount === 1) {
-      classes.push("lg:grid-cols-[minmax(0,1.15fr)_minmax(10.5rem,13.5rem)_minmax(0,1fr)]");
-    } else {
-      classes.push("lg:grid-cols-[minmax(0,1.15fr)_minmax(10.5rem,13.5rem)]");
-    }
-    return classes.join(" ");
-  }
-
-  if (linkColumnCount >= 3) {
-    classes.push("lg:grid-cols-[minmax(0,1.15fr)_repeat(3,minmax(0,1fr))]");
-  } else if (linkColumnCount === 2) {
-    classes.push("lg:grid-cols-[minmax(0,1.15fr)_repeat(2,minmax(0,1fr))]");
-  } else if (linkColumnCount === 1) {
-    classes.push("lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]");
-  }
-
-  return classes.join(" ");
+/** Product / Company / Support live inside one wrapper — internal grid per breakpoint. */
+function footerMenuGroupGridClass(columnCount: number): string {
+  if (columnCount <= 1) return "";
+  if (columnCount === 2) return "sm:grid-cols-2";
+  return "sm:grid-cols-2 md:grid-cols-3";
 }
 
 export function LandingFooter({
@@ -96,7 +74,7 @@ export function LandingFooter({
 }: LandingFooterProps) {
   const isLanding = variant === "landing";
   const hasDownload = Boolean(appSection);
-  const linkColumnCount = columns.length;
+  const hasMenus = columns.length > 0;
 
   const columnHeadingClass = isLanding
     ? "text-xs font-semibold uppercase tracking-wide text-[var(--landing-text)]"
@@ -114,11 +92,11 @@ export function LandingFooter({
     <>
       <div
         className={cn(
-          "grid min-w-0 grid-cols-1 gap-x-6 gap-y-10 sm:gap-x-8 lg:items-start lg:gap-x-8 xl:gap-x-10 lg:gap-y-0",
-          footerResponsiveGridClass(linkColumnCount, hasDownload),
+          "grid min-w-0 grid-cols-1 items-start gap-x-6 gap-y-10 sm:gap-x-8 lg:gap-x-8 xl:gap-x-10",
+          footerOuterGridClass(hasDownload, hasMenus),
         )}
       >
-        <div className={cn(footerColumnClass, footerBrandColSpanClass(linkColumnCount, hasDownload))}>
+        <div className={footerColumnClass}>
           {logoHref === null ? (
             <BrandLogo size={isLanding ? "md" : "sm"} showWordmark href={null} />
           ) : (
@@ -173,20 +151,31 @@ export function LandingFooter({
           </div>
         ) : null}
 
-        {columns.map((col) => (
-          <div key={col.title} className={footerColumnClass}>
-            <p className={cn(columnHeadingClass, "break-words")}>{col.title}</p>
-            <ul className="mt-3 space-y-2">
-              {col.links.map((link) => (
-                <li key={`${col.title}-${link.href}-${link.label}`}>
-                  <Link href={link.href} className={cn(columnLinkClass, "break-words")}>
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-        ))}
+        {hasMenus ? (
+          <nav
+            aria-label="Footer"
+            className={cn(
+              footerColumnClass,
+              "grid min-w-0 grid-cols-1 items-start gap-x-6 gap-y-10 sm:gap-x-8",
+              footerMenuGroupGridClass(columns.length),
+            )}
+          >
+            {columns.map((col) => (
+              <div key={col.title} className={footerColumnClass}>
+                <p className={cn(columnHeadingClass, "break-words")}>{col.title}</p>
+                <ul className="mt-3 space-y-2">
+                  {col.links.map((link) => (
+                    <li key={`${col.title}-${link.href}-${link.label}`}>
+                      <Link href={link.href} className={cn(columnLinkClass, "break-words")}>
+                        {link.label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </nav>
+        ) : null}
       </div>
 
       <div
