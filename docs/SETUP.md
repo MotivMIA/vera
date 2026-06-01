@@ -29,8 +29,8 @@ Open **`visual-era`** as the Cursor workspace root (not a parent folder).
 ## 2. Environment variables
 
 ```bash
-cp .env.dev.example .env.dev
-cp .env.prod.example .env.prod
+cp .env.local.example .env.local
+cp .env.production.local.example .env.production.local
 # Fill in Clerk, Supabase, Didit values
 npm run env:check
 npm run env:check:prod
@@ -38,8 +38,8 @@ npm run env:check:prod
 
 | File | Purpose |
 |------|---------|
-| `.env.dev.example` / `.env.prod.example` | Committed templates |
-| `.env.dev` / `.env.prod` | Your secrets (gitignored) |
+| `.env.local.example` / `.env.production.local.example` | Committed templates |
+| `.env.local` / `.env.production.local` | Your secrets (gitignored) |
 
 **Local defaults:**
 

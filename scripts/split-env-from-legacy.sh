@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# One-time helper: create .env.dev and .env.prod from an existing .env (if present).
+# One-time helper: create .env.local and .env.production.local from an existing .env.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
@@ -7,16 +7,16 @@ LEGACY="${ROOT}/.env"
 
 if [[ ! -f "$LEGACY" ]]; then
   echo "error: no .env to split — copy templates first:" >&2
-  echo "  cp .env.dev.example .env.dev" >&2
-  echo "  cp .env.prod.example .env.prod" >&2
+  echo "  cp .env.local.example .env.local" >&2
+  echo "  cp .env.production.local.example .env.production.local" >&2
   exit 1
 fi
 
-DEV_OUT="${ROOT}/.env.dev"
-PROD_OUT="${ROOT}/.env.prod"
+DEV_OUT="${ROOT}/.env.local"
+PROD_OUT="${ROOT}/.env.production.local"
 
 if [[ -f "$DEV_OUT" || -f "$PROD_OUT" ]]; then
-  echo "error: .env.dev or .env.prod already exists — remove or rename before splitting" >&2
+  echo "error: .env.local or .env.production.local already exists — remove or rename before splitting" >&2
   exit 1
 fi
 
@@ -38,7 +38,6 @@ else
   echo "ALLOW_DEV_AUTH_BYPASS=true" >> "$DEV_OUT"
 fi
 
-# Strip prod-only proxy hints from dev (optional cleanup)
 sed -i '' '/^NEXT_PUBLIC_CLERK_PROXY_URL=/d' "$DEV_OUT" 2>/dev/null \
   || sed -i '/^NEXT_PUBLIC_CLERK_PROXY_URL=/d' "$DEV_OUT" 2>/dev/null || true
 sed -i '' '/^NEXT_PUBLIC_CLERK_FORCE_PROXY=/d' "$DEV_OUT" 2>/dev/null \
@@ -59,4 +58,4 @@ echo "created:"
 echo "  ${DEV_OUT}  (localhost + ALLOW_DEV_AUTH_BYPASS=true)"
 echo "  ${PROD_OUT} (https://visual-era.com, no dev bypass)"
 echo ""
-echo "Review both files, then use: npm run dev  (loads .env.dev)"
+echo "Review both files, then: npm run dev  (Next.js loads .env.local)"

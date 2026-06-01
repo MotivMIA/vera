@@ -58,8 +58,8 @@ Do **not** change unless the human explicitly requests:
 
 | Decision | Detail |
 |----------|--------|
-| **Local secrets** | `.env.dev` + `.env.prod` (gitignored); legacy `.env` still works |
-| **Template** | `.env.dev.example` / `.env.prod.example` |
+| **Local secrets** | `.env.local` + `.env.production.local` (gitignored); legacy `.env` still works |
+| **Template** | `.env.local.example` / `.env.production.local.example` |
 | **Local site URL** | `http://localhost:3001` |
 | **Production site URL** | `https://visual-era.com` on Vercel only |
 | **Dev bypass** | `ALLOW_DEV_AUTH_BYPASS=true` local only; never on Vercel Production |
