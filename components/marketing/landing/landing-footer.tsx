@@ -39,30 +39,19 @@ const siteHeadingClass =
 
 const footerColumnClass = "min-w-0";
 
-/**
- * sm+ top row: brand | menu group (two columns, top-aligned).
- * Download is a sibling with col-span-full so it is the only block that drops below.
- */
-function footerOuterGridClass(hasDownload: boolean, hasMenus: boolean): string {
-  if (!hasMenus && !hasDownload) return "";
-  if (!hasMenus) {
-    return hasDownload
-      ? "sm:grid-cols-[minmax(0,1.15fr)_minmax(10.5rem,13.5rem)]"
-      : "";
-  }
-  if (!hasDownload) {
-    return "sm:grid-cols-[minmax(0,1.15fr)_minmax(0,2fr)]";
-  }
-  return "sm:grid-cols-[minmax(0,1.15fr)_minmax(0,2fr)]";
+/** md+ evenly spaced top-level containers: brand | download | menu group. */
+function footerTopRowGridClass(hasDownload: boolean, hasMenus: boolean): string {
+  const count = 1 + (hasDownload ? 1 : 0) + (hasMenus ? 1 : 0);
+  if (count <= 1) return "";
+  if (count === 2) return "md:grid-cols-2";
+  return "md:grid-cols-3";
 }
 
-const footerDownloadSpanClass = "col-span-full";
-
-/** Product / Company / Support live inside one wrapper — internal grid per breakpoint. */
+/** Product / Company / Support stay inside the menu container. */
 function footerMenuGroupGridClass(columnCount: number): string {
   if (columnCount <= 1) return "";
-  if (columnCount === 2) return "sm:grid-cols-2";
-  return "sm:grid-cols-2 md:grid-cols-3";
+  if (columnCount === 2) return "grid-cols-2";
+  return "grid-cols-1 sm:grid-cols-2 md:grid-cols-3";
 }
 
 export function LandingFooter({
@@ -97,8 +86,8 @@ export function LandingFooter({
     <>
       <div
         className={cn(
-          "grid min-w-0 grid-cols-1 items-start gap-x-6 gap-y-10 sm:gap-x-8 lg:gap-x-8 xl:gap-x-10",
-          footerOuterGridClass(hasDownload, hasMenus),
+          "grid min-w-0 grid-cols-1 items-start gap-y-10 gap-x-6 md:gap-x-8 lg:gap-x-10",
+          footerTopRowGridClass(hasDownload, hasMenus),
         )}
       >
         <div className={footerColumnClass}>
@@ -117,7 +106,7 @@ export function LandingFooter({
             <div
               className={cn(
                 "mt-4 flex flex-wrap items-center gap-3",
-                !isLanding && "justify-center sm:justify-start",
+                !isLanding && "justify-center md:justify-start",
               )}
             >
               {socialLinks.map((social) => (
@@ -142,12 +131,26 @@ export function LandingFooter({
           ) : null}
         </div>
 
+        {appSection ? (
+          <div id="download" className={footerColumnClass}>
+            <p className={cn(columnHeadingClass, "break-words")}>{appSection.title}</p>
+            <div className="mt-3 min-w-0 w-full max-w-[13.5rem]">
+              <AppStoreBadges
+                links={APP_STORE_LINKS}
+                size="sm"
+                layout="row"
+                className="w-full min-w-0"
+              />
+            </div>
+          </div>
+        ) : null}
+
         {hasMenus ? (
           <nav
             aria-label="Footer"
             className={cn(
               footerColumnClass,
-              "grid min-w-0 grid-cols-1 items-start gap-x-6 gap-y-10 sm:gap-x-8",
+              "grid min-w-0 items-start gap-x-6 gap-y-10",
               footerMenuGroupGridClass(columns.length),
             )}
           >
@@ -166,26 +169,6 @@ export function LandingFooter({
               </div>
             ))}
           </nav>
-        ) : null}
-
-        {appSection ? (
-          <div
-            id="download"
-            className={cn(
-              footerColumnClass,
-              hasMenus && footerDownloadSpanClass,
-            )}
-          >
-            <p className={cn(columnHeadingClass, "break-words")}>{appSection.title}</p>
-            <div className="mt-3 min-w-0 w-full max-w-[13.5rem]">
-              <AppStoreBadges
-                links={APP_STORE_LINKS}
-                size="sm"
-                layout="row"
-                className="w-full min-w-0"
-              />
-            </div>
-          </div>
         ) : null}
       </div>
 
