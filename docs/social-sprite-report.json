@@ -1,0 +1,27 @@
+{
+  "generatedAt": "2026-06-01T07:18:48.675Z",
+  "package": "simple-icons",
+  "config": "lib/brand/site-social-icons.ts",
+  "output": "public/social-sprite.svg",
+  "requested": 3,
+  "generated": 3,
+  "missing": 0,
+  "icons": [
+    {
+      "id": "google",
+      "slug": "google",
+      "title": "Google"
+    },
+    {
+      "id": "x",
+      "slug": "x",
+      "title": "X"
+    },
+    {
+      "id": "instagram",
+      "slug": "instagram",
+      "title": "Instagram"
+    }
+  ],
+  "missingIcons": []
+}

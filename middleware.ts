@@ -1,8 +1,14 @@
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
+import createIntlMiddleware from "next-intl/middleware";
 import { collectClerkOrigins } from "@/lib/clerk/origins";
 import { shouldUseClerkFrontendApiProxy } from "@/lib/clerk/proxy-url";
+import { routing } from "@/i18n/routing";
+import { shouldLocalizePathname } from "@/lib/i18n/middleware";
+import { authSignInPath, DEFAULT_LOCALE } from "@/lib/routes";
 import { NextResponse } from "next/server";
-import type { NextFetchEvent, NextRequest } from "next/server";
+import type { NextRequest } from "next/server";
+
+const handleIntlRouting = createIntlMiddleware(routing);
 
 const isProtectedRoute = createRouteMatcher([
   "/onboarding(.*)",
@@ -57,22 +63,39 @@ function redirectLegacyClerkProxy(req: NextRequest): NextResponse | null {
     redirectPath === "/";
 
   if (isBrokenHandshake) {
-    return clearStaleClerkCookies(NextResponse.redirect(new URL("/sign-in", req.url)));
+    return clearStaleClerkCookies(
+      NextResponse.redirect(new URL(authSignInPath(DEFAULT_LOCALE), req.url)),
+    );
   }
 
   const isHandshakeLoop = redirectParam.includes("/__clerk/") || redirectParam.length > 512;
-  const target = new URL(isHandshakeLoop ? "/sign-in" : "/", req.url);
+  const target = new URL(isHandshakeLoop ? authSignInPath(DEFAULT_LOCALE) : "/", req.url);
   target.search = "";
   const response = NextResponse.redirect(target);
   return isHandshakeLoop ? clearStaleClerkCookies(response) : response;
 }
 
-const runClerkMiddleware = clerkMiddleware(
+export default clerkMiddleware(
   async (auth, req) => {
-    if (!isProtectedRoute(req)) return;
+    const legacyRedirect = redirectLegacyClerkProxy(req);
+    if (legacyRedirect) {
+      return legacyRedirect;
+    }
+
+    if (!isProtectedRoute(req)) {
+      if (shouldLocalizePathname(req.nextUrl.pathname)) {
+        return handleIntlRouting(req);
+      }
+      return;
+    }
 
     const authState = await auth();
-    if (authState.userId) return;
+    if (authState.userId) {
+      if (shouldLocalizePathname(req.nextUrl.pathname)) {
+        return handleIntlRouting(req);
+      }
+      return;
+    }
 
     if (req.nextUrl.pathname.startsWith("/api/")) {
       return NextResponse.json({ error: "Unauthorized." }, { status: 401 });
@@ -92,14 +115,6 @@ const runClerkMiddleware = clerkMiddleware(
       : {}),
   },
 );
-
-export default function middleware(req: NextRequest, event: NextFetchEvent) {
-  const legacyRedirect = redirectLegacyClerkProxy(req);
-  if (legacyRedirect) {
-    return legacyRedirect;
-  }
-  return runClerkMiddleware(req, event);
-}
 
 export const config = {
   matcher: [

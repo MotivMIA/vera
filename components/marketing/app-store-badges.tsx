@@ -7,8 +7,8 @@ import {
   type AppStorePlatform,
 } from "@/lib/brand/app";
 import {
+  borderAccentClass,
   borderAccentHoverClass,
-  borderAccentStrongClass,
   focusRingClass,
   panelSurfaceClass,
   panelSurfaceHoverClass,
@@ -19,8 +19,6 @@ export type AppStoreBadgeSize = "sm" | "md" | "lg";
 export type AppStoreBadgeLayout = "row" | "stack";
 /** `official` — full badge artwork; `styled` — themed shell with icon + store copy */
 export type AppStoreBadgeVariant = "official" | "styled";
-
-const BADGE_ASPECT = APP_STORE_BADGE_ASSETS.apple.width / APP_STORE_BADGE_ASSETS.apple.height;
 
 const sizeConfig = {
   sm: {
@@ -69,9 +67,9 @@ function badgeShellClassName({
 
   return cn(
     "inline-flex shrink-0 items-center justify-center overflow-hidden rounded-xl border text-left text-white",
-    borderAccentStrongClass,
+    borderAccentClass,
     variant === "official"
-      ? "bg-transparent p-0"
+      ? "bg-surface-panel/40 p-0"
       : cn("gap-2", panelSurfaceClass, sized.padding, sized.styledMinWidth),
     interactive &&
       cn(
@@ -89,7 +87,7 @@ function badgeShellClassName({
   );
 }
 
-function OfficialBadgeImage({
+function OfficialBadgeArtwork({
   platform,
   size,
 }: {
@@ -99,16 +97,18 @@ function OfficialBadgeImage({
   const asset = APP_STORE_BADGE_ASSETS[platform];
   const { heightClass } = sizeConfig[size];
   const heightPx = size === "sm" ? 32 : size === "md" ? 40 : 48;
-  const widthPx = Math.round(heightPx * BADGE_ASPECT);
+  const aspect = asset.width / asset.height;
+  const widthPx = Math.round(heightPx * aspect);
 
   return (
-    <Image
+    // eslint-disable-next-line @next/next/no-img-element -- static SVG badge artwork
+    <img
       src={asset.src}
       alt=""
       width={widthPx}
       height={heightPx}
-      className={cn(heightClass, "w-auto max-w-none object-contain")}
-      unoptimized
+      decoding="async"
+      className={cn(heightClass, "block w-auto max-w-none object-contain")}
       aria-hidden
     />
   );
@@ -172,7 +172,7 @@ function StoreBadge({
 
   const content =
     variant === "official" ? (
-      <OfficialBadgeImage platform={link.platform} size={size} />
+      <OfficialBadgeArtwork platform={link.platform} size={size} />
     ) : (
       <StyledBadgeContent link={link} size={size} />
     );

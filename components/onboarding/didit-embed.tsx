@@ -9,6 +9,8 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { getClientLocaleFromCookie } from "@/lib/i18n/client-locale";
+import { authSignInPath } from "@/lib/routes";
 import type { VerificationState } from "@/types/onboarding";
 
 type VerificationStatusResponse = {
@@ -56,7 +58,7 @@ export function DiditEmbed() {
 
     if (!isSignedIn || !userId) {
       const redirect = encodeURIComponent("/verify-identity");
-      router.replace(`/sign-in?redirect_url=${redirect}`);
+      router.replace(`${authSignInPath(getClientLocaleFromCookie())}?redirect_url=${redirect}`);
       return;
     }
 

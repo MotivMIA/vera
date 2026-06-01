@@ -5,12 +5,14 @@ import { clerkAppearance } from "@/lib/clerk/appearance";
 import { getClerkProviderProxyProps } from "@/lib/clerk/hosted-only";
 import { getClerkPublishableKey } from "@/lib/clerk/keys";
 import { collectClerkOrigins } from "@/lib/clerk/origins";
+import { brandDisplayFont } from "@/lib/brand/fonts";
 import { getSiteUrl } from "@/lib/env";
+import { authSignInPath, authSignUpPath } from "@/lib/routes";
 import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Visual Era | Creator Onboarding",
-  description: "Professional creator onboarding, identity verification, and management tools.",
+  description: "Build the presence, trust, and momentum your brand was made for.",
   metadataBase: new URL(getSiteUrl()),
 };
 
@@ -28,10 +30,10 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
       {...getClerkProviderProxyProps()}
       appearance={clerkAppearance}
       allowedRedirectOrigins={allowedRedirectOrigins}
-      signInUrl="/sign-in"
-      signUpUrl="/sign-up"
+      signInUrl={authSignInPath()}
+      signUpUrl={authSignUpPath()}
     >
-      <html lang="en" className="dark">
+      <html lang="en" className={`dark ${brandDisplayFont.variable}`}>
         <body>
           {children}
           <Toaster />

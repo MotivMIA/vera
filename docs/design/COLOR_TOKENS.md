@@ -14,6 +14,7 @@
 - `lib/brand/tokens.css` — brand primitives (CSS source of truth)
 - `lib/brand/colors.ts` — same hex values for JS (Clerk, inline styles)
 - `app/globals.css` — semantic UI tokens + Tailwind `@theme inline`
+- [FLUID_METRICS.md](./FLUID_METRICS.md) — viewport-fluid type, spacing, layout (`lib/brand/fluid-metrics.css`)
 
 ---
 

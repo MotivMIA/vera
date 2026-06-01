@@ -1,0 +1,175 @@
+/**
+ * Fluid responsive metrics — viewport-interpolated scale (320px → 1440px).
+ * Formula: clamp(min, min + (max − min) × ((100vw − minVw) / range), max)
+ * See docs/design/FLUID_METRICS.md
+ */
+:root {
+  --fluid-vw-min: 20rem; /* 320px @ 16px root */
+  --fluid-vw-max: 90rem; /* 1440px @ 16px root */
+  --fluid-vw-range: calc(var(--fluid-vw-max) - var(--fluid-vw-min));
+
+  /* —— Typography —— */
+  --font-size-display: clamp(
+    2.25rem,
+    calc(2.25rem + (4.5rem - 2.25rem) * ((100vw - var(--fluid-vw-min)) / var(--fluid-vw-range))),
+    4.5rem
+  );
+  --font-size-h1: clamp(
+    1.875rem,
+    calc(1.875rem + (4.5rem - 1.875rem) * ((100vw - var(--fluid-vw-min)) / var(--fluid-vw-range))),
+    4.5rem
+  );
+  --font-size-h2: clamp(
+    1.125rem,
+    calc(1.125rem + (1.5rem - 1.125rem) * ((100vw - var(--fluid-vw-min)) / var(--fluid-vw-range))),
+    1.5rem
+  );
+  --font-size-body: clamp(
+    1rem,
+    calc(1rem + (1.25rem - 1rem) * ((100vw - var(--fluid-vw-min)) / var(--fluid-vw-range))),
+    1.25rem
+  );
+  --font-size-small: clamp(
+    0.875rem,
+    calc(0.875rem + (1rem - 0.875rem) * ((100vw - var(--fluid-vw-min)) / var(--fluid-vw-range))),
+    1rem
+  );
+  --font-size-caption: clamp(
+    0.75rem,
+    calc(0.75rem + (0.8125rem - 0.75rem) * ((100vw - var(--fluid-vw-min)) / var(--fluid-vw-range))),
+    0.8125rem
+  );
+
+  --line-height-h1: clamp(1.15, calc(1.15 + (1.02 - 1.15) * ((100vw - var(--fluid-vw-min)) / var(--fluid-vw-range))), 1.02);
+  --line-height-body: clamp(1.625, calc(1.625 + (1.75 - 1.625) * ((100vw - var(--fluid-vw-min)) / var(--fluid-vw-range))), 1.75);
+
+  /**
+   * HomeBranding motto — capped below page h1 so EN/ES title stays ≤2 lines
+   * in hero/auth columns (~280–640px). Compact variant for mobile auth lockup.
+   */
+  --font-size-motto: clamp(
+    1.5rem,
+    calc(1.5rem + (2.875rem - 1.5rem) * ((100vw - var(--fluid-vw-min)) / var(--fluid-vw-range))),
+    2.875rem
+  );
+  /* Compact auth/mobile motto — 320px→768px; caps before 3-line wrap in ~280px columns */
+  --font-size-motto-compact: clamp(
+    1.375rem,
+    calc(1.375rem + (2rem - 1.375rem) * ((100vw - var(--fluid-vw-min)) / (48rem - var(--fluid-vw-min)))),
+    2rem
+  );
+  --line-height-motto: 1.2;
+  --line-height-motto-compact: 1.22;
+
+  /**
+   * Logo lockup — wordmark + mark scale with the same viewport curve as motto/h1.
+   * Mark size ≈ wordmark × 1.349 (lg lockup geometry).
+   */
+  --font-size-lockup-wordmark: clamp(
+    2.27rem,
+    calc(2.27rem + (3.65rem - 2.27rem) * ((100vw - var(--fluid-vw-min)) / var(--fluid-vw-range))),
+    3.65rem
+  );
+  /* Auth/mobile compact lockup (xl) — caps before wide-desktop hero scale */
+  --font-size-lockup-wordmark-compact: clamp(
+    2.27rem,
+    calc(2.27rem + (2.89rem - 2.27rem) * ((100vw - var(--fluid-vw-min)) / (48rem - var(--fluid-vw-min)))),
+    2.89rem
+  );
+  --font-size-wordmark-sm: clamp(
+    1.25rem,
+    calc(1.25rem + (1.37rem - 1.25rem) * ((100vw - var(--fluid-vw-min)) / var(--fluid-vw-range))),
+    1.37rem
+  );
+  --font-size-wordmark-md: clamp(
+    1.65rem,
+    calc(1.65rem + (1.83rem - 1.65rem) * ((100vw - var(--fluid-vw-min)) / var(--fluid-vw-range))),
+    1.83rem
+  );
+
+  --size-lockup-mark: calc(var(--font-size-lockup-wordmark) * 1.349);
+  --size-lockup-mark-compact: calc(var(--font-size-lockup-wordmark-compact) * 1.349);
+  --size-lockup-mark-sm: clamp(
+    1.65rem,
+    calc(1.65rem + (1.75rem - 1.65rem) * ((100vw - var(--fluid-vw-min)) / var(--fluid-vw-range))),
+    1.75rem
+  );
+  --size-lockup-mark-md: clamp(
+    2rem,
+    calc(2rem + (2.1875rem - 2rem) * ((100vw - var(--fluid-vw-min)) / var(--fluid-vw-range))),
+    2.1875rem
+  );
+
+  --space-lockup-gap: clamp(
+    0.78rem,
+    calc(0.78rem + (1.1rem - 0.78rem) * ((100vw - var(--fluid-vw-min)) / var(--fluid-vw-range))),
+    1.1rem
+  );
+  --space-lockup-gap-compact: clamp(
+    0.75rem,
+    calc(0.75rem + (0.88rem - 0.75rem) * ((100vw - var(--fluid-vw-min)) / (48rem - var(--fluid-vw-min)))),
+    0.88rem
+  );
+  --lockup-offset: clamp(
+    0.1875rem,
+    calc(0.1875rem + (0.375rem - 0.1875rem) * ((100vw - var(--fluid-vw-min)) / var(--fluid-vw-range))),
+    0.375rem
+  );
+  --lockup-offset-compact: clamp(
+    0.1875rem,
+    calc(0.1875rem + (0.3125rem - 0.1875rem) * ((100vw - var(--fluid-vw-min)) / (48rem - var(--fluid-vw-min)))),
+    0.3125rem
+  );
+
+  /* —— Spacing rhythm —— */
+  --space-section-y: clamp(
+    2rem,
+    calc(2rem + (2.5rem - 2rem) * ((100vw - var(--fluid-vw-min)) / var(--fluid-vw-range))),
+    2.5rem
+  );
+  --space-section-y-lg: clamp(
+    3rem,
+    calc(3rem + (3.5rem - 3rem) * ((100vw - var(--fluid-vw-min)) / var(--fluid-vw-range))),
+    3.5rem
+  );
+  --space-block: clamp(
+    1.25rem,
+    calc(1.25rem + (2rem - 1.25rem) * ((100vw - var(--fluid-vw-min)) / var(--fluid-vw-range))),
+    2rem
+  );
+  --space-inline: clamp(
+    1.25rem,
+    calc(1.25rem + (2rem - 1.25rem) * ((100vw - var(--fluid-vw-min)) / var(--fluid-vw-range))),
+    2rem
+  );
+  --space-gap-lg: clamp(
+    2rem,
+    calc(2rem + (2.5rem - 2rem) * ((100vw - var(--fluid-vw-min)) / var(--fluid-vw-range))),
+    2.5rem
+  );
+  --space-gap-md: clamp(
+    1.5rem,
+    calc(1.5rem + (2rem - 1.5rem) * ((100vw - var(--fluid-vw-min)) / var(--fluid-vw-range))),
+    2rem
+  );
+  --space-gap-sm: clamp(
+    0.75rem,
+    calc(0.75rem + (1rem - 0.75rem) * ((100vw - var(--fluid-vw-min)) / var(--fluid-vw-range))),
+    1rem
+  );
+  --space-card-y: clamp(
+    1.25rem,
+    calc(1.25rem + (1.5rem - 1.25rem) * ((100vw - var(--fluid-vw-min)) / var(--fluid-vw-range))),
+    1.5rem
+  );
+
+  /* —— Layout —— */
+  --content-max-width: 80rem;
+  --auth-card-max-width: 28rem;
+  --hero-gap: var(--space-gap-lg);
+  --hero-min-height-offset: clamp(
+    10rem,
+    calc(10rem + (12rem - 10rem) * ((100vw - var(--fluid-vw-min)) / var(--fluid-vw-range))),
+    12rem
+  );
+}

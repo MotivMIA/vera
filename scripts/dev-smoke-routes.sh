@@ -7,7 +7,13 @@ BASE="http://localhost:${PORT}"
 
 routes=(
   /
+  /login
+  /es
   /sign-in
+  /sign-up
+  /es/sign-in
+  /es/sign-up
+  /onboarding
   /onboarding/consent
   /verify-identity
   /documents

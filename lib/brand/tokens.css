@@ -13,8 +13,23 @@
   --brand-magenta-deep: #830c60;
   --brand-purple-deep: #6b026b;
   --brand-gradient: linear-gradient(135deg, var(--brand-magenta) 0%, var(--brand-purple-deep) 100%);
-  --brand-glow: rgba(228, 26, 118, 0.16);
-  --brand-glow-purple: rgba(107, 2, 107, 0.14);
+  /** Lockup wordmark — “Visual” base tone; “Era” ~25% darker (see .brand-wordmark-era). */
+  --brand-wordmark-visual-color: #f6f4ef;
+  --brand-wordmark-visual-gradient: linear-gradient(
+    90deg,
+    var(--brand-wordmark-visual-color) 0%,
+    var(--brand-wordmark-visual-color) 100%
+  );
+  --brand-wordmark-era-color: color-mix(in srgb, var(--brand-wordmark-visual-color) 75%, #000);
+  --brand-wordmark-era-gradient: linear-gradient(
+    90deg,
+    var(--brand-wordmark-era-color) 0%,
+    color-mix(in srgb, var(--brand-wordmark-era-color) 88%, #000) 100%
+  );
+  /** @deprecated Whole-wordmark gradient; prefer split visual/era tokens. */
+  --brand-wordmark-gradient: var(--brand-wordmark-visual-gradient);
+  --brand-glow: rgba(228, 26, 118, 0.11);
+  --brand-glow-purple: rgba(107, 2, 107, 0.09);
   --brand-selection: rgba(228, 26, 118, 0.35);
 
   /* —— Semantic role tokens (Webflow-style aliases → primitives) —— */

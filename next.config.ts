@@ -1,8 +1,11 @@
 import type { NextConfig } from "next";
+import createNextIntlPlugin from "next-intl/plugin";
 import { applyResolvedClerkEnv, getClerkPublishableKey } from "./lib/clerk/keys";
 
 applyResolvedClerkEnv();
 const resolvedClerkPublishableKey = getClerkPublishableKey();
+
+const withNextIntl = createNextIntlPlugin("./i18n/request.ts");
 
 const nextConfig: NextConfig = {
   env: {
@@ -23,4 +26,4 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+export default withNextIntl(nextConfig);

@@ -15,7 +15,7 @@ export function OnboardingShell({ children, eyebrow, title, description, progres
   return (
     <main className="min-h-screen px-5 py-6 md:px-8">
       <header className="mx-auto flex max-w-6xl items-center justify-between">
-        <BrandLogo size="sm" showWordmark />
+        <BrandLogo href="/" size="sm" showWordmark />
         <UserButton />
       </header>
       <section className="mx-auto grid max-w-6xl gap-8 py-10 lg:grid-cols-[0.75fr_1fr] lg:py-16">

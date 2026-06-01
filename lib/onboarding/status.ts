@@ -2,6 +2,7 @@ import { cookies } from "next/headers";
 import type { OnboardingStep } from "@/types/onboarding";
 import { getSupabaseAdmin } from "@/lib/supabase/server";
 import { ONBOARDING_STEP_PATH } from "@/lib/onboarding/constants";
+import { ONBOARDING_ENTRY_PATH } from "@/lib/routes";
 
 const DEV_CONSENT_COOKIE = "ve_consent_ack";
 
@@ -129,23 +130,40 @@ export async function hasConsentAccepted(clerkUserId: string) {
 
 /** Canonical path for the user's current onboarding step (post-auth redirects). */
 export function resolveNextOnboardingPath(snapshot: OnboardingSnapshot): string {
-  if (!snapshot.consentComplete) return ONBOARDING_STEP_PATH.consent;
+  if (!snapshot.consentComplete) return ONBOARDING_ENTRY_PATH;
   if (!snapshot.identityVerified) return ONBOARDING_STEP_PATH.identity;
   if (!snapshot.documentsComplete) return ONBOARDING_STEP_PATH.documents;
   return ONBOARDING_STEP_PATH.complete;
 }
 
+function isOnboardingWelcomePath(pathname: string) {
+  return pathname === ONBOARDING_ENTRY_PATH;
+}
+
+function isOnboardingConsentPath(pathname: string) {
+  return pathname === ONBOARDING_STEP_PATH.consent || pathname.startsWith(`${ONBOARDING_STEP_PATH.consent}/`);
+}
+
 export function resolveOnboardingRedirect(snapshot: OnboardingSnapshot, pathname: string): string | null {
-  const onboardingPaths = ["/onboarding/consent", "/verify-identity", "/documents", "/success"];
+  const onboardingPaths = [
+    ONBOARDING_ENTRY_PATH,
+    ONBOARDING_STEP_PATH.consent,
+    "/verify-identity",
+    "/documents",
+    "/success",
+  ];
   if (!onboardingPaths.some((path) => pathname === path || pathname.startsWith(`${path}/`))) {
     return null;
   }
 
   if (!snapshot.consentComplete) {
-    return pathname.startsWith("/onboarding/consent") ? null : "/onboarding/consent";
+    if (isOnboardingWelcomePath(pathname) || isOnboardingConsentPath(pathname)) {
+      return null;
+    }
+    return ONBOARDING_ENTRY_PATH;
   }
 
-  if (pathname.startsWith("/onboarding/consent")) {
+  if (isOnboardingWelcomePath(pathname) || isOnboardingConsentPath(pathname)) {
     return "/verify-identity";
   }
 

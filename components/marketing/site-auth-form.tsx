@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useLocale, useTranslations } from "next-intl";
 import { useSignIn, useSignUp } from "@clerk/nextjs";
 import { LoaderCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -9,11 +10,14 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { navigateAfterAuthFinalize } from "@/lib/clerk/finalize-session";
+import { pathWithLocale } from "@/lib/i18n/paths";
 import { ONBOARDING_ENTRY_PATH } from "@/lib/routes";
 import { SocialSpriteIcon } from "@/components/marketing/social-sprite-icon";
 import type { SocialSpriteIconVariant } from "@/lib/brand/social-sprite";
 import {
   borderDefaultClass,
+  fluidCaptionClass,
+  fluidH2Class,
   panelShellClass,
   panelSurfaceClass,
   panelSurfaceEmphasisHoverClass,
@@ -25,43 +29,36 @@ const inputClassName =
 
 const SSO_PROVIDERS: {
   strategy: "oauth_google" | "oauth_x";
-  label: string;
+  labelKey: "continueGoogle" | "continueX";
   icon: SocialSpriteIconVariant;
 }[] = [
-  { strategy: "oauth_google", label: "Continue with Google", icon: "google" },
-  { strategy: "oauth_x", label: "Continue with X", icon: "x" },
+  { strategy: "oauth_google", labelKey: "continueGoogle", icon: "google" },
+  { strategy: "oauth_x", labelKey: "continueX", icon: "x" },
 ];
+
+function isIdentifierNotFound(error: unknown): boolean {
+  if (!error || typeof error !== "object" || !("errors" in error)) return false;
+  const errors = (error as { errors?: Array<{ code?: string }> }).errors;
+  return errors?.[0]?.code === "form_identifier_not_found";
+}
 
 function FieldError({ message }: { message?: string }) {
   if (!message) return null;
-  return <p className="text-xs text-destructive">{message}</p>;
+  return <p className={cn(fluidCaptionClass, "text-destructive")}>{message}</p>;
 }
 
 function AuthPanel({ children, className }: { children: React.ReactNode; className?: string }) {
   return <div className={cn(panelShellClass, className)}>{children}</div>;
 }
 
-function SocialButtons({
-  mode,
-  disabled,
-}: {
-  mode: "sign-in" | "sign-up";
-  disabled?: boolean;
-}) {
+function SocialButtons({ disabled }: { disabled?: boolean }) {
+  const t = useTranslations("Auth.form");
+  const locale = useLocale();
   const { signIn } = useSignIn();
-  const { signUp } = useSignUp();
-  const callbackUrl = mode === "sign-in" ? "/sign-in/sso-callback" : "/sign-up/sso-callback";
+  const callbackUrl = pathWithLocale(locale, "/sign-in/sso-callback");
 
   async function handleSso(strategy: (typeof SSO_PROVIDERS)[number]["strategy"]) {
-    if (mode === "sign-in") {
-      await signIn.sso({
-        strategy,
-        redirectUrl: ONBOARDING_ENTRY_PATH,
-        redirectCallbackUrl: callbackUrl,
-      });
-      return;
-    }
-    await signUp.sso({
+    await signIn.sso({
       strategy,
       redirectUrl: ONBOARDING_ENTRY_PATH,
       redirectCallbackUrl: callbackUrl,
@@ -76,7 +73,7 @@ function SocialButtons({
           type="button"
           variant="outline"
           className={cn(
-            "h-11 w-full text-sm font-medium text-foreground",
+            "h-11 w-full text-fluid-small font-medium text-foreground",
             borderDefaultClass,
             panelSurfaceClass,
             panelSurfaceEmphasisHoverClass,
@@ -87,7 +84,7 @@ function SocialButtons({
         >
           <span className="flex w-full items-center justify-center gap-3">
             <SocialSpriteIcon variant={provider.icon} className="size-5" />
-            <span>{provider.label}</span>
+            <span>{t(provider.labelKey)}</span>
           </span>
         </Button>
       ))}
@@ -95,56 +92,114 @@ function SocialButtons({
   );
 }
 
-function SiteSignInForm() {
+export function SiteAuthForm() {
+  const t = useTranslations("Auth.form");
   const router = useRouter();
-  const { signIn, errors, fetchStatus } = useSignIn();
+  const { signIn, errors: signInErrors, fetchStatus: signInFetchStatus } = useSignIn();
+  const { signUp, errors: signUpErrors, fetchStatus: signUpFetchStatus } = useSignUp();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [mfaCode, setMfaCode] = useState("");
-  const busy = fetchStatus === "fetching";
+  const [code, setCode] = useState("");
+  /** Sign-up email verification (new account path). */
+  const [verifyingNewAccount, setVerifyingNewAccount] = useState(false);
 
-  async function finalizeIfComplete() {
+  const busy = signInFetchStatus === "fetching" || signUpFetchStatus === "fetching";
+  const errors = verifyingNewAccount ? signUpErrors : signInErrors;
+
+  async function finalizeSignIn() {
     if (signIn.status !== "complete") return;
     await signIn.finalize({
       navigate: (args) => navigateAfterAuthFinalize(router, args),
     });
   }
 
+  async function finalizeSignUp() {
+    if (signUp.status !== "complete") return;
+    await signUp.finalize({
+      navigate: (args) => navigateAfterAuthFinalize(router, args),
+    });
+  }
+
   async function handlePasswordSubmit(event: React.FormEvent) {
     event.preventDefault();
-    await signIn.password({ emailAddress: email, password });
-    if (signIn.status === "needs_second_factor") {
-      await signIn.mfa.sendEmailCode();
+
+    const signInResult = await signIn.password({ emailAddress: email, password });
+
+    if (signInResult.error && isIdentifierNotFound(signInResult.error)) {
+      const signUpResult = await signUp.password({ emailAddress: email, password });
+      if (signUpResult.error) return;
+
+      if (
+        signUp.status === "missing_requirements" &&
+        signUp.unverifiedFields?.includes("email_address") &&
+        (signUp.missingFields?.length ?? 0) === 0
+      ) {
+        await signUp.verifications.sendEmailCode();
+        setVerifyingNewAccount(true);
+      }
+      return;
     }
-    await finalizeIfComplete();
+
+    if (signIn.status === "needs_second_factor" || signIn.status === "needs_client_trust") {
+      const emailCodeFactor = signIn.supportedSecondFactors?.find(
+        (factor) => factor.strategy === "email_code",
+      );
+      if (emailCodeFactor) {
+        await signIn.mfa.sendEmailCode();
+      }
+      return;
+    }
+
+    await finalizeSignIn();
   }
 
-  async function handleMfaSubmit(event: React.FormEvent) {
+  async function handleVerifySubmit(event: React.FormEvent) {
     event.preventDefault();
-    await signIn.mfa.verifyEmailCode({ code: mfaCode });
-    await finalizeIfComplete();
+
+    if (verifyingNewAccount) {
+      const verifyResult = await signUp.verifications.verifyEmailCode({ code });
+      if (verifyResult.error) return;
+      await finalizeSignUp();
+      return;
+    }
+
+    const verifyResult = await signIn.mfa.verifyEmailCode({ code });
+    if (verifyResult.error) return;
+    await finalizeSignIn();
   }
 
-  if (signIn.status === "needs_second_factor" || signIn.status === "needs_client_trust") {
+  const needsSignInVerification =
+    !verifyingNewAccount &&
+    (signIn.status === "needs_second_factor" || signIn.status === "needs_client_trust");
+
+  if (verifyingNewAccount || needsSignInVerification) {
+    const isNewAccount = verifyingNewAccount;
+
     return (
       <AuthPanel>
-        <h3 className="text-lg font-semibold">Verify it&apos;s you</h3>
-        <p className="mt-1 text-sm text-muted-foreground">Enter the code we sent to your email.</p>
-        <form className="mt-5 space-y-4" onSubmit={handleMfaSubmit}>
+        <h3 className={fluidH2Class}>{isNewAccount ? t("verifyEmailTitle") : t("verifyTitle")}</h3>
+        <p className="mt-1 text-fluid-small text-muted-foreground">
+          {isNewAccount
+            ? t.rich("verifyEmailSent", {
+                highlight: () => <span className="text-foreground">{email}</span>,
+              })
+            : t("verifyEmailHint")}
+        </p>
+        <form className="mt-5 space-y-4" onSubmit={handleVerifySubmit}>
           <div className="space-y-2">
-            <Label htmlFor="mfa-code">Verification code</Label>
+            <Label htmlFor="auth-code">{t("verificationCode")}</Label>
             <Input
-              id="mfa-code"
+              id="auth-code"
               inputMode="numeric"
               autoComplete="one-time-code"
-              value={mfaCode}
-              onChange={(e) => setMfaCode(e.target.value)}
+              value={code}
+              onChange={(e) => setCode(e.target.value)}
               className={inputClassName}
             />
             <FieldError message={errors?.fields?.code?.message} />
           </div>
           <Button type="submit" className="h-11 w-full" variant="accent" disabled={busy}>
-            {busy ? <LoaderCircle className="size-4 animate-spin" /> : "Verify"}
+            {busy ? <LoaderCircle className="size-4 animate-spin" /> : t("verify")}
           </Button>
         </form>
       </AuthPanel>
@@ -153,17 +208,19 @@ function SiteSignInForm() {
 
   return (
     <AuthPanel>
-      <SocialButtons mode="sign-in" disabled={busy} />
+      <SocialButtons disabled={busy} />
       <div className="my-5 flex items-center gap-3">
         <Separator className="flex-1 bg-border-default" />
-        <span className="text-xs uppercase tracking-wider text-muted-foreground">or</span>
+        <span className={cn(fluidCaptionClass, "uppercase tracking-wider text-muted-foreground")}>
+          {t("or")}
+        </span>
         <Separator className="flex-1 bg-border-default" />
       </div>
       <form className="space-y-4" onSubmit={handlePasswordSubmit}>
         <div className="space-y-2">
-          <Label htmlFor="sign-in-email">Email</Label>
+          <Label htmlFor="auth-email">{t("email")}</Label>
           <Input
-            id="sign-in-email"
+            id="auth-email"
             type="email"
             autoComplete="email"
             value={email}
@@ -171,12 +228,18 @@ function SiteSignInForm() {
             className={inputClassName}
             required
           />
-          <FieldError message={errors?.fields?.identifier?.message} />
+          <FieldError
+            message={
+              verifyingNewAccount
+                ? signUpErrors?.fields?.emailAddress?.message
+                : signInErrors?.fields?.identifier?.message
+            }
+          />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="sign-in-password">Password</Label>
+          <Label htmlFor="auth-password">{t("password")}</Label>
           <Input
-            id="sign-in-password"
+            id="auth-password"
             type="password"
             autoComplete="current-password"
             value={password}
@@ -187,129 +250,13 @@ function SiteSignInForm() {
           <FieldError message={errors?.fields?.password?.message} />
         </div>
         {errors?.global?.[0]?.message ? (
-          <p className="text-xs text-destructive">{errors.global[0].message}</p>
+          <p className={cn(fluidCaptionClass, "text-destructive")}>{errors.global[0].message}</p>
         ) : null}
         <Button type="submit" className="h-11 w-full" variant="accent" disabled={busy}>
-          {busy ? <LoaderCircle className="size-4 animate-spin" /> : "Sign in"}
+          {busy ? <LoaderCircle className="size-4 animate-spin" /> : t("continue")}
         </Button>
       </form>
+      <div id="clerk-captcha" />
     </AuthPanel>
   );
-}
-
-function SiteSignUpForm() {
-  const router = useRouter();
-  const { signUp, errors, fetchStatus } = useSignUp();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [code, setCode] = useState("");
-  const busy = fetchStatus === "fetching";
-
-  const needsVerification =
-    signUp.status === "missing_requirements" &&
-    signUp.unverifiedFields?.includes("email_address");
-
-  async function finalizeIfComplete() {
-    if (signUp.status !== "complete") return;
-    await signUp.finalize({
-      navigate: (args) => navigateAfterAuthFinalize(router, args),
-    });
-  }
-
-  async function handlePasswordSubmit(event: React.FormEvent) {
-    event.preventDefault();
-    await signUp.password({ emailAddress: email, password });
-    if (signUp.status === "missing_requirements" && signUp.unverifiedFields?.includes("email_address")) {
-      await signUp.verifications.sendEmailCode();
-      return;
-    }
-    await finalizeIfComplete();
-  }
-
-  async function handleVerifySubmit(event: React.FormEvent) {
-    event.preventDefault();
-    await signUp.verifications.verifyEmailCode({ code });
-    await finalizeIfComplete();
-  }
-
-  if (needsVerification) {
-    return (
-      <AuthPanel>
-        <h3 className="text-lg font-semibold">Verify your email</h3>
-        <p className="mt-1 text-sm text-muted-foreground">
-          We sent a code to <span className="text-foreground">{email}</span>.
-        </p>
-        <form className="mt-5 space-y-4" onSubmit={handleVerifySubmit}>
-          <div className="space-y-2">
-            <Label htmlFor="sign-up-code">Verification code</Label>
-            <Input
-              id="sign-up-code"
-              inputMode="numeric"
-              autoComplete="one-time-code"
-              value={code}
-              onChange={(e) => setCode(e.target.value)}
-              className={inputClassName}
-            />
-            <FieldError message={errors?.fields?.code?.message} />
-          </div>
-          <Button type="submit" className="h-11 w-full" variant="accent" disabled={busy}>
-            {busy ? <LoaderCircle className="size-4 animate-spin" /> : "Create account"}
-          </Button>
-        </form>
-      </AuthPanel>
-    );
-  }
-
-  return (
-    <AuthPanel>
-      <SocialButtons mode="sign-up" disabled={busy} />
-      <div className="my-5 flex items-center gap-3">
-        <Separator className="flex-1 bg-border-default" />
-        <span className="text-xs uppercase tracking-wider text-muted-foreground">or</span>
-        <Separator className="flex-1 bg-border-default" />
-      </div>
-      <form className="space-y-4" onSubmit={handlePasswordSubmit}>
-        <div className="space-y-2">
-          <Label htmlFor="sign-up-email">Email</Label>
-          <Input
-            id="sign-up-email"
-            type="email"
-            autoComplete="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className={inputClassName}
-            required
-          />
-          <FieldError message={errors?.fields?.emailAddress?.message} />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="sign-up-password">Password</Label>
-          <Input
-            id="sign-up-password"
-            type="password"
-            autoComplete="new-password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className={inputClassName}
-            required
-          />
-          <FieldError message={errors?.fields?.password?.message} />
-        </div>
-        {errors?.global?.[0]?.message ? (
-          <p className="text-xs text-destructive">{errors.global[0].message}</p>
-        ) : null}
-        <Button type="submit" className="h-11 w-full" variant="accent" disabled={busy}>
-          {busy ? <LoaderCircle className="size-4 animate-spin" /> : "Create account"}
-        </Button>
-      </form>
-    </AuthPanel>
-  );
-}
-
-export type SiteAuthFormProps = {
-  mode: "sign-in" | "sign-up";
-};
-
-export function SiteAuthForm({ mode }: SiteAuthFormProps) {
-  return mode === "sign-in" ? <SiteSignInForm /> : <SiteSignUpForm />;
 }

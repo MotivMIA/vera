@@ -1,6 +1,6 @@
 import {
   DOCUMENTS_PATH,
-  ONBOARDING_ENTRY_PATH,
+  ONBOARDING_CONSENT_PATH,
   SUCCESS_PATH,
   VERIFY_IDENTITY_PATH,
 } from "@/lib/routes";
@@ -11,7 +11,7 @@ export { ONBOARDING_ENTRY_PATH } from "@/lib/routes";
 export const ONBOARDING_STEP_ORDER: OnboardingStep[] = ["consent", "identity", "documents", "complete"];
 
 export const ONBOARDING_STEP_PATH: Record<OnboardingStep, string> = {
-  consent: ONBOARDING_ENTRY_PATH,
+  consent: ONBOARDING_CONSENT_PATH,
   identity: VERIFY_IDENTITY_PATH,
   documents: DOCUMENTS_PATH,
   complete: SUCCESS_PATH,

@@ -1,15 +1,50 @@
 import Image from "next/image";
 import Link from "next/link";
+import { brandWordmarkClass } from "@/lib/brand/theme-classes";
 import { cn } from "@/lib/utils";
 
+/** Mark-only sizes (no wordmark). Lockup mark/wordmark scale via globals.css + fluid-metrics. */
 const sizeMap = {
-  sm: { width: 32, height: 32, className: "size-8" },
-  md: { width: 40, height: 40, className: "size-10" },
-  lg: { width: 56, height: 56, className: "size-14" },
+  sm: {
+    width: 28,
+    height: 28,
+    className: "size-7",
+    wordmark: "brand-wordmark--sm",
+    gap: "gap-2",
+  },
+  md: {
+    width: 35,
+    height: 35,
+    className: "size-[2.1875rem]",
+    wordmark: "brand-wordmark--md",
+    gap: "gap-2.5",
+  },
+  lg: {
+    width: 85,
+    height: 85,
+    className: "size-[3.0625rem]",
+    wordmark: "brand-wordmark--lg",
+    gap: "gap-2.5",
+  },
+  xl: {
+    width: 63,
+    height: 63,
+    className: "size-[3.9375rem]",
+    wordmark: "brand-wordmark--xl",
+    gap: "gap-3",
+  },
+  "2xl": {
+    width: 85,
+    height: 85,
+    className: "size-[5.3125rem]",
+    wordmark: "brand-wordmark--2xl",
+    gap: "gap-3.5",
+  },
 } as const;
 
 export type BrandLogoProps = {
-  href?: string;
+  /** When set, wraps the logo in a link. Omit for a static logo (e.g. inside another link). */
+  href?: string | null;
   size?: keyof typeof sizeMap;
   showWordmark?: boolean;
   className?: string;
@@ -22,7 +57,7 @@ export type BrandLogoProps = {
 };
 
 export function BrandLogo({
-  href = "/",
+  href,
   size = "md",
   showWordmark = false,
   className,
@@ -30,6 +65,9 @@ export function BrandLogo({
   variant = "mask",
 }: BrandLogoProps) {
   const dimensions = sizeMap[size];
+  const markClassName = showWordmark
+    ? "brand-logo-mark shrink-0"
+    : cn(dimensions.className, "brand-logo-mark shrink-0");
 
   const mark =
     variant === "png" ? (
@@ -38,7 +76,7 @@ export function BrandLogo({
         alt=""
         width={dimensions.width}
         height={dimensions.height}
-        className={cn(dimensions.className, "shrink-0 object-contain")}
+        className={cn(markClassName, "brand-logo-mark-png", !showWordmark && "object-contain")}
         priority={priority}
         aria-hidden
       />
@@ -46,15 +84,25 @@ export function BrandLogo({
       <span
         role="img"
         aria-label="Visual Era"
-        className={cn(dimensions.className, "brand-logo-mark inline-block shrink-0")}
+        className={markClassName}
       />
     );
 
   const content = (
-    <span className={cn("inline-flex items-center gap-3", className)}>
+    <span
+      className={cn(
+        showWordmark ? "brand-logo-lockup inline-flex items-end" : "inline-flex items-center",
+        showWordmark ? null : dimensions.gap,
+        className,
+      )}
+      {...(showWordmark ? { "data-size": size } : {})}
+    >
       {mark}
       {showWordmark ? (
-        <span className="text-sm font-semibold tracking-wide text-foreground">Visual Era</span>
+        <span className={cn(brandWordmarkClass, dimensions.wordmark)}>
+          <span className="brand-wordmark-visual">Visual </span>
+          <span className="brand-wordmark-era">Era</span>
+        </span>
       ) : null}
     </span>
   );
