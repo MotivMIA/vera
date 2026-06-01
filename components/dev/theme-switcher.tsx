@@ -41,7 +41,7 @@ const LIGHT_THEMES = new Set<ThemeId>([
   "damascus-steel-light",
 ]);
 
-const THEME_LABELS: Record<ThemeId, string> = {
+export const THEME_LABELS: Record<ThemeId, string> = {
   "noir-magenta": "Noir Magenta",
   "noir-magenta-light": "Noir Magenta Light",
   "vera-classic": "VERA Classic",
@@ -79,7 +79,7 @@ export type ThemeSwitcherProps = {
   className?: string;
 };
 
-function useThemeSwitcherState() {
+export function useThemeSwitcherState() {
   const [theme, setTheme] = useState<ThemeId>(DEFAULT_THEME);
 
   useEffect(() => {
