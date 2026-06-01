@@ -1,6 +1,5 @@
 import type { Metadata, Viewport } from "next";
 import { ClerkProvider } from "@clerk/nextjs";
-import { DevThemeSwitcher } from "@/components/dev/dev-theme-switcher";
 import { Toaster } from "@/components/ui/sonner";
 import { clerkAppearance } from "@/lib/clerk/appearance";
 import { getClerkProviderProxyProps } from "@/lib/clerk/hosted-only";
@@ -48,7 +47,6 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           />
           {children}
           <Toaster />
-          <DevThemeSwitcher variant="floating" />
         </body>
       </html>
     </ClerkProvider>
