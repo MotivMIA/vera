@@ -39,6 +39,10 @@ const siteHeadingClass =
 
 const footerColumnClass = "min-w-0";
 
+/** Keep Product / Company / Support labels on one line; nav scrolls if cramped. */
+const footerMenuColumnClass = "min-w-max shrink-0";
+const footerMenuLabelClass = "whitespace-nowrap";
+
 /** md+ evenly spaced top-level containers: brand | download | menu group. */
 function footerTopRowGridClass(hasDownload: boolean, hasMenus: boolean): string {
   const count = 1 + (hasDownload ? 1 : 0) + (hasMenus ? 1 : 0);
@@ -149,18 +153,18 @@ export function LandingFooter({
           <nav
             aria-label="Footer"
             className={cn(
-              footerColumnClass,
-              "grid min-w-0 items-start gap-x-6 gap-y-10",
+              "min-w-0 overflow-x-auto",
+              "grid items-start gap-x-4 gap-y-10 sm:gap-x-6",
               footerMenuGroupGridClass(columns.length),
             )}
           >
             {columns.map((col) => (
-              <div key={col.title} className={footerColumnClass}>
-                <p className={cn(columnHeadingClass, "break-words")}>{col.title}</p>
+              <div key={col.title} className={footerMenuColumnClass}>
+                <p className={cn(columnHeadingClass, footerMenuLabelClass)}>{col.title}</p>
                 <ul className="mt-3 space-y-2">
                   {col.links.map((link) => (
                     <li key={`${col.title}-${link.href}-${link.label}`}>
-                      <Link href={link.href} className={cn(columnLinkClass, "break-words")}>
+                      <Link href={link.href} className={cn(columnLinkClass, footerMenuLabelClass)}>
                         {link.label}
                       </Link>
                     </li>
