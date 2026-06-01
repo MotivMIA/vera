@@ -7,18 +7,21 @@ const badgeClassName =
 const badgeInteractiveClassName =
   "transition hover:bg-neutral-900 hover:ring-white/20";
 
+const storeIconBoxClassName =
+  "flex h-7 w-7 shrink-0 items-center justify-center";
+
 const storeBadgeIcons = {
   apple: {
     src: "/badges/apple.svg",
     width: 28,
     height: 35,
-    className: "h-7 w-auto shrink-0",
+    alt: "Apple",
   },
   google: {
     src: "/badges/play.svg",
     width: 24,
     height: 26,
-    className: "h-6 w-auto shrink-0",
+    alt: "Google Play",
   },
 } as const;
 
@@ -26,15 +29,16 @@ function StoreIcon({ platform }: { platform: AppStoreLink["platform"] }) {
   const icon = storeBadgeIcons[platform];
 
   return (
-    <Image
-      src={icon.src}
-      alt=""
-      width={icon.width}
-      height={icon.height}
-      className={icon.className}
-      aria-hidden
-      unoptimized
-    />
+    <span className={storeIconBoxClassName}>
+      <Image
+        src={icon.src}
+        alt={icon.alt}
+        width={icon.width}
+        height={icon.height}
+        className="max-h-full max-w-full object-contain"
+        unoptimized
+      />
+    </span>
   );
 }
 
