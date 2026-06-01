@@ -1,71 +1,56 @@
-# Local environment — `.env.local` (Next.js native)
+# Local vs live environment files
 
-Use **Next.js standard env files** so `npm run dev` loads secrets without wrapper scripts.
+Two gitignored files — no swapping keys by hand.
 
-## Files
+| File | Role | Used when |
+|------|------|-----------|
+| **`.env.local`** | **Local** — localhost, `pk_test_`, dev bypass | `npm run dev` |
+| **`.env.production.local`** | **Live** — visual-era.com, `pk_live_`, Clerk proxy | `npm run build`, Vercel sync |
 
-| File | Committed | Purpose |
-|------|-----------|---------|
-| `.env.local.example` | Yes | Template for local development |
-| `.env.production.local.example` | Yes | Template for local `npm run build` / Vercel import |
-| `.env.local` | No | Dev secrets — **auto-loaded** by `next dev` |
-| `.env.production.local` | No | Prod secrets for local builds — auto-loaded by `next build` |
-| `.env` | No | Legacy single file (still supported by `env:check`) |
+Templates (committed): `.env.local.example` · `.env.production.local.example`
 
-## First-time setup
+Legacy **`.env`** is optional. If you keep it, run `npm run env:refresh` to copy into local + live.
+
+## Setup
+
+**From scratch:**
 
 ```bash
 cp .env.local.example .env.local
 cp .env.production.local.example .env.production.local
-# Fill values
+# Paste keys into each file
 npm run env:check
-npm run dev
+npm run env:check:prod
 ```
 
-### Migrate from `.env.dev` / `.env.prod`
+**From one recovered `.env`:**
 
 ```bash
-npm run env:migrate
+npm run env:setup        # creates both (fails if they already exist)
+npm run env:refresh      # overwrites both from .env
 ```
 
-Or from a single `.env`:
+## Clerk
 
-```bash
-npm run env:split
-```
-
-## Clerk keys
-
-| Variable | `.env.local` | `.env.production.local` |
-|----------|--------------|-------------------------|
-| `*_DEV` | `pk_test_` / `sk_test_` | optional |
-| `*_PROD` | optional fallback | `pk_live_` / `sk_live_` |
-
-Do **not** set `NEXT_PUBLIC_CLERK_PROXY_URL` in `.env.local`.
-
-Production proxy: see [CLERK_PROXY_SETUP.md](./CLERK_PROXY_SETUP.md).
+| | `.env.local` (local) | `.env.production.local` (live) |
+|--|----------------------|--------------------------------|
+| Keys | `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY_DEV` + `CLERK_SECRET_KEY_DEV` (`pk_test_`) | `*_PROD` or legacy `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` (`pk_live_`) |
+| Site URL | `http://localhost:3001` | `https://visual-era.com` |
+| Proxy | **off** | optional `/__clerk` on production domain |
+| Bypass | `ALLOW_DEV_AUTH_BYPASS=true` | **unset** |
 
 ## Commands
 
-| Command | Env file |
-|---------|----------|
-| `npm run dev` | `.env.local` (+ `.env.development*` if present) |
-| `npm run build` | `.env.production.local`, `.env.production`, `.env` |
-| `npm run env:check` | `.env.local` (falls back to `.env.dev`, `.env`) |
-| `npm run env:check:prod` | `.env.production.local` (falls back to `.env.prod`, `.env`) |
-
-## Vercel
-
 ```bash
-npm run vercel:sync-env   # reads .env.production.local, then legacy paths
-vercel env pull .env.production.local
+npm run dev              # → .env.local
+npm run build            # → .env.production.local
+npm run env:check        # validate local file
+npm run env:check:prod   # validate live file
+npm run vercel:sync-env  # push from live file
 ```
 
-Production on Vercel uses dashboard env vars — not your local files.
-
-## Verify
+## Migrate old names
 
 ```bash
-npm run env:check
-npm run dev:smoke
+npm run env:migrate   # .env.dev → .env.local, .env.prod → .env.production.local
 ```
