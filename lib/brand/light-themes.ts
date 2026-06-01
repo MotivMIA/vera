@@ -10,7 +10,7 @@ export const LIGHT_THEME_IDS = [
 
 export type LightThemeId = (typeof LIGHT_THEME_IDS)[number];
 
-/** Footer social icons + app store badge artwork on light backgrounds. */
+/** Footer social icons on light backgrounds (not app store badges — those keep native artwork). */
 export const marketingFooterMarkClass = "marketing-footer-mark";
 
 export const appStoreBadgeShellClass = "app-store-badge-shell";

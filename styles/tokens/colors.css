@@ -179,7 +179,7 @@ select:-webkit-autofill:focus {
   box-shadow: 0 0 0 1000px var(--color-bg-soft) inset;
 }
 
-/* Footer social icons + app store badges — dark marks on light palettes */
+/* Footer social icons — dark marks on light palettes (not app store badge SVGs) */
 [data-theme="crm-light"] .marketing-footer-mark,
 [data-theme="noir-magenta-light"] .marketing-footer-mark,
 [data-theme="vera-classic-light"] .marketing-footer-mark,
