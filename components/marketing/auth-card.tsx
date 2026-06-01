@@ -162,13 +162,15 @@ function ClerkProxyBlockedNotice() {
             via the registered <code className="text-xs text-accent">/__clerk</code> proxy.
           </p>
           <p className="mt-3 text-muted-foreground">
-            Copy <code className="text-xs text-accent">pk_test_</code> /{" "}
-            <code className="text-xs text-accent">sk_test_</code> from Clerk Dashboard → Development
-            (instance <code className="text-xs text-accent">immense-sawfish-81</code>) → API Keys into{" "}
-            <code className="text-xs text-accent">.env</code>, comment out the production{" "}
-            <code className="text-xs text-accent">pk_live_</code> pair, omit{" "}
-            <code className="text-xs text-accent">NEXT_PUBLIC_CLERK_PROXY_URL</code>, then restart{" "}
-            <code className="text-xs text-accent">npm run dev</code>.
+            Add development keys to{" "}
+            <code className="text-xs text-accent">NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY_DEV</code> /{" "}
+            <code className="text-xs text-accent">CLERK_SECRET_KEY_DEV</code> in{" "}
+            <code className="text-xs text-accent">.env</code> (keep production keys in{" "}
+            <code className="text-xs text-accent">*_PROD</code> — no manual swapping). Omit{" "}
+            <code className="text-xs text-accent">NEXT_PUBLIC_CLERK_PROXY_URL</code> for{" "}
+            <code className="text-xs text-accent">pk_test_</code>, then restart{" "}
+            <code className="text-xs text-accent">npm run dev</code>. See{" "}
+            <code className="text-accent/90">docs/ops/LOCAL_ENV.md</code>.
           </p>
         </>
       ) : (

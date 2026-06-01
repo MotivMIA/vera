@@ -26,7 +26,18 @@ Default dev URL: **http://localhost:3001** (`NEXT_PUBLIC_SITE_URL` must match).
 
 ### Clerk (development instance)
 
-Use **`pk_test_` / `sk_test_`** (e.g. **immense-sawfish-81**). Do **not** set `NEXT_PUBLIC_CLERK_PROXY_URL` — development instances use hosted `*.clerk.accounts.dev`, not `/__clerk` proxy (see [CLERK_PROXY_SETUP.md](./CLERK_PROXY_SETUP.md)).
+Use **`pk_test_` / `sk_test_`** (e.g. **immense-sawfish-81**) in the `*_DEV` env vars. Do **not** set `NEXT_PUBLIC_CLERK_PROXY_URL` — development instances use hosted `*.clerk.accounts.dev`, not `/__clerk` proxy (see [CLERK_PROXY_SETUP.md](./CLERK_PROXY_SETUP.md)).
+
+#### Dual keys (recommended)
+
+Keep **both** dev and prod Clerk keys in `.env` — no manual swapping:
+
+| Variable | When used |
+|----------|-----------|
+| `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY_DEV` / `CLERK_SECRET_KEY_DEV` | `npm run dev` (localhost) |
+| `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY_PROD` / `CLERK_SECRET_KEY_PROD` | Production builds / `visual-era.com` |
+
+Vercel Production can keep legacy `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` / `CLERK_SECRET_KEY` — dual keys are optional there. Resolution lives in `lib/clerk/keys.ts`.
 
 ## Sync with Vercel
 

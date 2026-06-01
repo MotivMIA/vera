@@ -1,4 +1,5 @@
 import { z } from "zod";
+import { getClerkPublishableKey, getClerkSecretKey } from "@/lib/clerk/keys";
 
 const optionalUrl = z.preprocess((value) => {
   if (value === "") return undefined;
@@ -6,8 +7,6 @@ const optionalUrl = z.preprocess((value) => {
 }, z.string().url().optional());
 
 const productionRequiredKeys = [
-  "NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY",
-  "CLERK_SECRET_KEY",
   "NEXT_PUBLIC_SITE_URL",
   "NEXT_PUBLIC_SUPABASE_URL",
   "NEXT_PUBLIC_SUPABASE_ANON_KEY",
@@ -16,7 +15,11 @@ const productionRequiredKeys = [
 
 const serverEnvSchema = z.object({
   NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY: z.string().optional(),
+  NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY_DEV: z.string().optional(),
+  NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY_PROD: z.string().optional(),
   CLERK_SECRET_KEY: z.string().optional(),
+  CLERK_SECRET_KEY_DEV: z.string().optional(),
+  CLERK_SECRET_KEY_PROD: z.string().optional(),
   NEXT_PUBLIC_SITE_URL: optionalUrl,
   NEXT_PUBLIC_SUPABASE_URL: optionalUrl,
   NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().optional(),
@@ -55,6 +58,18 @@ export function validateProductionEnv() {
   const missing = productionRequiredKeys.filter((key) => !process.env[key]?.trim());
   if (missing.length > 0) {
     throw new Error(`Missing required production environment variables: ${missing.join(", ")}`);
+  }
+
+  if (!getClerkPublishableKey()) {
+    throw new Error(
+      "Missing Clerk publishable key in production (NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY or NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY_PROD).",
+    );
+  }
+
+  if (!getClerkSecretKey()) {
+    throw new Error(
+      "Missing Clerk secret key in production (CLERK_SECRET_KEY or CLERK_SECRET_KEY_PROD).",
+    );
   }
 
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim() ?? "";
