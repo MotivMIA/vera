@@ -49,12 +49,13 @@ export async function FooterDisclaimerRow({
     <div
       className={cn(
         "grid min-w-0 grid-cols-1 gap-y-4 text-xs leading-relaxed",
-        "lg:grid-cols-[1fr_auto_1fr] lg:items-center lg:gap-x-6 lg:gap-y-0",
+        "md:grid-cols-2 md:items-center md:gap-x-6 md:gap-y-3",
+        "lg:grid-cols-[minmax(0,1fr)_minmax(0,auto)_minmax(0,1fr)] lg:grid-rows-1 lg:gap-y-0",
         mutedClass,
       )}
     >
       {showLanguageSelector ? (
-        <div className="flex justify-self-start">
+        <div className="flex min-w-0 justify-self-start md:col-start-1 md:row-start-1 lg:col-start-1 lg:row-start-1">
           <div className="inline-flex shrink-0 items-center gap-1.5">
             <Globe
               className="size-3.5 shrink-0 opacity-70"
@@ -73,11 +74,23 @@ export async function FooterDisclaimerRow({
         <div className="hidden lg:block" aria-hidden />
       )}
 
-      <div className="min-w-0 justify-self-center px-1 lg:col-start-2 lg:row-start-1">
+      <div
+        className={cn(
+          "min-w-0 justify-self-center px-1",
+          "md:col-span-2 md:row-start-2",
+          "lg:col-span-1 lg:col-start-2 lg:row-start-1",
+        )}
+      >
         {copyrightDisclaimer}
       </div>
 
-      <div className="flex min-w-0 flex-wrap items-center justify-self-end gap-x-3 gap-y-1 lg:col-start-3 lg:row-start-1">
+      <div
+        className={cn(
+          "flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1",
+          "justify-self-start md:col-start-2 md:row-start-1 md:justify-self-end",
+          "lg:col-start-3 lg:row-start-1",
+        )}
+      >
         {legal.map((item, index) => (
           <span key={item.href} className="inline-flex items-center gap-x-3">
             {index > 0 ? <span aria-hidden>·</span> : null}
