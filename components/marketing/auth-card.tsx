@@ -23,7 +23,7 @@ import {
   isLocalDevHost,
   shouldUseClerkProxyClient,
 } from "@/lib/clerk/client-env";
-import { ONBOARDING_ENTRY_PATH } from "@/lib/onboarding/constants";
+import { ONBOARDING_ENTRY_PATH } from "@/lib/routes";
 
 type AuthMode = "sign-up" | "sign-in";
 

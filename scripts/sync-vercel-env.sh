@@ -3,10 +3,13 @@
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-ENV_FILE="${ROOT}/.env"
+ENV_FILE="${ROOT}/.env.prod"
+if [[ ! -f "$ENV_FILE" ]]; then
+  ENV_FILE="${ROOT}/.env"
+fi
 
 if [[ ! -f "$ENV_FILE" ]]; then
-  echo "error: missing .env — copy from .env.example" >&2
+  echo "error: missing .env.prod or .env — copy from .env.prod.example" >&2
   exit 1
 fi
 

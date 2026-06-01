@@ -73,7 +73,7 @@ Server writes use **`SUPABASE_SERVICE_ROLE_KEY`** only on the server. Migrations
 
 ## Environment
 
-- **Single local file:** `.env` (gitignored) — see [.env.example](../.env.example)
+- **Local profiles:** `.env.dev` / `.env.prod` (gitignored) — see [.env.dev.example](../.env.dev.example)
 - **Vercel:** same keys; Production overrides `NEXT_PUBLIC_SITE_URL`
 - **Validation:** `lib/env.ts` — production required keys at build/runtime
 

@@ -1,4 +1,4 @@
-import { ONBOARDING_ENTRY_PATH } from "@/lib/onboarding/constants";
+import { ONBOARDING_ENTRY_PATH } from "@/lib/routes";
 
 const redirectProps = {
   fallbackRedirectUrl: ONBOARDING_ENTRY_PATH,
