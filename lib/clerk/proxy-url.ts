@@ -5,8 +5,9 @@
  * Clerk development instances (pk_test_, e.g. immense-sawfish-81) use hosted
  * *.clerk.accounts.dev — proxying is not supported; do not set proxyUrl.
  */
-const LOCAL_PROXY_URL = "http://localhost:3001/__clerk";
 const PRODUCTION_PROXY_URL = "https://visual-era.com/__clerk";
+
+const LOCAL_SITE_PATTERN = /^https?:\/\/(localhost|127\.0\.0\.1|\[::1\])(:\d+)?/i;
 
 function normalizeProxyUrl(value: string): string | null {
   const trimmed = value.trim().replace(/\/$/, "");
@@ -36,6 +37,12 @@ export function shouldUseClerkFrontendApiProxy(): boolean {
   return isClerkProductionKey() || isClerkProxyForced();
 }
 
+/** True when NEXT_PUBLIC_SITE_URL points at this machine (npm run dev). */
+export function isLocalSiteUrl(siteUrl?: string): boolean {
+  const url = (siteUrl ?? process.env.NEXT_PUBLIC_SITE_URL ?? "").trim();
+  return LOCAL_SITE_PATTERN.test(url);
+}
+
 function resolveClerkProxyUrl(): string {
   const explicit = process.env.NEXT_PUBLIC_CLERK_PROXY_URL?.trim();
   const normalizedExplicit = explicit ? normalizeProxyUrl(explicit) : null;
@@ -56,12 +63,16 @@ function resolveClerkProxyUrl(): string {
     return `https://${process.env.VERCEL_URL}/__clerk`;
   }
 
-  return LOCAL_PROXY_URL;
+  return PRODUCTION_PROXY_URL;
 }
 
 /** Proxy URL for ClerkProvider / handshake, or `null` when using a dev instance without proxy. */
 export function getClerkProxyUrl(): string | null {
   if (!shouldUseClerkFrontendApiProxy()) {
+    return null;
+  }
+  // pk_live_ + localhost proxy breaks Clerk JS (blank page). Use pk_test_ locally instead.
+  if (isLocalSiteUrl()) {
     return null;
   }
   return resolveClerkProxyUrl();

@@ -26,11 +26,19 @@ describe("getClerkProxyUrl", () => {
     expect(isClerkProductionKey()).toBe(true);
   });
 
-  it("allows pk_test_ proxy when NEXT_PUBLIC_CLERK_FORCE_PROXY=true", () => {
+  it("returns null for pk_live_ on localhost (no broken local /__clerk proxy)", () => {
+    process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY = "pk_live_example";
+    process.env.NEXT_PUBLIC_SITE_URL = "http://localhost:3001";
+    delete process.env.NEXT_PUBLIC_CLERK_PROXY_URL;
+    expect(getClerkProxyUrl()).toBeNull();
+  });
+
+  it("allows forced proxy only when site URL is not localhost", () => {
     process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY = "pk_test_example";
     process.env.NEXT_PUBLIC_CLERK_FORCE_PROXY = "true";
-    process.env.NEXT_PUBLIC_CLERK_PROXY_URL = "http://localhost:3001/__clerk";
-    expect(getClerkProxyUrl()).toBe("http://localhost:3001/__clerk");
+    process.env.NEXT_PUBLIC_SITE_URL = "https://visual-era.com";
+    process.env.NEXT_PUBLIC_CLERK_PROXY_URL = "https://visual-era.com/__clerk";
+    expect(getClerkProxyUrl()).toBe("https://visual-era.com/__clerk");
   });
 
   it("ignores malformed NEXT_PUBLIC_CLERK_PROXY_URL copy-paste", () => {
