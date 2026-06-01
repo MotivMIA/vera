@@ -136,14 +136,17 @@ export function LandingFooter({
         </div>
 
         {appSection ? (
-          <div id="download" className={footerColumnClass}>
-            <p className={cn(columnHeadingClass, "break-words")}>{appSection.title}</p>
-            <div className="mt-3 min-w-0 w-full max-w-[13.5rem]">
+          <div
+            id="download"
+            className={cn(footerColumnClass, "flex flex-col items-center text-center")}
+          >
+            <p className={cn(columnHeadingClass, "w-full break-words")}>{appSection.title}</p>
+            <div className="mt-3 flex w-full min-w-0 justify-center">
               <AppStoreBadges
                 links={APP_STORE_LINKS}
                 size="sm"
                 layout="row"
-                className="w-full min-w-0"
+                className="min-w-0 items-center justify-center sm:items-center"
               />
             </div>
           </div>
