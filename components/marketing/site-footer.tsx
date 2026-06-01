@@ -130,11 +130,14 @@ export function SiteFooter() {
           </nav>
         </div>
 
-        <div className="flex flex-col items-center gap-1 border-t border-white/10 py-5 text-center text-xs text-muted-foreground">
-          <p>© {currentYear} All rights reserved.</p>
-          <p className="max-w-md text-pretty leading-5">
-            Information on this site is for general purposes only and is not legal or financial
-            advice.
+        <div className="border-t border-white/10 py-5">
+          <p className="flex flex-row flex-wrap justify-center items-center gap-x-3 gap-y-1 text-center text-xs text-muted-foreground md:flex-nowrap">
+            <span>© {currentYear} All rights reserved.</span>
+            <span aria-hidden>·</span>
+            <span>
+              Information on this site is for general purposes only and is not legal or financial
+              advice.
+            </span>
           </p>
         </div>
       </div>
