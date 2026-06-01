@@ -2,7 +2,7 @@ import Image from "next/image";
 import type { AppStoreLink } from "@/lib/brand/app";
 
 const badgeClassName =
-  "inline-flex w-[8.25rem] shrink-0 min-h-[2.75rem] items-center gap-2 rounded-lg bg-black px-3 py-2 text-left text-white ring-1 ring-white/10";
+  "inline-flex w-[11rem] shrink-0 min-h-[2.75rem] items-center gap-2 rounded-lg bg-black px-3 py-2 text-left text-white ring-1 ring-white/10";
 
 const badgeInteractiveClassName =
   "transition hover:bg-neutral-900 hover:ring-white/20";
@@ -33,7 +33,7 @@ function StoreIcon({ platform }: { platform: AppStoreLink["platform"] }) {
         alt=""
         width={icon.width}
         height={icon.height}
-        className="max-h-full max-w-full object-contain"
+        className="max-h-full max-w-full object-contain object-center"
         aria-hidden
         unoptimized
       />
