@@ -75,10 +75,19 @@ describe("clerk keys", () => {
     expect(getClerkSecretKey()).toBe("sk_test_legacy");
   });
 
-  it("falls back to legacy keys when selected dual slot is empty", () => {
+  it("falls back to prod dual keys when dev slots are empty in development", () => {
     clearClerkEnv();
     vi.stubEnv("NODE_ENV", "development");
     process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY_PROD = "pk_live_prod";
+    process.env.CLERK_SECRET_KEY_PROD = "sk_live_prod";
+
+    expect(getClerkPublishableKey()).toBe("pk_live_prod");
+    expect(getClerkSecretKey()).toBe("sk_live_prod");
+  });
+
+  it("falls back to legacy keys when dual keys are absent", () => {
+    clearClerkEnv();
+    vi.stubEnv("NODE_ENV", "development");
     process.env.NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY = "pk_test_legacy";
 
     expect(getClerkPublishableKey()).toBe("pk_test_legacy");
